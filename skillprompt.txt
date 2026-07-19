@@ -1,0 +1,89 @@
+---
+name: sunthornllm
+description: >
+  Build and clean a กลอนแปด (Thai klon-8) dataset from สุนทรภู่ and fine-tune a Thai
+  LLM to generate prosodically-correct, story-telling Thai poetry. Use whenever
+  working in c:\Desktop\SunthornLLM — poem scraping/cleaning, syllable counting,
+  จังหวะ (beat) segmentation, dataset JSONL formatting, or fine-tuning setup.
+---
+
+# SunthornLLM
+
+## Mission
+Fine-tune a Thai base LLM so that a prompt like "create me a กลอนแปด about dogs"
+yields a กลอนแปด that is BOTH prosodically correct (≈8-syllable วรรค, valid สัมผัส
+rhyme, acceptable tone at วรรค-ends) AND a coherent story.
+
+## Context (state before assuming anything)
+- Project root: `c:\Desktop\SunthornLLM\` (`CleanData.py`). Prototyping in
+  `c:\Desktop\TestPythai.ipynb` and Colab. SEPARATE from `upgen` (that is only the
+  cwd; do not conflate).
+- User: senior web dev + cybersecurity; Windows 11; Colab + VS Code. Wants safe,
+  pretty, efficient code. Will sometimes ask to be taught step-by-step ("don't let
+  me vibecode") and sometimes "just gen me the code" — read which mode is being
+  requested. Corrects over-engineering; keep proposals minimal and on-spec.
+
+## Pipeline
+scrape สุนทรภู่ (พระอภัยมณี) from วชิรญาณ → clean → mark จังหวะ + วรรค → JSONL →
+QLoRA fine-tune (Unsloth / Unsloth Studio) on a Thai base LLM → generate WITH
+`pythainlp.khavee.KhaveeVerifier` in the loop (rejection-sample / re-rank for
+prosody). PyThaiNLP is TOOLING (prep + verify), never the model being trained.
+
+## HARD RULES — follow exactly, these were settled with the user
+
+### 1. Syllable counting
+Count SPOKEN syllables: `word_tokenize(text, engine="newmm")` → for each word
+`pronunciate(word, engine="w2p")` → `split("-")` → sum. This fixes orthographic
+undercount of unwritten-อะ loanwords (มนุษย์ = มะ-นุด = 2; ssg/dict wrongly give 1).
+`syllable_tokenize(engine="tltk")` is the phonetic alternative — run a bake-off of
+both counters against a hand-counted gold set; keep the winner, use the other as a
+disagreement cross-check.
+
+### 2. จังหวะ grouping (3 beats per วรรค)
+- Canonical by syllable count: 8→[3,2,3], 9→[3,3,3], 6→[2,2,2]. 7→ambiguous → FLAG.
+- Use [4,2,3] or [3,2,4] ONLY when a single 4-syllable word sits at the start/end of
+  a 9-วรรค (e.g. มหาสมุทร, มไหสวรรย์). Otherwise a 9-วรรค is [3,3,3].
+- Place beat boundaries at WORD boundaries. If a multi-syllable word straddles a
+  canonical beat line, FLAG it — never cut mid-word.
+
+### 3. Output format (LOCKED)
+- Two in-text markers only: beats = `" | "`, วรรค-end = `"\n"`. NO per-syllable breaks.
+- One บท per JSONL record. `text` holds the poem; `rhythms`/`syllable_counts` are
+  METADATA fields, never inline. No custom/exotic separators, no new special tokens
+  (it's a fine-tune; added tokens would be untrained).
+- Example: {"text": "แล้วสอนว่า | อย่าไว้ | ใจมนุษย์\n...", "rhythms": [[3,2,3], ...]}
+
+### 4. Human review
+- `needs_review` flag on each wak. Interactive resolve menu:
+  1=[3,2,2] 2=[2,2,3] 3=[4,2,3] 4=[3,2,4] 0=keep-auto-guess.
+  Guard: chosen pattern's sum must equal the wak's syllable total.
+- At episode scale: DECOUPLE scan (non-interactive, fast) from resolve, and
+  CHECKPOINT every answer to disk so review is resumable across sessions.
+
+### 5. Structure (research reproducibility)
+`.py` module = deterministic, testable logic (analyze_wak, _classify_and_group,
+scan, write_jsonl). `.ipynb` = interactive review ONLY. Plus unit tests, a VERSIONED
+`gold_set.json`, and an `OVERRIDES` dict for known loanwords. Real git repo.
+
+## Verify before trusting (don't assert these blind)
+- Confirm `pronunciate` actually delimits with `-` (one print test).
+- Confirm newmm keeps proper names / มหาสมุทร WHOLE; if not, pass
+  `Tokenizer(custom_dict=<thai_words ∪ proper nouns>)`.
+- After scanning an episode, check the FLAG RATE. >25% means an upstream problem
+  (parsing or counting) — fix that, do not brute-force review.
+
+## Gotchas / sources
+- vajirayana.org returns HTTP 403 to naive fetchers → needs a browser User-Agent.
+  Thai Wikisource (real MediaWiki API) is a cleaner source — prefer it.
+- Raw corpus has NO prompts. Prompt-controlled generation needs synthesized
+  (instruction→poem) pairs. Start style-only `{"text": ...}` to validate the loop,
+  then add synthesized instructions.
+- Fine-tune needs an NVIDIA GPU (~8–12 GB for a 7–8B QLoRA). Unsloth Studio = no-code
+  local UI over the Unsloth library (2× faster, ~70% less VRAM).
+
+## Behavioral directives
+- Do NOT promise the fine-tune alone will produce correct prosody — always pair it
+  with the KhaveeVerifier-in-the-loop. The dataset quality is the hard part.
+- Special openers เมื่อนั้น / บัดนั้น / มาจะกล่าวบทไป are short-วรรค exceptions
+  (กลอนนิทาน/ละคร/เสภา) — detect and flag them, don't treat as malformed.
+- Resolve ambiguity with a measured gold-set bake-off, not argument.
