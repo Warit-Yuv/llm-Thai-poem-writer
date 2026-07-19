@@ -19,7 +19,7 @@ the checksum. OVERRIDES remains for shatters into WRONG multi-char pieces.
 import csv
 import json
 import os
-import re # Regular expressions for Thai character ranges
+import re
 from pythainlp.tokenize import Tokenizer, subword_tokenize
 from pythainlp.corpus import thai_words
 from pythainlp.transliterate import pronunciate
@@ -28,17 +28,25 @@ THAI = r"[ก-ฮ]"
 
 # Proper nouns / rare compounds newmm shatters into WRONG multi-char pieces.
 # (Orphan-letter shatters no longer need entries — orphans count as 1 syllable.)
-OVERRIDES = {"อินทคาม", "มไหสวรรย์", "สานน", "วิเชียร", "โมรา"}
+OVERRIDES = {"อินทคาม", "มไหสวรรย์", "สานน", "วิเชียร", "โมรา", "กเฬวราก"}
+
+# Words w2p miscounts even when kept whole (found via --wak probes). w2p's
+# systematic weakness: it swallows the linking syllable in Sanskrit-derived
+# compounds (กิด-ติ-[มะ]-สัก, ไส-[ยะ]-สาด). Grow this as probes find more.
+SYL_OVERRIDES = {"กิตติมศักดิ์": 4, "ไสยศาสตร์": 3}
 
 # Real one-character words in classical verse — NOT shatter fragments.
-SINGLE_CHAR_OK = {"ณ", "ธ", "บ", "ก", "อ", "ฤ"}
+SINGLE_CHAR_OK = {"ณ", "ธ", "บ", "ก", "อ", "ฤ", "ฦ", "ฤๅ", "ฦๅ"}
 
 _tok = Tokenizer(custom_dict=set(thai_words()) | OVERRIDES, engine="newmm")
 
 
 def _count_syls(word):
     """Spoken syllables: pronunciate then split '-'. Phonetic, so it fixes
-    orthographic undercount (มนุษย์ = มะ-นุด = 2, not 1)."""
+    orthographic undercount (มนุษย์ = มะ-นุด = 2, not 1). SYL_OVERRIDES wins
+    over w2p for words it's known to misread."""
+    if word in SYL_OVERRIDES:
+        return SYL_OVERRIDES[word]
     spoken = pronunciate(word, engine="w2p")
     return len([s for s in spoken.split("-") if s.strip()]) or 1
 
@@ -72,8 +80,9 @@ def _pattern(total, counts):
 def _syllable_split(word, expect):
     """(piece, syls) list from written-syllable tokenization, or None when the
     split can't be trusted: <2 pieces, pieces don't rejoin to the word, or the
-    pieces' spoken counts don't sum to the whole word's (เกสร alone = เกด-สอน
-    but in compounds = เกด — a mismatch would silently shift the วรรค total)."""
+    pieces' spoken counts don't sum to the whole word's (w2p reads เกสร alone
+    as 2 syl — เกด-สอน, really เก-สอน — but as a compound tail it's 1: เกด.
+    A mismatch would silently shift the วรรค total)."""
     pieces = subword_tokenize(word, engine="dict")
     if len(pieces) < 2 or "".join(pieces) != word:
         return None
@@ -364,6 +373,17 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:                              # driver: scan / resolve a ตอน file
         sys.stdout.reconfigure(encoding="utf-8")       # Windows: print Thai, not mojibake
         sys.stdin.reconfigure(encoding="utf-8")        # ...and read typed/piped Thai answers
+        if "--wak" in sys.argv:                        # probe any วรรค/word, no file needed
+            for t in (a for a in sys.argv[1:] if not a.startswith("-")):
+                r = analyze_wak(t)
+                print(f"\n{t}  ({r['total_syllables']} syl, {r['kind']})")
+                for w, c in r["words"]:
+                    print(f"  {w:<12} {pronunciate(w, engine='w2p')}  ({c})")
+                if r["rhythm"]:
+                    print(f"  beats: {r['segmented']}   {r['rhythm']}")
+                for f in r["flags"]:
+                    print(f"  flag:  {f}")
+            sys.exit()
         path = [a for a in sys.argv[1:] if not a.startswith("-")][0]
         if "--resolve" in sys.argv:
             resolve_ton(path)
