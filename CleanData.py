@@ -20,20 +20,20 @@ import csv
 import json
 import os
 import re
-from pythainlp.tokenize import Tokenizer, subword_tokenize
+from pythainlp.tokenize import Tokenizer, subword_tokenize, syllable_tokenize
 from pythainlp.corpus import thai_words
 from pythainlp.transliterate import pronunciate
+
+from Noto_tokenizer import POETRY_OVERRIDES
 
 THAI = r"[ก-ฮ]"
 
 # Proper nouns / rare compounds newmm shatters into WRONG multi-char pieces.
 # (Orphan-letter shatters no longer need entries — orphans count as 1 syllable.)
-OVERRIDES = {"อินทคาม", "มไหสวรรย์", "สานน", "วิเชียร", "โมรา", "กเฬวราก"}
+OVERRIDES = {"อินทคาม", "มไหสวรรย์", "สานน", "วิเชียร", "โมรา", "กเฬวราก", "นครา"}
 
-# Words w2p miscounts even when kept whole (found via --wak probes). w2p's
-# systematic weakness: it swallows the linking syllable in Sanskrit-derived
-# compounds (กิด-ติ-[มะ]-สัก, ไส-[ยะ]-สาด). Grow this as probes find more.
-SYL_OVERRIDES = {"กิตติมศักดิ์": 4, "ไสยศาสตร์": 3}
+# Words w2p miscounts go in Noto_tokenizer.POETRY_OVERRIDES (full syllable
+# lists — the count is len(); the syllables themselves feed rhyme work later).
 
 # Real one-character words in classical verse — NOT shatter fragments.
 SINGLE_CHAR_OK = {"ณ", "ธ", "บ", "ก", "อ", "ฤ", "ฦ", "ฤๅ", "ฦๅ"}
@@ -42,12 +42,19 @@ _tok = Tokenizer(custom_dict=set(thai_words()) | OVERRIDES, engine="newmm")
 
 
 def _count_syls(word):
-    """Spoken syllables: pronunciate then split '-'. Phonetic, so it fixes
-    orthographic undercount (มนุษย์ = มะ-นุด = 2, not 1). SYL_OVERRIDES wins
-    over w2p for words it's known to misread."""
-    if word in SYL_OVERRIDES:
-        return SYL_OVERRIDES[word]
+    """Spoken syllables: POETRY_OVERRIDES (curated syllable map, shared with
+    the Noto validator) -> ssg bypass for <=2-char words (w2p hallucinates:
+    ก -> กะ-โหฺมด) -> w2p, counting ITS OWN '-' boundaries. Noto's ssg
+    re-segmentation of the joined phonetic string is deliberately skipped:
+    it merges syllables (เสนา -> 1, so อัปยศอดสูเสนาใน fell to 6 = opener
+    and left the review queue SILENTLY)."""
+    if word in POETRY_OVERRIDES:
+        return len(POETRY_OVERRIDES[word])
+    if len(word) <= 2:
+        return len(syllable_tokenize(word, engine="ssg")) or 1
     spoken = pronunciate(word, engine="w2p")
+    if not spoken:
+        return len(syllable_tokenize(word, engine="ssg")) or 1
     return len([s for s in spoken.split("-") if s.strip()]) or 1
 
 
