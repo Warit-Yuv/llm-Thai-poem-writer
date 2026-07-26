@@ -259,6 +259,23 @@ def resolve_ton(path):
     print(f"done — {len(ck)} answers in {ck_path}")
 
 
+# Output layout: sources live in PhraAphai/, results split by state under
+# Results/. The .review.json checkpoint stays beside its source .txt.
+_ROOT = os.path.dirname(os.path.abspath(__file__))
+EXPORT_DIR = os.path.join(_ROOT, "Results", "Exportable")
+ATTENTION_DIR = os.path.join(_ROOT, "Results", "NeedsAttention")
+
+
+def _out_paths(path):
+    """(export_csv, attention_csv) for a source ตอน, routed to the Results/
+    folders by basename. Dirs are created if missing so a fresh clone works."""
+    base = os.path.splitext(os.path.basename(path))[0]
+    os.makedirs(EXPORT_DIR, exist_ok=True)
+    os.makedirs(ATTENTION_DIR, exist_ok=True)
+    return (os.path.join(EXPORT_DIR, base + "_export.csv"),
+            os.path.join(ATTENTION_DIR, base + "_attention.csv"))
+
+
 def _load_review(path):
     ck_path = path + ".review.json"
     if os.path.exists(ck_path):
@@ -281,6 +298,10 @@ def write_csv(path, window=2):
     ck = _load_review(path)
     with open(path, encoding="utf-8") as fh:
         results, _, sections = scan_ton(fh.read())
+    if not results:                          # empty/blank source: write nothing
+        return {"export_rows": 0, "attention_rows": 0, "bot_clean": 0,
+                "bot_blocked": 0, "sections_skipped": 0, "empty": True,
+                "export": None, "attention": None}
 
     def cells(r):
         """3 beat cells for a clean/resolved วรรค; None = blocks its บท."""
@@ -295,10 +316,10 @@ def write_csv(path, window=2):
             seg = r["segmented"]
         return (seg.split(" | ") + ["", ""])[:3]
 
-    stem = os.path.splitext(path)[0]
+    export_path, attention_path = _out_paths(path)
     stats = {"export_rows": 0, "attention_rows": 0, "bot_clean": 0,
              "bot_blocked": 0, "sections_skipped": 0,
-             "export": stem + "_export.csv", "attention": stem + "_attention.csv"}
+             "export": export_path, "attention": attention_path}
     with open(stats["export"], "w", encoding="utf-8-sig", newline="") as fe, \
          open(stats["attention"], "w", encoding="utf-8-sig", newline="") as fa:
         we, wa = csv.writer(fe), csv.writer(fa)
@@ -340,7 +361,7 @@ def import_attention(path):
     (cuts only, no edits — Excel autocorrect gets caught here). 'x' in cell a =
     exclude. Deleted rows simply reappear on the next --csv. Rerun --csv after
     importing: recovered windows move into the export file."""
-    att = os.path.splitext(path)[0] + "_attention.csv"
+    _, att = _out_paths(path)
     with open(path, encoding="utf-8") as fh:
         results, _, _ = scan_ton(fh.read())
     by_wak = {r["wak"]: r for r in results}
@@ -397,6 +418,9 @@ if __name__ == "__main__":
             sys.exit()
         if "--csv" in sys.argv:
             s = write_csv(path)
+            if s.get("empty"):
+                print(f"skipped:    {path} has no วรรค (empty file?) — nothing written")
+                sys.exit()
             print(f"export:     {s['export_rows']} rows -> {s['export']}")
             print(f"attention:  {s['attention_rows']} วรรค to fix -> {s['attention']}")
             print(f"บท:         {s['bot_clean']} clean, {s['bot_blocked']} blocked (วรรครับ opener cut)")
@@ -474,6 +498,7 @@ if __name__ == "__main__":
     # Then fix the attention row, --import, rewrite: export grows, attention empties.
     import tempfile
     with tempfile.TemporaryDirectory() as td:
+        EXPORT_DIR = ATTENTION_DIR = td      # isolate: don't litter real Results/
         p = os.path.join(td, "t.txt")
         with open(p, "w", encoding="utf-8") as fh:
             fh.write("๏ " + " ".join(["กากา"] * 8)
