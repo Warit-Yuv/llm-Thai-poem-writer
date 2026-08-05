@@ -28,9 +28,15 @@ from Noto_tokenizer import POETRY_OVERRIDES
 
 THAI = r"[ก-ฮ]"
 
-# Proper nouns / rare compounds newmm shatters into WRONG multi-char pieces.
-# (Orphan-letter shatters no longer need entries — orphans count as 1 syllable.)
-OVERRIDES = {"อินทคาม", "มไหสวรรย์", "สานน", "วิเชียร", "โมรา", "กเฬวราก", "นครา"}
+# Proper nouns / rare compounds newmm splits wrong. Every entry is verified
+# against the corpus: นครา shifts the TOTAL (นค|รา = 8 not 9) in 82 วรรค; the
+# other three keep the total but move word boundaries (สานน -> สาน|นก|ล), which
+# the meter checksum CANNOT see. That blindness is why entries are earned, not
+# guessed: a dict entry applies to all ~97k วรรค
+# and Thai runs words together, so a plausible string like ตัวอย่า (ตัว + อย่า)
+# silently rewrites unrelated วรรค at the same syllable count. Add one only
+# after a real วรรค breaks, then re-check the corpus for collateral splits.
+OVERRIDES = {"อินทคาม", "มไหสวรรย์", "สานน", "นครา"}
 
 # Words w2p miscounts go in Noto_tokenizer.POETRY_OVERRIDES (full syllable
 # lists — the count is len(); the syllables themselves feed rhyme work later).
