@@ -1,29 +1,29 @@
-﻿wak,syllables,flag,a,b,c
-ส่งนัดดาแล้วเสร็จเสด็จกลับ,9,word straddles a beat boundary,ส่งนัดดา,แล้วเสร็จเสด็จ,กลับ
-เสด็จไปเนินสิงคุตรที่กุฎี,10,10 syllables — likely shatter/miscount,เสด็จไปเนินสิงคุตรที่กุฎี,,
-ก็ตามราชรถไปในวิถี,9,word straddles a beat boundary,ก็ตามราชรถ,ไป,ในวิถี
-เกิดมาแล้วก็คงตายวายชีวาตม์,10,10 syllables — likely shatter/miscount,เกิดมาแล้วก็คงตายวายชีวาตม์,,
-บรรพชาเสียให้พ้นทนทรมาน,10,10 syllables — likely shatter/miscount,บรรพชาเสียให้พ้นทนทรมาน,,
-ประทานสายสุดาสวาทราชนัดดา,10,10 syllables — likely shatter/miscount,ประทานสายสุดาสวาทราชนัดดา,,
-ก็พระราชทานของโอรสา,9,4-syllable word not at วรรค edge,ก็พระราชทานของโอรสา,,
-ทั้งอนุชาที่จะไปก็ให้ปัน,10,10 syllables — likely shatter/miscount,ทั้งอนุชาที่จะไปก็ให้ปัน,,
-แม้นมีราชการร้อนจงผ่อนผัน,9,word straddles a beat boundary,แม้นมีราชการ,ร้อน,จงผ่อนผัน
-ถึงมารดรเลยจงมุ่งไปกรุงศรี,10,10 syllables — likely shatter/miscount,ถึงมารดรเลยจงมุ่งไปกรุงศรี,,
-บนบรรจถรณ์ท้ายบาหลีพระปรีดิ์เปรม,10,10 syllables — likely shatter/miscount,บนบรรจถรณ์ท้ายบาหลีพระปรีดิ์เปรม,,
-นางอิ่มเอมซื่อตรงเหมือนวงศ์วาน,9,word straddles a beat boundary,นางอิ่มเอม,ซื่อตรงเหมือน,วงศ์วาน
-พระสุริยงเย็นพยับลงลับฟ้า,10,10 syllables — likely shatter/miscount,พระสุริยงเย็นพยับลงลับฟ้า,,
-ฝ่ายโฉมยงองค์หัสกันพี่,7,"7 syllables — ambiguous, [3,2,2] is only a guess",ฝ่ายโฉมยง,องค์หัส,กันพี่
-พิศดูขวัญวันชายายิ่งอาลัย,10,10 syllables — likely shatter/miscount,พิศดูขวัญวันชายายิ่งอาลัย,,
-พิศดูทรงแล้วสะท้อนถอนฤทัย,10,10 syllables — likely shatter/miscount,พิศดูทรงแล้วสะท้อนถอนฤทัย,,
-ฉวยตื่นกลับท้าคารมว่าข่มเหง,10,10 syllables — likely shatter/miscount,ฉวยตื่นกลับท้าคารมว่าข่มเหง,,
-ทำเฉยเมยมิใคร่ตรัสน่าอัศจรรย์,10,10 syllables — likely shatter/miscount,ทำเฉยเมยมิใคร่ตรัสน่าอัศจรรย์,,
-ขอฝากรักแม่อย่าอางขนางหนี,10,10 syllables — likely shatter/miscount,ขอฝากรักแม่อย่าอางขนางหนี,,
-ประเวณีไม่ต้องสอนเหมือนกลอนเพลง,10,10 syllables — likely shatter/miscount,ประเวณีไม่ต้องสอนเหมือนกลอนเพลง,,
-พลิกคะแคงเสือกกระทั่งเกยฝั่งฝา,10,10 syllables — likely shatter/miscount,พลิกคะแคงเสือกกระทั่งเกยฝั่งฝา,,
-อากาศกลุ้มคลุ้มมัวทั่ววิถี,9,word straddles a beat boundary,อากาศกลุ้ม,คลุ้มมัว,ทั่ววิถี
-ไม่แจ้งเหตุว่าจะไปข้างใต้เหนือ,10,10 syllables — likely shatter/miscount,ไม่แจ้งเหตุว่าจะไปข้างใต้เหนือ,,
-จนเกสรบานทั่วกลีบบัวหลวง,9,word straddles a beat boundary,จนเกสร,บานทั่วกลีบ,บัวหลวง
-ครั้นวัฒนาหาเปรียบไม่เทียบถึง,9,word straddles a beat boundary,ครั้นวัฒนา,หาเปรียบ,ไม่เทียบถึง
-ไม่ห่างองค์พงศ์กษัตริย์หัสกัน,8,word straddles a beat boundary,ไม่ห่างองค์,พงศ์กษัตริย์,หัสกัน
-อยู่บนบรรรถรณ์สบายท้ายเภตรา,11,11 syllables — likely shatter/miscount,อยู่บนบรรรถรณ์สบายท้ายเภตรา,,
-จะกล่าวถึงวลายุดากับวายุพัฒน์,11,11 syllables — likely shatter/miscount,จะกล่าวถึงวลายุดากับวายุพัฒน์,,
+﻿wak,syllables,flag,guess,a,b,c
+ส่งนัดดาแล้วเสร็จเสด็จกลับ,9,word straddles a beat boundary,ส่งนัดดา | แล้วเสร็จเสด็จ | กลับ,,,
+เสด็จไปเนินสิงคุตรที่กุฎี,10,10 syllables — likely shatter/miscount,เสด็จไปเนินสิงคุตรที่กุฎี,,,
+ก็ตามราชรถไปในวิถี,9,word straddles a beat boundary,ก็ตามราชรถ | ไป | ในวิถี,,,
+เกิดมาแล้วก็คงตายวายชีวาตม์,10,10 syllables — likely shatter/miscount,เกิดมาแล้วก็คงตายวายชีวาตม์,,,
+บรรพชาเสียให้พ้นทนทรมาน,10,10 syllables — likely shatter/miscount,บรรพชาเสียให้พ้นทนทรมาน,,,
+ประทานสายสุดาสวาทราชนัดดา,10,10 syllables — likely shatter/miscount,ประทานสายสุดาสวาทราชนัดดา,,,
+ก็พระราชทานของโอรสา,9,4-syllable word not at วรรค edge,ก็พระราชทานของโอรสา,,,
+ทั้งอนุชาที่จะไปก็ให้ปัน,10,10 syllables — likely shatter/miscount,ทั้งอนุชาที่จะไปก็ให้ปัน,,,
+แม้นมีราชการร้อนจงผ่อนผัน,9,word straddles a beat boundary,แม้นมีราชการ | ร้อน | จงผ่อนผัน,,,
+ถึงมารดรเลยจงมุ่งไปกรุงศรี,10,10 syllables — likely shatter/miscount,ถึงมารดรเลยจงมุ่งไปกรุงศรี,,,
+บนบรรจถรณ์ท้ายบาหลีพระปรีดิ์เปรม,10,10 syllables — likely shatter/miscount,บนบรรจถรณ์ท้ายบาหลีพระปรีดิ์เปรม,,,
+นางอิ่มเอมซื่อตรงเหมือนวงศ์วาน,9,word straddles a beat boundary,นางอิ่มเอม | ซื่อตรงเหมือน | วงศ์วาน,,,
+พระสุริยงเย็นพยับลงลับฟ้า,10,10 syllables — likely shatter/miscount,พระสุริยงเย็นพยับลงลับฟ้า,,,
+ฝ่ายโฉมยงองค์หัสกันพี่,7,"7 syllables — ambiguous, [3,2,2] is only a guess",ฝ่ายโฉมยง | องค์หัส | กันพี่,,,
+พิศดูขวัญวันชายายิ่งอาลัย,10,10 syllables — likely shatter/miscount,พิศดูขวัญวันชายายิ่งอาลัย,,,
+พิศดูทรงแล้วสะท้อนถอนฤทัย,10,10 syllables — likely shatter/miscount,พิศดูทรงแล้วสะท้อนถอนฤทัย,,,
+ฉวยตื่นกลับท้าคารมว่าข่มเหง,10,10 syllables — likely shatter/miscount,ฉวยตื่นกลับท้าคารมว่าข่มเหง,,,
+ทำเฉยเมยมิใคร่ตรัสน่าอัศจรรย์,10,10 syllables — likely shatter/miscount,ทำเฉยเมยมิใคร่ตรัสน่าอัศจรรย์,,,
+ขอฝากรักแม่อย่าอางขนางหนี,10,10 syllables — likely shatter/miscount,ขอฝากรักแม่อย่าอางขนางหนี,,,
+ประเวณีไม่ต้องสอนเหมือนกลอนเพลง,10,10 syllables — likely shatter/miscount,ประเวณีไม่ต้องสอนเหมือนกลอนเพลง,,,
+พลิกคะแคงเสือกกระทั่งเกยฝั่งฝา,10,10 syllables — likely shatter/miscount,พลิกคะแคงเสือกกระทั่งเกยฝั่งฝา,,,
+อากาศกลุ้มคลุ้มมัวทั่ววิถี,9,word straddles a beat boundary,อากาศกลุ้ม | คลุ้มมัว | ทั่ววิถี,,,
+ไม่แจ้งเหตุว่าจะไปข้างใต้เหนือ,10,10 syllables — likely shatter/miscount,ไม่แจ้งเหตุว่าจะไปข้างใต้เหนือ,,,
+จนเกสรบานทั่วกลีบบัวหลวง,9,word straddles a beat boundary,จนเกสร | บานทั่วกลีบ | บัวหลวง,,,
+ครั้นวัฒนาหาเปรียบไม่เทียบถึง,9,word straddles a beat boundary,ครั้นวัฒนา | หาเปรียบ | ไม่เทียบถึง,,,
+ไม่ห่างองค์พงศ์กษัตริย์หัสกัน,8,word straddles a beat boundary,ไม่ห่างองค์ | พงศ์กษัตริย์ | หัสกัน,,,
+อยู่บนบรรรถรณ์สบายท้ายเภตรา,11,11 syllables — likely shatter/miscount,อยู่บนบรรรถรณ์สบายท้ายเภตรา,,,
+จะกล่าวถึงวลายุดากับวายุพัฒน์,11,11 syllables — likely shatter/miscount,จะกล่าวถึงวลายุดากับวายุพัฒน์,,,

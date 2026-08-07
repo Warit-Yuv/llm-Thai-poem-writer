@@ -1,10 +1,10 @@
-﻿wak,syllables,flag,a,b,c
-น้องจะขอไปเป็นเหยื่อผีเสื้อน้ำ,10,10 syllables — likely shatter/miscount,น้องจะขอไปเป็นเหยื่อผีเสื้อน้ำ,,
-อยู่พึ่งบุญบารมีพระชีไพร,9,4-syllable word not at วรรค edge,อยู่พึ่งบุญบารมีพระชีไพร,,
-อยู่ในห้วงหุบวนชลสาย,7,"7 syllables — ambiguous, [3,2,2] is only a guess",อยู่ในห้วง,หุบวน,ชลสาย
-เชิงฉลาดเหมือนมนุษย์นั้นสุดเหมือน,11,11 syllables — likely shatter/miscount,เชิงฉลาดเหมือนมนุษย์นั้นสุดเหมือน,,
-ขอเป็นข้ากว่าชีวันจะบรรลัย,10,10 syllables — likely shatter/miscount,ขอเป็นข้ากว่าชีวันจะบรรลัย,,
-จะยินดีด้วยมนุษย์นั้นสุดกลัว,10,10 syllables — likely shatter/miscount,จะยินดีด้วยมนุษย์นั้นสุดกลัว,,
-พลาหกเทวบุตรก็ผุดพุ่ง,8,word straddles a beat boundary,พลาหกเทวบุตร,ก็,ผุดพุ่ง
-สีขรินทร์อิสินธรก็อ่อนเอน,10,10 syllables — likely shatter/miscount,สีขรินทร์อิสินธรก็อ่อนเอน,,
-สมพาสเงือกเยือกเย็นเหมือนเล่นน้ำ,9,word straddles a beat boundary,สมพาสเงือก,เยือกเย็นเหมือน,เล่นน้ำ
+﻿wak,syllables,flag,guess,a,b,c
+น้องจะขอไปเป็นเหยื่อผีเสื้อน้ำ,10,10 syllables — likely shatter/miscount,น้องจะขอไปเป็นเหยื่อผีเสื้อน้ำ,,,
+อยู่พึ่งบุญบารมีพระชีไพร,9,4-syllable word not at วรรค edge,อยู่พึ่งบุญบารมีพระชีไพร,,,
+อยู่ในห้วงหุบวนชลสาย,7,"7 syllables — ambiguous, [3,2,2] is only a guess",อยู่ในห้วง | หุบวน | ชลสาย,,,
+เชิงฉลาดเหมือนมนุษย์นั้นสุดเหมือน,11,11 syllables — likely shatter/miscount,เชิงฉลาดเหมือนมนุษย์นั้นสุดเหมือน,,,
+ขอเป็นข้ากว่าชีวันจะบรรลัย,10,10 syllables — likely shatter/miscount,ขอเป็นข้ากว่าชีวันจะบรรลัย,,,
+จะยินดีด้วยมนุษย์นั้นสุดกลัว,10,10 syllables — likely shatter/miscount,จะยินดีด้วยมนุษย์นั้นสุดกลัว,,,
+พลาหกเทวบุตรก็ผุดพุ่ง,8,word straddles a beat boundary,พลาหกเทวบุตร | ก็ | ผุดพุ่ง,,,
+สีขรินทร์อิสินธรก็อ่อนเอน,10,10 syllables — likely shatter/miscount,สีขรินทร์อิสินธรก็อ่อนเอน,,,
+สมพาสเงือกเยือกเย็นเหมือนเล่นน้ำ,9,word straddles a beat boundary,สมพาสเงือก | เยือกเย็นเหมือน | เล่นน้ำ,,,

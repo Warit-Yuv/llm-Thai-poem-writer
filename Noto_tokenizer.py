@@ -20,7 +20,6 @@ POETRY_OVERRIDES = {
     "ผู้": ["ผู้"],   # Fixes the "ผู้ใด" -> 'พู่' hallucination
     "ใหม่": ["ใหม่"],
     "อย่า": ["อย่า"],
-    "อยู่": ["อยู่"],
     "อย่าง": ["อย่าง"],
     "อยาก": ["อยาก"],
     # w2p swallows linking syllables in Sanskrit compounds — found via --wak probes

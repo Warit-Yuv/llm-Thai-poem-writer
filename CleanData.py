@@ -20,6 +20,7 @@ import csv
 import json
 import os
 import re
+from functools import lru_cache
 from pythainlp.tokenize import Tokenizer, subword_tokenize, syllable_tokenize
 from pythainlp.corpus import thai_words
 from pythainlp.transliterate import pronunciate
@@ -47,13 +48,18 @@ SINGLE_CHAR_OK = {"ณ", "ธ", "บ", "ก", "อ", "ฤ", "ฦ", "ฤๅ", "�
 _tok = Tokenizer(custom_dict=set(thai_words()) | OVERRIDES, engine="newmm")
 
 
+@lru_cache(maxsize=None)
 def _count_syls(word):
     """Spoken syllables: POETRY_OVERRIDES (curated syllable map, shared with
     the Noto validator) -> ssg bypass for <=2-char words (w2p hallucinates:
     ก -> กะ-โหฺมด) -> w2p, counting ITS OWN '-' boundaries. Noto's ssg
     re-segmentation of the joined phonetic string is deliberately skipped:
     it merges syllables (เสนา -> 1, so อัปยศอดสูเสนาใน fell to 6 = opener
-    and left the review queue SILENTLY)."""
+    and left the review queue SILENTLY).
+
+    Cached: w2p dominates runtime and words repeat ~2.5x per ตอน (2940 tokens,
+    1160 unique in ep.1), so the cache halves a scan. --csv and --import each
+    re-scan the same file, where it pays again."""
     if word in POETRY_OVERRIDES:
         return len(POETRY_OVERRIDES[word])
     if len(word) <= 2:
@@ -105,7 +111,7 @@ def _syllable_split(word, expect):
     return list(zip(pieces, counts))
 
 
-def _group(words, counts, pattern):
+def _place_beats(words, counts, pattern):
     """Join words into 3 beats at the pattern's syllable lines. จังหวะ is spoken,
     so a beat line may fall INSIDE a word (ข้าชื่อวิ | เชียรโมรา): a crossing
     word is cut at written-syllable boundaries when _syllable_split verifies the
@@ -121,6 +127,9 @@ def _group(words, counts, pattern):
             if pieces:
                 # ponytail: one split level only — a multi-syllable PIECE that
                 # still crosses a line flags rather than re-splitting into junk.
+                # That also bounds the loop: _syllable_split guarantees >=2
+                # pieces and the pieces carry may_split=False, so the retry at
+                # the same i cannot split again — every `continue` makes progress.
                 units[i:i + 1] = [(p, pc, False) for p, pc in pieces]
                 continue                             # re-place this position as pieces
         beats[bi].append(w)
@@ -152,7 +161,7 @@ def analyze_wak(text):
         pattern, note = _pattern(total, counts)
 
     if pattern:
-        segmented, straddle = _group(words, counts, pattern)
+        segmented, straddle = _place_beats(words, counts, pattern)
         if straddle:
             flags.append("word straddles a beat boundary")
     else:
@@ -295,26 +304,31 @@ def write_csv(path, window=2):
     <stem>_export.csv    clean overlapping `window`-บท rows, columns w1_a..wN_c
                          (stride 1 within a ๏ act — every สัมผัสระหว่างบท pair
                          appears; the 3-วรรค วรรครับ opener บท is cut)
-    <stem>_attention.csv ONE ROW PER unresolved flagged วรรค, beat guess
-                         prefilled. Fix the cells / put 'x' in a to exclude /
-                         delete the row to defer, then --import.
+    <stem>_attention.csv ONE ROW PER unresolved flagged วรรค. The auto-guess
+                         sits in a read-only `guess` column and a/b/c ship
+                         EMPTY: an unedited file imports NOTHING, so a review
+                         is always typed, never defaulted (copy `guess` across
+                         when you agree). 'x' in a excludes, blank defers.
     Answers in <path>.review.json overlay automatically; a บท with an
     excluded/unresolved วรรค blocks its windows (no false rhyme pair).
     Details (rhythms, counts, provenance) are printed by scan, not stored."""
+    stats = {"export_rows": 0, "attention_rows": 0, "bot_clean": 0,
+             "bot_blocked": 0, "sections_skipped": 0, "empty": False,
+             "export": None, "attention": None}
     ck = _load_review(path)
     with open(path, encoding="utf-8") as fh:
         results, _, sections = scan_ton(fh.read())
     if not results:                          # empty/blank source: write nothing
-        return {"export_rows": 0, "attention_rows": 0, "bot_clean": 0,
-                "bot_blocked": 0, "sections_skipped": 0, "empty": True,
-                "export": None, "attention": None}
+        stats["empty"] = True
+        return stats
+    stats["export"], stats["attention"] = _out_paths(path)
 
     def cells(r):
         """3 beat cells for a clean/resolved วรรค; None = blocks its บท."""
         e = ck.get(r["wak"])
         if e is not None:
-            if e.get("exclude"):
-                return None
+            if e.get("exclude") or not e.get("segmented"):   # excluded or malformed
+                return None                                  # -> block, never guess
             seg = e["segmented"]
         elif r["needs_review"]:
             return None
@@ -322,20 +336,18 @@ def write_csv(path, window=2):
             seg = r["segmented"]
         return (seg.split(" | ") + ["", ""])[:3]
 
-    export_path, attention_path = _out_paths(path)
-    stats = {"export_rows": 0, "attention_rows": 0, "bot_clean": 0,
-             "bot_blocked": 0, "sections_skipped": 0,
-             "export": export_path, "attention": attention_path}
     with open(stats["export"], "w", encoding="utf-8-sig", newline="") as fe, \
          open(stats["attention"], "w", encoding="utf-8-sig", newline="") as fa:
         we, wa = csv.writer(fe), csv.writer(fa)
         we.writerow([f"w{i}_{b}" for i in range(1, 4 * window + 1) for b in "abc"])
-        wa.writerow(["wak", "syllables", "flag", "a", "b", "c"])
+        wa.writerow(["wak", "syllables", "flag", "guess", "a", "b", "c"])
 
+        seen = set()
         for r in results:                          # attention file: poem order
-            if r["needs_review"] and r["wak"] not in ck:
-                wa.writerow([r["wak"], r["total_syllables"], "; ".join(r["flags"])]
-                            + (r["segmented"].split(" | ") + ["", ""])[:3])
+            if r["needs_review"] and r["wak"] not in ck and r["wak"] not in seen:
+                seen.add(r["wak"])   # review.json is keyed by text: 1 row per unique
+                wa.writerow([r["wak"], r["total_syllables"], "; ".join(r["flags"]),
+                             r["segmented"], "", "", ""])
                 stats["attention_rows"] += 1
 
         for start, n, _ in sections:
@@ -362,41 +374,61 @@ def write_csv(path, window=2):
 
 
 def import_attention(path):
-    """Merge an edited <stem>_attention.csv into <path>.review.json. Every row
-    present = confirmed; guard: the beat cells must rejoin EXACTLY to the วรรค
-    (cuts only, no edits — Excel autocorrect gets caught here). 'x' in cell a =
-    exclude. Deleted rows simply reappear on the next --csv. Rerun --csv after
-    importing: recovered windows move into the export file."""
+    """Merge an edited <stem>_attention.csv into <path>.review.json. Only rows
+    with TYPED a/b/c cells count as reviewed — a/b/c ship empty and the machine
+    guess sits in the read-only `guess` column, so importing an untouched file
+    is a no-op instead of laundering 35 guesses into ground truth. Guard: the
+    beat cells must rejoin EXACTLY to the วรรค (cuts only, no edits — Excel
+    autocorrect gets caught here). 'x' in cell a = exclude; blank row = defer,
+    it reappears on the next --csv. Rerun --csv after importing: recovered
+    windows move into the export file."""
     _, att = _out_paths(path)
+    if not os.path.exists(att):
+        print(f"  !! no {att} — run --csv first")
+        return 0, 0
     with open(path, encoding="utf-8") as fh:
         results, _, _ = scan_ton(fh.read())
     by_wak = {r["wak"]: r for r in results}
 
     ck = _load_review(path)
-    ok = bad = 0
+    ok = bad = blank = 0
     with open(att, encoding="utf-8-sig", newline="") as fh:
-        for row in csv.DictReader(fh):
+        rows = csv.DictReader(fh)
+        # pre-`guess` files hold the machine guess in a/b/c; importing one would
+        # confirm every guess as reviewed. Refuse it — --csv rewrites the file.
+        if "guess" not in (rows.fieldnames or []):
+            print(f"  !! {os.path.basename(att)} is the old prefilled format — "
+                  f"rerun --csv to regenerate it, then edit")
+            return 0, 0
+        for row in rows:
             wak = (row.get("wak") or "").strip()
             r = by_wak.get(wak)
             if r is None:
                 print(f"  !! unknown วรรค (wak cell edited?): {wak}")
                 bad += 1
                 continue
-            if (row.get("a") or "").strip().lower() == "x":
+            abc = [(row.get(k) or "").strip() for k in "abc"]
+            if not any(abc):                          # untouched row: deferred
+                blank += 1
+                continue
+            if abc[0].lower() == "x":
                 ck[wak] = {"exclude": True}
                 ok += 1
                 continue
-            seg = " | ".join(c for c in ((row.get(k) or "").strip() for k in "abc") if c)
-            entry = _manual_cuts(seg, [w for w, _ in r["words"]], r["total_syllables"])
+            entry = _manual_cuts(" | ".join(c for c in abc if c),
+                                 [w for w, _ in r["words"]], r["total_syllables"])
             if entry is None:
                 print(f"  !! cells don't rejoin to the วรรค — cuts only, no edits: {wak}")
                 bad += 1
                 continue
             ck[wak] = entry
             ok += 1
-    with open(path + ".review.json", "w", encoding="utf-8") as fh:
-        json.dump(ck, fh, ensure_ascii=False, indent=1)
-    print(f"imported {ok}, rejected {bad} -> {path}.review.json")
+    summary = f"imported {ok}, rejected {bad}, blank/deferred {blank}"
+    if ok:                                            # nothing accepted -> no file
+        with open(path + ".review.json", "w", encoding="utf-8") as fh:
+            json.dump(ck, fh, ensure_ascii=False, indent=1)
+        summary += f" -> {path}.review.json"
+    print(summary)
     return ok, bad
 
 
@@ -404,11 +436,17 @@ if __name__ == "__main__":
     import sys
     from collections import Counter
 
+    for stream in (sys.stdout, sys.stderr, sys.stdin):  # Windows: Thai, not mojibake —
+        stream.reconfigure(encoding="utf-8")            # stderr too, sys.exit(msg) uses it
+
+    USAGE = ("usage: python CleanData.py <ตอน.txt> [--csv | --import | --resolve]\n"
+             "       python CleanData.py --wak <วรรค|word> ...   (probe, no file)\n"
+             "       python test_cleandata.py                    (self-checks)")
+
     if len(sys.argv) > 1:                              # driver: scan / resolve a ตอน file
-        sys.stdout.reconfigure(encoding="utf-8")       # Windows: print Thai, not mojibake
-        sys.stdin.reconfigure(encoding="utf-8")        # ...and read typed/piped Thai answers
+        args = [a for a in sys.argv[1:] if not a.startswith("-")]
         if "--wak" in sys.argv:                        # probe any วรรค/word, no file needed
-            for t in (a for a in sys.argv[1:] if not a.startswith("-")):
+            for t in args:
                 r = analyze_wak(t)
                 print(f"\n{t}  ({r['total_syllables']} syl, {r['kind']})")
                 for w, c in r["words"]:
@@ -418,7 +456,9 @@ if __name__ == "__main__":
                 for f in r["flags"]:
                     print(f"  flag:  {f}")
             sys.exit()
-        path = [a for a in sys.argv[1:] if not a.startswith("-")][0]
+        if not args:
+            sys.exit(USAGE)
+        path = args[0]
         if "--resolve" in sys.argv:
             resolve_ton(path)
             sys.exit()
@@ -460,79 +500,4 @@ if __name__ == "__main__":
                     print(f"      - {f}")
         sys.exit()
 
-    # no file arg -> self-check on real วรรค: the custom_dict fix + both flag types.
-    a = analyze_wak("พระอย่าได้ถือความข้าสามคน")       # clean 8
-    assert a["total_syllables"] == 8 and a["rhythm"] == [3, 2, 3], a
-
-    b = analyze_wak("ทั้งสามคนคู่ชีวิตเป็นมิตรกัน")      # clean 9
-    assert b["total_syllables"] == 9 and b["rhythm"] == [3, 3, 3], b
-
-    c = analyze_wak("ดนตรีมีคุณที่ข้อไหน")              # genuine 7 -> flagged
-    assert c["total_syllables"] == 7 and c["needs_review"], c
-
-    d = analyze_wak("ข้าชื่อวิเชียรโมราเจ้าสานน")       # was 10 via shatter; override -> 9
-    assert d["total_syllables"] == 9, d
-    # beat line falls inside วิเชียร -> auto-split at written syllables, no flag
-    assert d["segmented"] == "ข้าชื่อวิ | เชียรโมรา | เจ้าสานน", d
-    assert not d["needs_review"], d
-
-    e = analyze_wak("สนมนางแสนสุรางคนิกร")             # orphan ค = คะ (1 syl): was 10-irregular
-    assert e["total_syllables"] == 9 and e["rhythm"] == [3, 3, 3], e
-    assert e["segmented"] == "สนมนาง | แสนสุราง | คนิกร" and not e["needs_review"], e
-
-    # the split guard: วิเชียร verifiable; มนุษย์ (1 piece) and เกสร (piece
-    # counts 2+2 != spoken 2... เกด-สอน vs compound เกด) must refuse
-    assert _syllable_split("วิเชียร", 2) == [("วิ", 1), ("เชียร", 1)]
-    assert _syllable_split("มนุษย์", 2) is None
-    assert _syllable_split("ปทุมเกสร", 3) is None
-
-    # resolve-menu typed cuts: valid cuts pass, edited text refuses
-    m = _manual_cuts("ข้าชื่อวิ | เชียรโมรา | เจ้าสานน",
-                     ["ข้า", "ชื่อ", "วิเชียร", "โมรา", "เจ้า", "สานน"], 9)
-    assert m == {"rhythm": [3, 3, 3], "segmented": "ข้าชื่อวิ | เชียรโมรา | เจ้าสานน"}, m
-    assert _manual_cuts("ข้าชื่อ | ผิดๆ | เจ้าสานน",
-                        ["ข้า", "ชื่อ", "วิเชียร", "โมรา", "เจ้า", "สานน"], 9) is None
-
-    # ๏ checksum: 4-วรรค section ok, 3-วรรค section bad; glued ๏วรรค counts too.
-    _, _, secs = scan_ton("๏กากา กากา กากา กากา ๏ กากา กากา กากา")
-    assert secs == [(0, 4, True), (4, 3, False)], secs
-    _, _, secs = scan_ton("กากา กากา")            # no ๏ -> checksum skipped
-    assert secs == [], secs
-
-    # CSV round-trip: act1 = 2 clean บท -> 1 export row; act2 = flagged วรรค
-    # blocks its บท -> 1 attention row, no export; act3 = bad %4 -> skipped.
-    # Then fix the attention row, --import, rewrite: export grows, attention empties.
-    import tempfile
-    with tempfile.TemporaryDirectory() as td:
-        EXPORT_DIR = ATTENTION_DIR = td      # isolate: don't litter real Results/
-        p = os.path.join(td, "t.txt")
-        with open(p, "w", encoding="utf-8") as fh:
-            fh.write("๏ " + " ".join(["กากา"] * 8)
-                     + " ๏ ดนตรีมีคุณที่ข้อไหน " + " ".join(["กากา"] * 7)
-                     + " ๏ กากา")
-        s = write_csv(p)
-        assert s["export_rows"] == 1 and s["attention_rows"] == 1, s
-        assert s["bot_clean"] == 3 and s["bot_blocked"] == 1, s
-        assert s["sections_skipped"] == 1, s
-        with open(s["export"], encoding="utf-8-sig", newline="") as fh:
-            rows = list(csv.reader(fh))
-        assert rows[0][:4] == ["w1_a", "w1_b", "w1_c", "w2_a"] and len(rows[0]) == 24
-        assert rows[1] == ["กากา", "", ""] * 8, rows[1]
-
-        with open(s["attention"], encoding="utf-8-sig", newline="") as fh:
-            att = list(csv.DictReader(fh))
-        assert att[0]["wak"] == "ดนตรีมีคุณที่ข้อไหน", att
-        att[0]["a"], att[0]["b"], att[0]["c"] = "ดนตรี", "มีคุณ", "ที่ข้อไหน"
-        with open(s["attention"], "w", encoding="utf-8-sig", newline="") as fh:
-            w = csv.DictWriter(fh, fieldnames=att[0].keys())
-            w.writeheader()
-            w.writerows(att)
-        ok, bad = import_attention(p)
-        assert (ok, bad) == (1, 0), (ok, bad)
-        s = write_csv(p)
-        assert s["export_rows"] == 2 and s["attention_rows"] == 0, s
-
-    print("8 ->", a["segmented"])
-    print("9 ->", b["segmented"])
-    print("7 ->", c["segmented"], "| flags:", c["flags"])
-    print("all self-checks passed")
+    sys.exit(USAGE)   # self-checks live in test_cleandata.py (pytest or python)
