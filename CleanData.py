@@ -207,10 +207,18 @@ def scan_ton(text):
 
 def _manual_cuts(seg, words, total):
     """Typed cuts ('beat1 | beat2 | beat3') -> checkpoint entry, or None if the
-    typed text doesn't rejoin to the วรรค (cuts only, no edits). rhythm becomes
-    None when the per-beat counts don't sum to the วรรค total (fragment
-    pronunciation is unreliable) — the cuts still stand."""
+    cuts don't yield exactly 3 จังหวะ, or the typed text doesn't rejoin to the
+    วรรค (cuts only, no edits). rhythm becomes None when the per-beat counts
+    don't sum to the วรรค total (fragment pronunciation is unreliable) — the
+    cuts still stand.
+
+    The 3-beat rule is what stops a half-filled row becoming a 'resolved' วรรค:
+    an entry with fewer beats exports with empty cells AND drops out of the
+    review queue (--csv skips anything already in review.json), so it would go
+    silently missing from both sides."""
     pieces = ["".join(p.split()) for p in seg.split("|")]
+    if len(pieces) != 3 or not all(pieces):
+        return None
     if "".join(pieces) != "".join(words):
         return None
     rhythm = [_count_syls(p) for p in pieces]
@@ -261,12 +269,16 @@ def resolve_ton(path):
                 save(r["wak"], {"exclude": True})
                 break
             if ans == "0":
+                if r["rhythm"] is None:      # irregular วรรค: there are no beats
+                    print("  !! no auto guess to keep (rhythm=None) — type cuts, "
+                          "or x to exclude, or s to defer")
+                    continue
                 save(r["wak"], {"rhythm": r["rhythm"], "segmented": r["segmented"]})
                 break
             if "|" in ans:
                 entry = _manual_cuts(ans, words, r["total_syllables"])
                 if entry is None:
-                    print("  !! text mismatch — place cuts only, no edits")
+                    print("  !! need exactly 3 จังหวะ, and cuts only — no edits")
                     continue
                 save(r["wak"], entry)
                 break

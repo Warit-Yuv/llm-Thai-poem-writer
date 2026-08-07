@@ -64,6 +64,17 @@ def test_manual_cuts_reject_edits():
     assert C._manual_cuts("ข้าชื่อ | ผิดๆ | เจ้าสานน", words, 9) is None
 
 
+def test_manual_cuts_require_three_beats():
+    """A half-filled row must not become a 'resolved' วรรค: it would export with
+    empty beat cells and vanish from the queue (--csv skips anything in
+    review.json), going silently missing from both sides."""
+    words = ["ข้า", "ชื่อ", "วิเชียร", "โมรา", "เจ้า", "สานน"]
+    whole = "ข้าชื่อวิเชียรโมราเจ้าสานน"
+    assert C._manual_cuts(whole, words, 9) is None                      # no cuts
+    assert C._manual_cuts("ข้าชื่อวิ | เชียรโมราเจ้าสานน", words, 9) is None  # 2 beats
+    assert C._manual_cuts("ข้าชื่อวิ |  | เชียรโมราเจ้าสานน", words, 9) is None  # empty beat
+
+
 def test_section_checksum():
     """๏ sections must hold a multiple of 4 วรรค — the only check that catches a
     DROPPED วรรค. Glued ๏วรรค anchors too; no ๏ means no checksum."""
@@ -159,6 +170,23 @@ def test_duplicate_wak_gets_one_row():
         s = C.write_csv(p)
         assert s["attention_rows"] == 1, s
         assert [r["wak"] for r in _read(s["attention"])] == [dup]
+
+
+def test_resolve_refuses_keep_auto_on_irregular():
+    """'0 = keep auto' on an irregular วรรค has no beats to keep. Accepting it
+    wrote {'rhythm': None, segmented: <whole วรรค>} — resolved, unqueued, and
+    exported as one filled cell plus two empty ones."""
+    import subprocess
+    with tempfile.TemporaryDirectory() as td:
+        p = os.path.join(td, "r.txt")
+        with open(p, "w", encoding="utf-8") as fh:
+            fh.write("๏ " + " ".join(["กากา"] * 3)
+                     + " พระชนนีรักใคร่ดังนัยนา " + " ".join(["กากา"] * 4))
+        r = subprocess.run([sys.executable, "CleanData.py", p, "--resolve"],
+                           input="0\nq\n", capture_output=True, text=True,
+                           encoding="utf-8", cwd=os.path.dirname(os.path.abspath(__file__)))
+        assert "no auto guess to keep" in r.stdout, r.stdout
+        assert not os.path.exists(p + ".review.json"), "wrote a beatless entry"
 
 
 def test_empty_source_writes_nothing():
