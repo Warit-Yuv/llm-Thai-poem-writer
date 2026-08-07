@@ -189,6 +189,23 @@ def test_resolve_refuses_keep_auto_on_irregular():
         assert not os.path.exists(p + ".review.json"), "wrote a beatless entry"
 
 
+def test_eval_keeps_beat_flagged_waks():
+    """Eval blocks on TEXT problems only. The 7-syllable วรรค is flagged for the
+    training export (its จังหวะ is a guess) but its text is sound, so eval keeps
+    the บท — no beats, no windows, one line, 4 tab-separated วรรค."""
+    with tempfile.TemporaryDirectory() as td:
+        C.EVAL_DIR = td
+        p = os.path.join(td, "e.txt")
+        with open(p, "w", encoding="utf-8") as fh:                    # 2 บท:
+            fh.write("๏ ดนตรีมีคุณที่ข้อไหน " + " ".join(["ทั้งสามคนคู่ชีวิตเป็นมิตรกัน"] * 3)
+                     + " " + " ".join(["พระชนนีรักใคร่ดังนัยนา"] + ["ทั้งสามคนคู่ชีวิตเป็นมิตรกัน"] * 3))
+        s = C.write_eval(p)
+        assert (s["bot_kept"], s["bot_blocked"]) == (1, 1), s   # beat-flagged in, 10-syl out
+        lines = open(s["eval"], encoding="utf-8").read().splitlines()
+        assert len(lines) == 1 and lines[0].split("\t")[0] == "ดนตรีมีคุณที่ข้อไหน", lines
+        assert len(lines[0].split("\t")) == 4, lines
+
+
 def test_empty_source_writes_nothing():
     with tempfile.TemporaryDirectory() as td:
         C.EXPORT_DIR = C.ATTENTION_DIR = td

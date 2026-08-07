@@ -289,8 +289,11 @@ def resolve_ton(path):
 # Output layout: sources live in PhraAphai/, results split by state under
 # Results/. The .review.json checkpoint stays beside its source .txt.
 _ROOT = os.path.dirname(os.path.abspath(__file__))
-EXPORT_DIR = os.path.join(_ROOT, "Results", "Exportable")
-ATTENTION_DIR = os.path.join(_ROOT, "Results", "NeedsAttention")
+EXPORT_DIR = os.path.join(_ROOT, "Results", "Train", "ok")
+ATTENTION_DIR = os.path.join(_ROOT, "Results", "Train", "not_ok")
+# Validate is a sibling of Train, not a subfolder, because eval ตอน must be HELD
+# OUT of the training export — the same chapter in both makes eval meaningless.
+EVAL_DIR = os.path.join(_ROOT, "Results", "Validate")
 
 
 def _out_paths(path):
@@ -299,8 +302,8 @@ def _out_paths(path):
     base = os.path.splitext(os.path.basename(path))[0]
     os.makedirs(EXPORT_DIR, exist_ok=True)
     os.makedirs(ATTENTION_DIR, exist_ok=True)
-    return (os.path.join(EXPORT_DIR, base + "_export.csv"),
-            os.path.join(ATTENTION_DIR, base + "_attention.csv"))
+    return (os.path.join(EXPORT_DIR, base + "_ok.csv"),
+            os.path.join(ATTENTION_DIR, base + "_not_ok.csv"))
 
 
 def _load_review(path):
@@ -311,12 +314,30 @@ def _load_review(path):
     return {}
 
 
+def _bots(sections):
+    """([[ (i,j,k,l), ... ] per ๏ act], acts_skipped) — วรรค indices per บท.
+
+    An act whose วรรค count is neither 4k nor 4k+3 is dropped: a วรรค was lost or
+    merged there, so every บท boundary after it is guesswork. The +3 form cuts
+    the 3-วรรค วรรครับ opener บท. Kept as one helper so the training export and
+    the eval writer can never disagree about where a บท starts."""
+    out, skipped = [], 0
+    for start, n, _ in sections:
+        rem = n % 4
+        if rem not in (0, 3):
+            skipped += 1
+            continue
+        out.append([tuple(range(i, i + 4))
+                    for i in range(start + rem, start + n, 4)])
+    return out, skipped
+
+
 def write_csv(path, window=2):
     """ตอน file -> two CSVs (utf-8-sig so Excel reads Thai):
-    <stem>_export.csv    clean overlapping `window`-บท rows, columns w1_a..wN_c
+    <stem>_ok.csv        clean overlapping `window`-บท rows, columns w1_a..wN_c
                          (stride 1 within a ๏ act — every สัมผัสระหว่างบท pair
                          appears; the 3-วรรค วรรครับ opener บท is cut)
-    <stem>_attention.csv ONE ROW PER unresolved flagged วรรค. The auto-guess
+    <stem>_not_ok.csv    ONE ROW PER unresolved flagged วรรค. The auto-guess
                          sits in a read-only `guess` column and a/b/c ship
                          EMPTY: an unedited file imports NOTHING, so a review
                          is always typed, never defaulted (copy `guess` across
@@ -362,14 +383,11 @@ def write_csv(path, window=2):
                              r["segmented"], "", "", ""])
                 stats["attention_rows"] += 1
 
-        for start, n, _ in sections:
-            rem = n % 4
-            if rem not in (0, 3):
-                stats["sections_skipped"] += 1
-                continue
+        acts, stats["sections_skipped"] = _bots(sections)
+        for act in acts:
             bots = []
-            for i in range(start + rem, start + n, 4):   # +rem cuts the opener บท
-                vs = [cells(results[j]) for j in range(i, i + 4)]
+            for idx in act:
+                vs = [cells(results[j]) for j in idx]
                 bots.append(vs if all(v is not None for v in vs) else None)
             run = []
             for bv in bots + [None]:               # sentinel flushes last run
@@ -385,8 +403,49 @@ def write_csv(path, window=2):
     return stats
 
 
+def write_eval(path):
+    """ตอน -> Results/Validate/<stem>_ok.txt, ONE บท PER LINE, 4 วรรค tab-separated.
+
+    Deliberately NOT the training export: no beat cuts (evaluation reads whole
+    วรรค, so [3,3,3]/[3,2,3] is training-side machinery) and no sliding windows
+    (an interleaved window scores the same บท two or three times, which quietly
+    weights whatever it overlaps).
+
+    A บท is kept when all 4 วรรค are `body` — that is the TEXT check: `irregular`
+    means >=10 syllables (a merge or shatter) and `opener` means <=6, both signs
+    the line itself is wrong. Beat flags do NOT block: 'straddles a beat
+    boundary' and '7 syllables — ambiguous' say the จังหวะ is uncertain, not the
+    text, and eval never looks at จังหวะ. A human 'exclude' still blocks — that
+    is a judgement about the line, not the beats.
+
+    Uses no review.json answers beyond excludes, so eval data needs no review
+    pass to be usable."""
+    ck = _load_review(path)
+    with open(path, encoding="utf-8") as fh:
+        results, _, sections = scan_ton(fh.read())
+    os.makedirs(EVAL_DIR, exist_ok=True)
+    out = os.path.join(EVAL_DIR, os.path.splitext(os.path.basename(path))[0] + "_ok.txt")
+
+    def ok(r):
+        return r["kind"] == "body" and not (ck.get(r["wak"]) or {}).get("exclude")
+
+    acts, skipped = _bots(sections)
+    kept = blocked = 0
+    with open(out, "w", encoding="utf-8", newline="\n") as fh:
+        for act in acts:
+            for idx in act:
+                bot = [results[j] for j in idx]
+                if all(ok(r) for r in bot):
+                    fh.write("\t".join(r["wak"] for r in bot) + "\n")
+                    kept += 1
+                else:
+                    blocked += 1
+    return {"eval": out, "bot_kept": kept, "bot_blocked": blocked,
+            "sections_skipped": skipped}
+
+
 def import_attention(path):
-    """Merge an edited <stem>_attention.csv into <path>.review.json. Only rows
+    """Merge an edited <stem>_not_ok.csv into <path>.review.json. Only rows
     with TYPED a/b/c cells count as reviewed — a/b/c ship empty and the machine
     guess sits in the read-only `guess` column, so importing an untouched file
     is a no-op instead of laundering 35 guesses into ground truth. Guard: the
@@ -451,7 +510,7 @@ if __name__ == "__main__":
     for stream in (sys.stdout, sys.stderr, sys.stdin):  # Windows: Thai, not mojibake —
         stream.reconfigure(encoding="utf-8")            # stderr too, sys.exit(msg) uses it
 
-    USAGE = ("usage: python CleanData.py <ตอน.txt> [--csv | --import | --resolve]\n"
+    USAGE = ("usage: python CleanData.py <ตอน.txt> [--csv | --import | --resolve | --eval]\n"
              "       python CleanData.py --wak <วรรค|word> ...   (probe, no file)\n"
              "       python test_cleandata.py                    (self-checks)")
 
@@ -484,6 +543,14 @@ if __name__ == "__main__":
             print(f"บท:         {s['bot_clean']} clean, {s['bot_blocked']} blocked (วรรครับ opener cut)")
             if s["sections_skipped"]:
                 print(f"๏ sections skipped (bad %4): {s['sections_skipped']}")
+            sys.exit()
+        if "--eval" in sys.argv:
+            s = write_eval(path)
+            print(f"eval:       {s['bot_kept']} บท (1 per line, 4 วรรค tab-separated) -> {s['eval']}")
+            print(f"blocked:    {s['bot_blocked']} บท with a non-body วรรค (>=10 or <=6 syllables)")
+            if s["sections_skipped"]:
+                print(f"๏ acts skipped (bad %4): {s['sections_skipped']}")
+            print("NOTE: hold these ตอน out of the training export, or eval is contaminated.")
             sys.exit()
         if "--import" in sys.argv:
             import_attention(path)
