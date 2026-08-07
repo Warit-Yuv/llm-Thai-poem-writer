@@ -289,11 +289,12 @@ def resolve_ton(path):
 # Output layout: sources live in PhraAphai/, results split by state under
 # Results/. The .review.json checkpoint stays beside its source .txt.
 _ROOT = os.path.dirname(os.path.abspath(__file__))
-EXPORT_DIR = os.path.join(_ROOT, "Results", "Train", "ok")
-ATTENTION_DIR = os.path.join(_ROOT, "Results", "Train", "not_ok")
-# Validate is a sibling of Train, not a subfolder, because eval ตอน must be HELD
-# OUT of the training export — the same chapter in both makes eval meaningless.
-EVAL_DIR = os.path.join(_ROOT, "Results", "Validate")
+EXPORT_DIR = os.path.join(_ROOT, "Results", "Export", "ok")
+ATTENTION_DIR = os.path.join(_ROOT, "Results", "Export", "not_ok")
+# Evaluate is a sibling FORMAT, not a held-out split: every ตอน can appear in
+# both folders. This repo only prepares data — the train/eval split is the
+# training code's job, and it must not draw eval ตอน from Export/ok.
+EVAL_DIR = os.path.join(_ROOT, "Results", "Evaluate")
 
 
 def _out_paths(path):
@@ -404,7 +405,8 @@ def write_csv(path, window=2):
 
 
 def write_eval(path):
-    """ตอน -> Results/Validate/<stem>_ok.txt, ONE บท PER LINE, 4 วรรค tab-separated.
+    """ตอน -> Results/Evaluate/<stem>_ok.csv, ONE บท PER ROW, columns w1..w4
+    (utf-8-sig so Excel reads Thai, same as the export CSVs).
 
     Deliberately NOT the training export: no beat cuts (evaluation reads whole
     วรรค, so [3,3,3]/[3,2,3] is training-side machinery) and no sliding windows
@@ -424,19 +426,21 @@ def write_eval(path):
     with open(path, encoding="utf-8") as fh:
         results, _, sections = scan_ton(fh.read())
     os.makedirs(EVAL_DIR, exist_ok=True)
-    out = os.path.join(EVAL_DIR, os.path.splitext(os.path.basename(path))[0] + "_ok.txt")
+    out = os.path.join(EVAL_DIR, os.path.splitext(os.path.basename(path))[0] + "_ok.csv")
 
     def ok(r):
         return r["kind"] == "body" and not (ck.get(r["wak"]) or {}).get("exclude")
 
     acts, skipped = _bots(sections)
     kept = blocked = 0
-    with open(out, "w", encoding="utf-8", newline="\n") as fh:
+    with open(out, "w", encoding="utf-8-sig", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(["w1", "w2", "w3", "w4"])
         for act in acts:
             for idx in act:
                 bot = [results[j] for j in idx]
                 if all(ok(r) for r in bot):
-                    fh.write("\t".join(r["wak"] for r in bot) + "\n")
+                    w.writerow([r["wak"] for r in bot])
                     kept += 1
                 else:
                     blocked += 1
@@ -546,11 +550,12 @@ if __name__ == "__main__":
             sys.exit()
         if "--eval" in sys.argv:
             s = write_eval(path)
-            print(f"eval:       {s['bot_kept']} บท (1 per line, 4 วรรค tab-separated) -> {s['eval']}")
+            print(f"eval:       {s['bot_kept']} บท (1 per row, columns w1..w4) -> {s['eval']}")
             print(f"blocked:    {s['bot_blocked']} บท with a non-body วรรค (>=10 or <=6 syllables)")
             if s["sections_skipped"]:
                 print(f"๏ acts skipped (bad %4): {s['sections_skipped']}")
-            print("NOTE: hold these ตอน out of the training export, or eval is contaminated.")
+            print("NOTE: this is a FORMAT, not a split — the same ตอน is also in Export/ok.")
+            print("      whoever trains must hold the eval ตอน out, or it scores memorisation.")
             sys.exit()
         if "--import" in sys.argv:
             import_attention(path)

@@ -192,7 +192,7 @@ def test_resolve_refuses_keep_auto_on_irregular():
 def test_eval_keeps_beat_flagged_waks():
     """Eval blocks on TEXT problems only. The 7-syllable วรรค is flagged for the
     training export (its จังหวะ is a guess) but its text is sound, so eval keeps
-    the บท — no beats, no windows, one line, 4 tab-separated วรรค."""
+    the บท — no beats, no windows, one row, columns w1..w4."""
     with tempfile.TemporaryDirectory() as td:
         C.EVAL_DIR = td
         p = os.path.join(td, "e.txt")
@@ -201,9 +201,9 @@ def test_eval_keeps_beat_flagged_waks():
                      + " " + " ".join(["พระชนนีรักใคร่ดังนัยนา"] + ["ทั้งสามคนคู่ชีวิตเป็นมิตรกัน"] * 3))
         s = C.write_eval(p)
         assert (s["bot_kept"], s["bot_blocked"]) == (1, 1), s   # beat-flagged in, 10-syl out
-        lines = open(s["eval"], encoding="utf-8").read().splitlines()
-        assert len(lines) == 1 and lines[0].split("\t")[0] == "ดนตรีมีคุณที่ข้อไหน", lines
-        assert len(lines[0].split("\t")) == 4, lines
+        rows = _read(s["eval"])
+        assert list(rows[0]) == ["w1", "w2", "w3", "w4"], rows[0]
+        assert len(rows) == 1 and rows[0]["w1"] == "ดนตรีมีคุณที่ข้อไหน", rows
 
 
 def test_empty_source_writes_nothing():

@@ -60,7 +60,7 @@ fix them, they come back:
 
 ```bash
 python CleanData.py PhraAphai/phraAphai_1.txt --csv       # writes ok + not_ok CSVs
-#   ... open Results/Train/not_ok/phraAphai_1_not_ok.csv in Excel,
+#   ... open Results/Export/not_ok/phraAphai_1_not_ok.csv in Excel,
 #       type beat cuts into a/b/c (the machine's `guess` column is read-only)
 python CleanData.py PhraAphai/phraAphai_1.txt --import    # merge answers
 python CleanData.py PhraAphai/phraAphai_1.txt --csv       # fixed วรรค rejoin the export
@@ -82,7 +82,7 @@ which is also what catches Excel autocorrect.
 
 ### What comes out
 
-`Results/Train/ok/<chapter>_ok.csv` — 24 columns, `w1_a` … `w8_c`: two
+`Results/Export/ok/<chapter>_ok.csv` — 24 columns, `w1_a` … `w8_c`: two
 consecutive บท (4 วรรค × 3 beats each), stride 1, so every สัมผัสระหว่างบท pair
 appears. A บท holding an unresolved or excluded วรรค blocks its windows rather
 than emitting a false rhyme pair.
@@ -93,7 +93,7 @@ than emitting a false rhyme pair.
 python CleanData.py PhraAphai/phraAphai_7.txt --eval
 ```
 
-`Results/Validate/<chapter>_ok.txt` — one บท per line, 4 วรรค separated by tabs.
+`Results/Evaluate/<chapter>_ok.csv` — one บท per row, columns `w1`–`w4`.
 Deliberately unlike the training export: **no beat marks** (the model generates
 plain วรรค, so the reference must be plain too) and **no sliding windows** (an
 interleaved window scores the same บท two or three times, weighting whatever it
@@ -107,8 +107,10 @@ keeps it. On chapter 1 that is 111 บท versus 90.
 
 Consequence: **eval data needs no review pass.** The queue only fixes beats.
 
-⚠️ Hold eval chapters *out* of the training export. A chapter in both files makes
-the evaluation measure memorisation.
+These are two **formats of the same corpus**, not a split — a chapter appears in
+both folders. This repo only prepares data; nothing is trained here. Choosing the
+held-out chapters belongs to the training code, which must not draw its eval set
+from `Export/ok`.
 
 ## Layout
 
@@ -120,8 +122,8 @@ the evaluation measure memorisation.
 | `Noto_tokenizer.py` | `POETRY_OVERRIDES`, the hand-verified syllable map |
 | `build_overrides.py`, `build_g2p_dict.py`, `override_draft_cleaner.py` | override generation, four guards against w2p hallucination — see `OVERRIDE_PIPELINE.md` |
 | `poetry_overrides*.py` | generated override dicts (~3.5k and ~6k entries) |
-| `Results/Train/ok/`, `Results/Train/not_ok/` | training export, and the review queue |
-| `Results/Validate/` | evaluation บท — hold these chapters out of Train |
+| `Results/Export/ok/`, `Results/Export/not_ok/` | export rows, and the review queue |
+| `Results/Evaluate/` | the same corpus in evaluation format |
 | `core.py` | vendored PyThaiNLP `KhaveeVerifier` (Apache-2.0), kept for patching |
 
 ## Status
