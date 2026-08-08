@@ -21,6 +21,7 @@ import json
 import os
 import re
 from functools import lru_cache
+from itertools import product
 from pythainlp.tokenize import Tokenizer, subword_tokenize, syllable_tokenize
 from pythainlp.corpus import thai_words
 from pythainlp.transliterate import pronunciate
@@ -47,11 +48,45 @@ SINGLE_CHAR_OK = {"ณ", "ธ", "บ", "ก", "อ", "ฤ", "ฦ", "ฤๅ", "�
 
 _tok = Tokenizer(custom_dict=set(thai_words()) | OVERRIDES, engine="newmm")
 
+# Wiktionary IPA lookup (g2p/SOURCE.md — CC-BY-SA 3.0). Counts come from the
+# " . " syllable separators, so no phonetic respelling is involved and the
+# reading is exact. Covers ~81% of corpus tokens, demoting w2p to a fallback.
+# Values are CANDIDATE LISTS: 384 words carry more than one reading (ราช = ราด
+# alone, ราด-ชะ in compound), and collapsing them would fix 23k tokens to a
+# guess. First entry is Wiktionary's primary and is what _count_syls returns;
+# the rest exist so _meter_resolve can pick a different one when the canon says
+# the primary is wrong.
+G2P_TSV = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                       "g2p", "wiktionary-23-7-2022-clean.tsv")
+
+
+def _load_g2p(path=G2P_TSV):
+    """{word: [candidate syllable counts]}, primary reading first."""
+    out = {}
+    if not os.path.exists(path):                 # optional: falls back to w2p
+        return out
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            parts = line.rstrip("\n").split("\t")
+            if len(parts) != 2:
+                continue
+            word, ipa = parts
+            n = len([s for s in ipa.split(" . ") if s.strip()])
+            if n:
+                out.setdefault(word, [])
+                if n not in out[word]:
+                    out[word].append(n)
+    return out
+
+
+G2P = _load_g2p()
+
 
 @lru_cache(maxsize=None)
 def _count_syls(word):
-    """Spoken syllables: POETRY_OVERRIDES (curated syllable map, shared with
-    the Noto validator) -> ssg bypass for <=2-char words (w2p hallucinates:
+    """Spoken syllables: POETRY_OVERRIDES (curated, wins — poetic readings differ
+    from prose: สระ is สะ-หระ in verse, /saʔ/ in speech) -> G2P Wiktionary IPA
+    (exact, ~81% of tokens) -> ssg bypass for <=2-char words (w2p hallucinates:
     ก -> กะ-โหฺมด) -> w2p, counting ITS OWN '-' boundaries. Noto's ssg
     re-segmentation of the joined phonetic string is deliberately skipped:
     it merges syllables (เสนา -> 1, so อัปยศอดสูเสนาใน fell to 6 = opener
@@ -62,6 +97,8 @@ def _count_syls(word):
     re-scan the same file, where it pays again."""
     if word in POETRY_OVERRIDES:
         return len(POETRY_OVERRIDES[word])
+    if word in G2P:                              # dictionary beats model
+        return G2P[word][0]
     if len(word) <= 2:
         return len(syllable_tokenize(word, engine="ssg")) or 1
     spoken = pronunciate(word, engine="w2p")
@@ -75,6 +112,46 @@ def _is_orphan(tok):
     (consonant + implicit อะ: ค = คะ) — count 1, don't let pronunciate invent
     syllables from it. Whitelisted 1-char words excepted."""
     return len(tok) == 1 and re.fullmatch(THAI, tok) and tok not in SINGLE_CHAR_OK
+
+
+def _meter_resolve(words, counts):
+    """Use the canon to pick among a word's alternate readings. Returns
+    (counts, total, [(word, was, now)]) or None.
+
+    384 Wiktionary words carry more than one syllable count — the Sanskrit/Pali
+    linking class, where ราช is ราด (1) standing alone but ราด-ชะ (2) inside a
+    compound. Position decides, and in verse the METER encodes the position:
+    if the primary reading puts the วรรค off-canon and exactly one alternate
+    lands it in 7-9, that alternate is the reading (สมเด็จท้าวบิตุรงค์ดำรงราชย์
+    — ราชย์ is [1,3], only 1 gives a legal total).
+
+    Deliberately one-directional: this is only ever called on an ALREADY
+    off-canon วรรค, so a line that already scans is never second-guessed. And
+    only a UNIQUE fit is accepted — if two readings both land in-band the วรรค
+    stays flagged, because the meter has not actually decided anything.
+
+    ponytail: >3 ambiguous words is skipped rather than searched. 2^3 combos is
+    cheap; beyond that the "unique fit" claim is weak anyway.
+    """
+    amb = [i for i, w in enumerate(words) if len(G2P.get(w, ())) > 1]
+    if not amb or len(amb) > 3:
+        return None
+    base = sum(counts) - sum(counts[i] for i in amb)
+    fits = []
+    for combo in product(*(G2P[words[i]] for i in amb)):
+        if 7 <= base + sum(combo) <= 9:
+            fits.append(combo)
+            if len(fits) > 1:                    # ambiguous: meter decided nothing
+                return None
+    if not fits:
+        return None
+    new = list(counts)
+    changed = []
+    for i, c in zip(amb, fits[0]):
+        if new[i] != c:
+            changed.append((words[i], new[i], c))
+        new[i] = c
+    return (new, sum(new), changed) if changed else None
 
 
 def _pattern(total, counts):
@@ -152,6 +229,12 @@ def analyze_wak(text):
         counts.append(1 if _is_orphan(t) else _count_syls(t))
     total = sum(counts)
 
+    resolved = []
+    if not 7 <= total <= 9:                      # off-canon: can an alternate reading save it?
+        fix = _meter_resolve(words, counts)
+        if fix:
+            counts, total, resolved = fix
+
     if total <= 6:
         kind, pattern, note = "opener", None, "opener (<=6 syllables) — short วรรค, expected"
     elif total >= 10:
@@ -179,6 +262,9 @@ def analyze_wak(text):
         "needs_review": bool(flags) and kind != "opener",
         "flags": flags,
         "words": list(zip(words, counts)),
+        # [(word, primary_reading, meter_chosen_reading)] — an inference, not a
+        # lookup, so it is recorded for audit rather than left invisible.
+        "meter_resolved": resolved,
     }
 
 def scan_ton(text):

@@ -27,7 +27,7 @@ usually breaks the วรรค total, and a broken total gets flagged instead o
 
 ```bash
 pip install "pythainlp[ssg]" numpy     # Python 3.12, pythainlp 5.3.4
-python CleanData.py PhraAphai/phraAphai_1.txt
+python CleanData.py Dataset/PhraAphai/phraAphai_1.txt
 ```
 
 Bare `pip install pythainlp` is **not** enough: it pulls in only `tzdata`, and
@@ -59,11 +59,11 @@ Roughly 7% of วรรค can't be resolved automatically. They go to a spreads
 fix them, they come back:
 
 ```bash
-python CleanData.py PhraAphai/phraAphai_1.txt --csv       # writes ok + not_ok CSVs
+python CleanData.py Dataset/PhraAphai/phraAphai_1.txt --csv       # writes ok + not_ok CSVs
 #   ... open Results/Export/not_ok/phraAphai_1_not_ok.csv in Excel,
 #       type beat cuts into a/b/c (the machine's `guess` column is read-only)
-python CleanData.py PhraAphai/phraAphai_1.txt --import    # merge answers
-python CleanData.py PhraAphai/phraAphai_1.txt --csv       # fixed วรรค rejoin the export
+python CleanData.py Dataset/PhraAphai/phraAphai_1.txt --import    # merge answers
+python CleanData.py Dataset/PhraAphai/phraAphai_1.txt --csv       # fixed วรรค rejoin the export
 ```
 
 `--resolve` does the same thing as an interactive terminal prompt if you prefer
@@ -90,7 +90,7 @@ than emitting a false rhyme pair.
 ### Validation data
 
 ```bash
-python CleanData.py PhraAphai/phraAphai_7.txt --eval
+python CleanData.py Dataset/PhraAphai/phraAphai_7.txt --eval
 ```
 
 `Results/Evaluate/<chapter>_ok.csv` — one บท per row, columns `w1`–`w4`.
@@ -116,7 +116,7 @@ from `Export/ok`.
 
 | Path | What |
 |---|---|
-| `PhraAphai/` | 132 source chapters, plus `.review.json` checkpoints |
+| `Dataset/` | sources: `PhraAphai/` (132), `KhunChangKhunPhaen/` (43), `PhukaoTong/` (1), plus `.review.json` checkpoints |
 | `CleanData.py` | จังหวะ marker + CSV review loop — the main pipeline |
 | `test_cleandata.py` | self-checks (`pytest` or `python test_cleandata.py`) |
 | `Noto_tokenizer.py` | `POETRY_OVERRIDES`, the hand-verified syllable map |
