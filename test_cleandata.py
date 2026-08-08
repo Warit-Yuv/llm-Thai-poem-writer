@@ -78,9 +78,9 @@ def test_manual_cuts_require_three_beats():
 def test_section_checksum():
     """๏ sections must hold a multiple of 4 วรรค — the only check that catches a
     DROPPED วรรค. Glued ๏วรรค anchors too; no ๏ means no checksum."""
-    _, _, secs = C.scan_ton("๏กากา กากา กากา กากา ๏ กากา กากา กากา")
+    _, _, secs = C.scan_ton("๏กากา\tกากา\nกากา\tกากา\n๏ กากา\tกากา\nกากา")
     assert secs == [(0, 4, True), (4, 3, False)], secs
-    _, _, secs = C.scan_ton("กากา กากา")
+    _, _, secs = C.scan_ton("กากา\tกากา")
     assert secs == [], secs
 
 
@@ -89,9 +89,9 @@ def _fixture(td):
     C.EXPORT_DIR = C.ATTENTION_DIR = td          # isolate: don't litter real Results/
     p = os.path.join(td, "t.txt")
     with open(p, "w", encoding="utf-8") as fh:
-        fh.write("๏ " + " ".join(["กากา"] * 8)
-                 + " ๏ ดนตรีมีคุณที่ข้อไหน " + " ".join(["กากา"] * 7)
-                 + " ๏ กากา")
+        fh.write("๏ " + "\t".join(["กากา"] * 8)
+                 + "\n๏ ดนตรีมีคุณที่ข้อไหน\t" + "\t".join(["กากา"] * 7)
+                 + "\n๏ กากา")
     return p
 
 
@@ -166,7 +166,7 @@ def test_duplicate_wak_gets_one_row():
         p = os.path.join(td, "dup.txt")
         dup = "ดนตรีมีคุณที่ข้อไหน"
         with open(p, "w", encoding="utf-8") as fh:
-            fh.write("๏ " + " ".join([dup] + ["กากา"] * 2 + [dup] * 2 + ["กากา"] * 3))
+            fh.write("๏ " + "	".join([dup] + ["กากา"] * 2 + [dup] * 2 + ["กากา"] * 3))
         s = C.write_csv(p)
         assert s["attention_rows"] == 1, s
         assert [r["wak"] for r in _read(s["attention"])] == [dup]
@@ -180,8 +180,8 @@ def test_resolve_refuses_keep_auto_on_irregular():
     with tempfile.TemporaryDirectory() as td:
         p = os.path.join(td, "r.txt")
         with open(p, "w", encoding="utf-8") as fh:
-            fh.write("๏ " + " ".join(["กากา"] * 3)
-                     + " พระชนนีรักใคร่ดังนัยนา " + " ".join(["กากา"] * 4))
+            fh.write("๏ " + "	".join(["กากา"] * 3)
+                     + "	พระชนนีรักใคร่ดังนัยนา	" + "	".join(["กากา"] * 4))
         r = subprocess.run([sys.executable, "CleanData.py", p, "--resolve"],
                            input="0\nq\n", capture_output=True, text=True,
                            encoding="utf-8", cwd=os.path.dirname(os.path.abspath(__file__)))
@@ -197,8 +197,8 @@ def test_eval_keeps_beat_flagged_waks():
         C.EVAL_DIR = td
         p = os.path.join(td, "e.txt")
         with open(p, "w", encoding="utf-8") as fh:                    # 2 บท:
-            fh.write("๏ ดนตรีมีคุณที่ข้อไหน " + " ".join(["ทั้งสามคนคู่ชีวิตเป็นมิตรกัน"] * 3)
-                     + " " + " ".join(["พระชนนีรักใคร่ดังนัยนา"] + ["ทั้งสามคนคู่ชีวิตเป็นมิตรกัน"] * 3))
+            fh.write("๏ ดนตรีมีคุณที่ข้อไหน	" + "	".join(["ทั้งสามคนคู่ชีวิตเป็นมิตรกัน"] * 3)
+                     + "	" + "	".join(["พระชนนีรักใคร่ดังนัยนา"] + ["ทั้งสามคนคู่ชีวิตเป็นมิตรกัน"] * 3))
         s = C.write_eval(p)
         assert (s["bot_kept"], s["bot_blocked"]) == (1, 1), s   # beat-flagged in, 10-syl out
         rows = _read(s["eval"])

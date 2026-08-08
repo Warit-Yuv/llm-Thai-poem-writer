@@ -250,6 +250,13 @@ def analyze_wak(text):
     else:
         segmented = "".join(words)
 
+    if resolved:
+        # An INFERENCE, not a lookup: the canon picked among a word's Wiktionary
+        # readings. It must reach a human, because a wrong pick lands in-band,
+        # shifts every later beat line, and would otherwise export as clean.
+        flags.append("reading chosen by meter: "
+                     + ", ".join(f"{w} {a}->{b}" for w, a, b in resolved))
+
     if note:
         flags.append(note)
 
@@ -268,8 +275,14 @@ def analyze_wak(text):
     }
 
 def scan_ton(text):
-    """Scan a whole ตอน. วรรค = whitespace-separated Thai runs (๏/ฯ drop out
+    """Scan a whole ตอน. วรรค = TAB/NEWLINE-separated Thai runs (๏/ฯ drop out
     because they carry no ก-ฮ). Returns (results, flag_rate, sections).
+
+    Split on tab/newline only, NOT on all whitespace: the sources are
+    tab-delimited, and a วรรค may legitimately contain spaces when it names Thai
+    letters — 'ขอบวชเรียนเขียน ก ข ต่อหนังสือ' (ตอน 101) and 'เล่าไม่ได้แต่ ก กา
+    ถึงห้าปี' (ตอน 129). Splitting those on spaces produced 4 phantom วรรค,
+    which shifted every later วรรค index and broke the ๏ x4 บท grouping.
 
     ๏ (ฟองมัน) is a section anchor (~every 6 บท), not a per-บท marker. Each
     ๏-to-๏ section must hold a multiple of 4 วรรค: a merge already self-flags
@@ -279,9 +292,14 @@ def scan_ton(text):
     ponytail: two วรรค with no space between merge into one token -> flagged as
     irregular, so a bad split self-announces rather than passing silently."""
     waks, anchors = [], []
-    for t in re.split(r"\s+", text):
-        if "๏" in t:                      # standalone ๏ or glued ๏วรรค
+    for t in re.split(r"[\t\r\n]+", text):
+        if "๏" in t:                      # standalone ๏ or glued '๏ วรรค'
             anchors.append(len(waks))
+        # ๏ (section anchor) and ฯ (abbreviation mark) are punctuation, not part
+        # of the วรรค. Space-splitting used to drop them as their own tokens;
+        # tab-splitting keeps them attached, so strip them explicitly. Internal
+        # spaces SURVIVE — 'เขียน ก ข ต่อหนังสือ' is one วรรค.
+        t = t.replace("๏", "").replace("ฯ", "").strip()
         if re.search(THAI, t):
             waks.append(t)
     results = [analyze_wak(w) for w in waks]

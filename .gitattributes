@@ -1,0 +1,16 @@
+# Normalise to LF in the repository regardless of editor settings. Without this,
+# saving any file in VS Code on Windows rewrites every line with CRLF and git
+# reports a whole-file diff for zero content change — noise that buries real edits.
+* text=auto
+
+*.py   text eol=lf
+*.txt  text eol=lf
+*.tsv  text eol=lf
+*.csv  text eol=lf
+*.md   text eol=lf
+*.json text eol=lf
+
+*.xlsx binary
+*.png  binary
+*.pdf  binary
+*.webp binary
