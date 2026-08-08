@@ -62,14 +62,22 @@ def extract_poetic_syllables(text: str) -> list:
 
         # Use 'ssg' to check if newmm greedy engine merged words like "ได้ใจ" or "รู้อยู่"
         sub_syllables = syllable_tokenize(word, engine="ssg")
-        
+
+        # SINGLE-LETTER OVERRIDES ARE STANDALONE-ONLY.
+        # A 1-char key ("จ" -> "จะ") must fire ONLY when the whole token IS that
+        # letter (handled above). It must NEVER fire as a sub-syllable inside a
+        # longer word: ssg sometimes splits a syllable into (single consonant +
+        # rest), e.g. จวน -> ['จ','วน'], so applying "จ" here would turn the
+        # 1-syllable word จวน into a wrong 2-syllable "จะ-วน".
         # Check if ANY of the segmented syllables are in the POETRY_OVERRIDES list
-        has_override = any(sub in POETRY_OVERRIDES for sub in sub_syllables)
-        
+        has_override = any(
+            len(sub) > 1 and sub in POETRY_OVERRIDES for sub in sub_syllables
+        )
+
         if len(sub_syllables) > 1 and has_override:
             # Found a hidden override word in the segmented syllables. Process each sub-syllable independently.
             for sub in sub_syllables:
-                if sub in POETRY_OVERRIDES:
+                if len(sub) > 1 and sub in POETRY_OVERRIDES:
                     final_syllables.extend(POETRY_OVERRIDES[sub])
                 else:
                     final_syllables.extend(process_w2p(sub))
