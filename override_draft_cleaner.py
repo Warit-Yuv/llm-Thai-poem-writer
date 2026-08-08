@@ -117,7 +117,7 @@ def load_draft(path):
 def build_corpus(export_dir):
     texts = []
     cols = [f"w{n}_{p}" for n in range(1, 9) for p in ("a", "b", "c")]
-    for fp in sorted(glob.glob(os.path.join(export_dir, "phraAphai_*_export.csv"))):
+    for fp in sorted(glob.glob(os.path.join(export_dir, "phraAphai_*_*.csv"))):
         df = pd.read_csv(fp, dtype=str)
         for _, row in df.iterrows():
             texts.append("".join(row[c] for c in cols if isinstance(row[c], str)))
