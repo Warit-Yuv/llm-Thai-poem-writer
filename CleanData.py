@@ -529,8 +529,15 @@ def write_eval(path):
     ck = _load_review(path)
     with open(path, encoding="utf-8") as fh:
         results, _, sections = scan_ton(fh.read())
-    os.makedirs(EVAL_DIR, exist_ok=True)
-    out = os.path.join(EVAL_DIR, os.path.splitext(os.path.basename(path))[0] + "_ok.csv")
+    # One subfolder per work so Evaluate stays navigable — 191 flat files across
+    # 5 works were not. The folder is the stem minus its trailing _<number>
+    # (phraAphai_1 -> phraAphai), which keeps every path space-free; deriving it
+    # from the Dataset/ folder instead would reintroduce "Suphasaet Son Ying".
+    stem = os.path.splitext(os.path.basename(path))[0]
+    work = re.sub(r"_\d+$", "", stem) or stem
+    outdir = os.path.join(EVAL_DIR, work)
+    os.makedirs(outdir, exist_ok=True)
+    out = os.path.join(outdir, stem + "_ok.csv")
 
     def ok(r):
         return r["kind"] == "body" and not (ck.get(r["wak"]) or {}).get("exclude")

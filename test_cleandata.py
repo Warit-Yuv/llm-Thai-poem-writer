@@ -206,6 +206,24 @@ def test_eval_keeps_beat_flagged_waks():
         assert len(rows) == 1 and rows[0]["w1"] == "ดนตรีมีคุณที่ข้อไหน", rows
 
 
+def test_eval_writes_into_a_per_work_subfolder():
+    """Evaluate/ holds 5 works; flat output made it unnavigable. The folder is
+    the stem minus its trailing _<number>, so every chapter of a work lands
+    together and no path contains a space."""
+    with tempfile.TemporaryDirectory() as td:
+        C.EVAL_DIR = td
+        for name, folder in [("phraAphai_7.txt", "phraAphai"),
+                             ("SuphasaetSonYing_1.txt", "SuphasaetSonYing")]:
+            p = os.path.join(td, name)
+            with open(p, "w", encoding="utf-8") as fh:
+                fh.write("๏ " + "\t".join(["ทั้งสามคนคู่ชีวิตเป็นมิตรกัน"] * 4))
+            s = C.write_eval(p)
+            assert os.path.basename(os.path.dirname(s["eval"])) == folder, s["eval"]
+            assert os.path.isfile(s["eval"]), s["eval"]
+        made = sorted(d for d in os.listdir(td) if os.path.isdir(os.path.join(td, d)))
+        assert made == ["SuphasaetSonYing", "phraAphai"], made
+
+
 def test_empty_source_writes_nothing():
     with tempfile.TemporaryDirectory() as td:
         C.EXPORT_DIR = C.ATTENTION_DIR = td

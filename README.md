@@ -93,7 +93,8 @@ than emitting a false rhyme pair.
 python CleanData.py Dataset/PhraAphai/phraAphai_7.txt --eval
 ```
 
-`Results/Evaluate/<chapter>_ok.csv` — one บท per row, columns `w1`–`w4`.
+`Results/Evaluate/<work>/<chapter>_ok.csv` — one บท per row, columns `w1`–`w4`,
+with one subfolder per work (`phraAphai/`, `khunChangKhunPhaen/`, …).
 Deliberately unlike the training export: **no beat marks** (the model generates
 plain วรรค, so the reference must be plain too) and **no sliding windows** (an
 interleaved window scores the same บท two or three times, weighting whatever it
@@ -123,7 +124,7 @@ from `Export/ok`.
 | `build_overrides.py`, `build_g2p_dict.py`, `override_draft_cleaner.py` | override generation, four guards against w2p hallucination — see `OVERRIDE_PIPELINE.md` |
 | `poetry_overrides*.py` | generated override dicts (~3.5k and ~6k entries) |
 | `Results/Export/ok/`, `Results/Export/not_ok/` | export rows, and the review queue |
-| `Results/Evaluate/` | the same corpus in evaluation format |
+| `Results/Evaluate/<work>/` | the same corpus in evaluation format, one folder per work |
 | `core.py` | vendored PyThaiNLP `KhaveeVerifier` (Apache-2.0), kept for patching |
 
 ## Status
