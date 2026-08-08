@@ -63,11 +63,17 @@ unverified w2p hallucinations into the dictionary.
 
 | File | Role |
 |------|------|
-| `poetry_overrides.py` | **THE ONLY FILE YOU EDIT.** `POETRY_OVERRIDES` = gold-standard `word -> [syllables]` (3,315 keys: curated + merged gold draft + author fixes). To fix any word: find it here, edit it. |
+| `poetry_overrides.py` | **SOURCE OF TRUTH — THE ONLY FILE YOU EDIT.** `POETRY_OVERRIDES` = gold-standard `word -> [syllables]` (currently **4,285 keys, 0 duplicates**). To fix any word: find it here, edit it. The pipeline NEVER writes to it. |
 | `build_overrides.py` | **The pipeline.** Reads the dict, screens it (suspicious dict entries are listed in the review file), scans the corpus, generates splits for unseen words (4 hallucination guards), and buckets into AUTO / FIXED / REVIEW / COMPOSED / SKIP. |
-| `poetry_overrides_generated.py` | Pipeline output: **AUTO + FIXED + COMPOSED** entries not yet in the dict → paste into `poetry_overrides.py`. |
-| `poetry_overrides_generated_review.py` | **THE review file.** New-word hallucinations + suspicious entries already in the dict → fix by ear, then edit `poetry_overrides.py`. |
+| `poetry_overrides_generated.py` | Pipeline output: **AUTO + FIXED + COMPOSED** entries not yet in the dict → merge with `merge_reviewed_add.py` or paste manually. |
+| `poetry_overrides_generated_review.py` | **THE review file.** New-word hallucinations + suspicious entries already in the dict → fix by ear, then merge with `merge_review.py`. |
 | `poetry_overrides_generated.screen.tsv` | Full report: every word + frequency + syllables + flags + bucket + context. |
+| `merge_review.py` | Merges a reviewed ADD file (default `poetry_overrides_generated_review.py`) into the dict: inserts new keys, **updates** any key whose reviewed value differs, dedupes internal duplicates, comment-free. |
+| `merge_reviewed_add.py` | Merges only the manually-reviewed head (lines 5–181) of `poetry_overrides_generated.py` into the dict. |
+| `dedup_overrides.py` | Idempotent duplicate-key remover for `poetry_overrides.py`; run after any manual merge as a sanity check. |
+| `build_phase1_base.py` / `poetry_overrides_base.py` | (Rebuild experiment) generate/hold a Phase-1 base: standalone single letters + 1-syllable words only. |
+| `build_g2p_dict.py` / `g2p_dictionary.py` | (IPA tooling) convert `test_g2p.txt` (Thai + IPA) into Thai syllable readings → `G2P_DICTIONARY`. |
+| `Noto_tokenizer.py` | Owns a **separate** small `POETRY_OVERRIDES` (used by `CleanData.py`) + `extract_poetic_syllables` (runtime composition logic, now with the **single-letter standalone-only guard**). |
 | `override_draft_cleaner.py` | Holds the shared `screen_override()` used by the pipeline. (The old draft tooling is archived.) |
 | `klonpad_validator.ipynb` | Playground. Its generator cell now just runs `build_overrides.py`. |
 | `Results/Exportable/*.csv` | Source corpus: 132 chapters × stanzas, each row `w1_a..w8_c` (8 waks × 3 parts). |
@@ -135,7 +141,7 @@ Rare words that pass screening don't need a dict entry — w2p is right on them
 and they appear once or twice, so the cost is negligible. Only *frequent*
 words (speed) and *suspicious* words (correctness) get overridden.
 
-### Coverage (current corpus, `--min-freq 3`, strict, dict already merged)
+### Coverage (from an older run — refresh with `build_overrides.py`; the dict has since grown to ~4.3k keys)
 
 ```
 dict (poetry_overrides.py)     3,315 words  -> 97.5% of tokens covered
@@ -236,22 +242,30 @@ Subtlety handled: w2p spells the `ำ` sound as explicit `า+ม`, so we normal
 ## 6. Workflow
 
 ```
-edit poetry_overrides.py  →  run build_overrides.py  →  read poetry_overrides_generated_review.py  →  fix & re-edit
+git commit (backup)  →  run build_overrides.py  →  read poetry_overrides_generated_review.py  →  fix by ear  →  merge_review.py  →  re-run
 ```
 
-1. Run: `python build_overrides.py` (add `--min-freq N`,
-   `--review-lenient`, `--no-compose`, `--out ...` as needed).
-2. Open `poetry_overrides_generated_review.py` (the ONLY review file). It has
+1. **Back up first:** `poetry_overrides.py` is git-tracked — commit before any
+   big change so you can roll back (`git add poetry_overrides.py && git commit`).
+2. Run: `python build_overrides.py` (add `--min-freq N`,
+   `--review-lenient`, `--no-compose`, `--out ...` as needed). It only READS
+   the dict; it never modifies `poetry_overrides.py`.
+3. Open `poetry_overrides_generated_review.py` (the ONLY review file). It has
    two kinds of entries:
    - **new words** the pipeline thinks w2p hallucinated → fix by ear, then
-     add to `poetry_overrides.py`;
+     merge;
    - **already in the dict** (marked in the header / `.screen.tsv`) → they
-     stay in the dict, listed so you can see them. Fix them in
+     stay in the dict, listed so you can see them. Fix them directly in
      `poetry_overrides.py` if you disagree.
-3. Merge `poetry_overrides_generated.py` (AUTO+FIXED+COMPOSED) into
-   `poetry_overrides.py` — or just leave it; since everything is already in
-   the dict, this file only holds words the corpus has that the dict lacks.
-4. Re-run the pipeline to confirm coverage climbed.
+4. **Merge a reviewed file:** `python merge_review.py` (defaults to
+   `poetry_overrides_generated_review.py`). It inserts new keys, updates keys
+   whose reviewed value differs, and keeps the dict comment-free. Then run
+   `python dedup_overrides.py` as a sanity check (should print 0 duplicates).
+5. Merge `poetry_overrides_generated.py` (AUTO+FIXED+COMPOSED) with
+   `python merge_reviewed_add.py` — or just leave it; since everything is
+   already in the dict, this file only holds words the corpus has that the
+   dict lacks.
+6. Re-run the pipeline to confirm coverage climbed, then commit again.
 
 **No kernel involved:** `build_overrides.py` is a standalone script — it reads
 all inputs fresh from disk. You never need to restart the notebook kernel to
@@ -283,3 +297,65 @@ regenerate; stale notebook state cannot affect it.
   proportionally larger REVIEW list (rare words are where hallucinations hide).
 - **Downstream consumers**: LLM training data generation, teacher validation
   of student Klon, RL environment (validator as reward signal).
+
+---
+
+## 8. Source of truth, backup & safety (current state, 2026-08-09)
+
+**`poetry_overrides.py` is the source of truth** — `POETRY_OVERRIDES`
+(currently **4,285 keys, 0 duplicates**). Every word in it has been reviewed
+by ear. Treat it as gold: never bulk-regenerate it, never let an automated
+step overwrite it.
+
+### Will the pipeline override it? No — nothing to fix.
+
+- `build_overrides.py` **only READS** `poetry_overrides.py` (as the "covered"
+  set). It writes to *separate* files only:
+  `poetry_overrides_generated.py`, `poetry_overrides_generated_review.py`,
+  `poetry_overrides_generated.screen.tsv`. It never touches the dict.
+- The only things that **write** to `poetry_overrides.py` are the manual
+  helper scripts you run yourself (`merge_review.py`,
+  `merge_reviewed_add.py`, `dedup_overrides.py`). The pipeline cannot clobber
+  your edits.
+
+### Backup — yes, use git.
+
+`poetry_overrides.py` is **git-tracked** (in the repo and already committed):
+
+- Commit **before** each merge/experiment so you can always roll back:
+  `git add poetry_overrides.py && git commit -m "..."`.
+- `git log -- poetry_overrides.py` is your history; `git checkout -- poetry_overrides.py`
+  restores the last commit.
+- Optional: drop a dated copy into `_archive/` before a large merge for a
+  second safety net.
+
+### Changes made during the rebuild (this session)
+
+1. **Single-letter overrides are now STANDALONE-ONLY.** In
+   `Noto_tokenizer.extract_poetic_syllables`, a 1-char key (e.g. `ถ → ถะ`)
+   only fires when the whole token IS that letter. It never fires as a
+   sub-syllable inside a longer word — ssg sometimes splits a syllable into
+   (single consonant + rest), e.g. `จวน → ['จ','วน']`, which would otherwise
+   turn the 1-syllable `จวน` into a wrong `จะ-วน`.
+2. **Merge helpers** were added so reviewed files can be merged without manual
+   copy-paste and without introducing duplicate keys or comments:
+   - `merge_review.py` — merges a reviewed ADD file (default
+     `poetry_overrides_generated_review.py`): inserts new keys, **updates** any
+     key whose reviewed value differs (the review wins), dedupes internal
+     duplicates, comment-free.
+   - `merge_reviewed_add.py` — merges only the manually-reviewed head
+     (lines 5–181) of `poetry_overrides_generated.py`.
+   - `dedup_overrides.py` — idempotent duplicate-key remover; run after any
+     manual merge as a sanity check.
+3. **Composition means you don't need every compound.** The runtime
+   composition branch (`extract_poetic_syllables`) rebuilds compounds from
+   covered parts (`จำเป็น = จำ + เป็น`), so the dict only needs the base
+   syllables — you don't have to store every `จำX` combination.
+
+### Two dicts — don't confuse them.
+
+- `poetry_overrides.py` → `POETRY_OVERRIDES` (the big source of truth; used by
+  `klonpad_validator.ipynb` and `build_overrides.py`).
+- `Noto_tokenizer.py` → its **own smaller** `POETRY_OVERRIDES` (used by
+  `CleanData.py` for จังหวะ counting). These are separate; editing one does
+  not change the other.

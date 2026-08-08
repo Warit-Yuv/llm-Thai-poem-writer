@@ -82,7 +82,7 @@ from override_draft_cleaner import (
 kv = KhaveeVerifier()
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_CORPUS = os.path.join(ROOT, "Results", "Exportable")
+DEFAULT_CORPUS = os.path.join(ROOT, "Results", "Export", "ok")
 DEFAULT_OUT = os.path.join(ROOT, "poetry_overrides_generated.py")
 
 
