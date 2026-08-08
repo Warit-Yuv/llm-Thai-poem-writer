@@ -82,7 +82,11 @@ from override_draft_cleaner import (
 kv = KhaveeVerifier()
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_CORPUS = os.path.join(ROOT, "Results", "Export", "ok")
+# Corpus is now the reorganized Results/Evaluate folder: every poem has its
+# own subfolder (khobut/ khunChangKhunPhaen/ phraAphai/ phukaoTong/
+# SuphasaetSonYing/) and build_corpus() ingests ALL *_ok.csv files
+# recursively, not just phraAphai.
+DEFAULT_CORPUS = os.path.join(ROOT, "Results", "Evaluate")
 DEFAULT_OUT = os.path.join(ROOT, "poetry_overrides_generated.py")
 
 
@@ -235,7 +239,8 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     ap.add_argument("--corpus", default=DEFAULT_CORPUS,
-                    help="folder of phraAphai_*_export.csv files")
+                    help="folder of *_ok.csv files (scanned recursively; "
+                         "default: Results/Evaluate, all poem subfolders)")
     ap.add_argument("--out", default=DEFAULT_OUT,
                     help="output .py path for the AUTO overrides")
     ap.add_argument("--gold", default=None,

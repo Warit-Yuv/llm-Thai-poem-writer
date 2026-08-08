@@ -7,7 +7,7 @@ Cleans & screens the (user-edited) Tier A override draft WITHOUT touching it.
 Reads:
   - override_draft_tierA_safe copy.py   user-edited Tier A draft (your backup)
   - klonpad_validator.ipynb             main POETRY_OVERRIDES (for dedup)
-  - Results/Exportable/*.csv            corpus (for example context)
+  - Results/Evaluate/**/*_ok.csv       corpus (for example context)
 
 Writes:
   - override_draft_tierA_clean.py       paste-ready dict (no "# xN" comments,
@@ -45,7 +45,7 @@ DRAFT = os.path.join(ROOT, "override_draft_tierA_safe copy.py")
 NOTEBOOK = os.path.join(ROOT, "klonpad_validator.ipynb")
 OUT_PY = os.path.join(ROOT, "override_draft_tierA_clean.py")
 OUT_TSV = os.path.join(ROOT, "override_draft_tierA_screen.tsv")
-EXPORT_DIR = os.path.join(ROOT, "Results", "Exportable")
+EXPORT_DIR = os.path.join(ROOT, "Results", "Evaluate")
 
 TONE = "่้๊๋"
 # (syllable screening now delegates to the improved KhaveeVerifier.is_sumpus)
@@ -115,10 +115,30 @@ def load_draft(path):
 
 
 def build_corpus(export_dir):
+    """Load every `*_ok.csv` under `export_dir` into one corpus string.
+
+    Recursive scan so it ingests ALL poems, not just phraAphai — the new
+    `Results/Evaluate/<poem>/*_ok.csv` layout (khobut/, khunChangKhunPhaen/,
+    phraAphai/, phukaoTong/, SuphasaetSonYing/) as well as the old flat
+    `Results/Export/ok/*_ok.csv` layout.
+
+    Handles both CSV layouts:
+      - old 24-col:  w1_a..w8_c   (8 waks x 3 parts)
+      - new  4-col:  w1..w4       (4 full waks per row)
+    Falls back to every column if neither layout matches.
+    """
     texts = []
-    cols = [f"w{n}_{p}" for n in range(1, 9) for p in ("a", "b", "c")]
-    for fp in sorted(glob.glob(os.path.join(export_dir, "phraAphai_*_*.csv"))):
+    old_cols = [f"w{n}_{p}" for n in range(1, 9) for p in ("a", "b", "c")]
+    new_cols = [f"w{n}" for n in range(1, 5)]
+    fps = sorted(glob.glob(os.path.join(export_dir, "**", "*_ok.csv"), recursive=True))
+    for fp in fps:
         df = pd.read_csv(fp, dtype=str)
+        if old_cols[0] in df.columns:
+            cols = old_cols
+        elif new_cols[0] in df.columns:
+            cols = new_cols
+        else:
+            cols = list(df.columns)
         for _, row in df.iterrows():
             texts.append("".join(row[c] for c in cols if isinstance(row[c], str)))
     return "\n".join(texts)
