@@ -616,6 +616,54 @@ as a single รึ (ฤทัย = รึ-ไท, the final ไท is never seen
   spelled out), `review_negatives.tsv` (6,000), `review_positives.tsv`
   (1,200). ⏳ **author review gate** before use in the final report.
 
+### v5 — oracle-blind flips to positives, volume 2,500/rule (2026-08-10)
+
+**Design change (author request):** the B "oracle that is wrong" must *lose
+points*. The old `C8_oracle_blind` negatives (gold=0, เพชร/เนตร/เกษตร vs
+สระ เอะ + แม่กด) made A/D take precision hits while B — the 5.3.5 oracle —
+kept a free 100% because it labelled them non-rhymes. Since the gold label is
+the LINGUISTIC truth (เพชร~เจ็ด IS a rhyme, silent ร), those cases are now
+emitted as **`HP_oracle_blind` POSITIVES (gold=1)** with tag `oracle_blind`:
+- the oracle must NOT see the rhyme (`o[rid] is False`),
+- every other rule's truth is unchanged (standalone),
+- B therefore takes **false negatives** here for missing them, while checkers
+  that hear the real rhyme get the credit.
+- New `--ob-positives` arg (default 60/rule; limited by the curated
+  silent-ร/เอะ+กด family and (เอะ,กด) target availability in the corpus).
+- C8 removed from `_pool_for`/NEG_MIX; docstring updated.
+
+**Regenerated profile (11,265 instances, 207s):**
+- Negatives 10,000 (2,500/rule): `C6_random` 300, `C0_same_mattra` 500,
+  `C1_same_vowel` 500, `C3_short_long` 3,100, `C4_old_disagree` 1,200,
+  `C9_old_accept` 2,800, `C5_lead_head` 600, `C2_trap` 1,000.
+- Tricky positives 1,200 (300/rule, unchanged): 920 classical, 18
+  both-normalise, 209 where 5.0.1 rejects.
+- **Oracle-blind positives 65** (r1×60, r3×5; r2/rX have no (เอะ,กด) targets
+  in the corpus).
+- **FP-by-operator on 10,000 negatives**: A **1,962** (C9 1,760, C3 167,
+  C1 19, C4 8, C6 3, C0 2, C2 3), B **0**, D_w2p 461 (C9 264, C3 129,
+  C1 23, C4 20, C6 12, C0 11, C2 2), D_ssg 217 (C3 118, C9 51, C4 15,
+  C6 12, C0 9, C1 9, C2 3). Augment-only precision: **A 80.4% vs B 100% vs
+  D_ssg 97.8% vs D_w2p 95.4%**.
+- **FN-by-operator on 1,265 positives**: A **566** (507 tricky = 57.8%
+  recall, 59 oracle-blind = 9.2%), B **65** (0 tricky, **65/65 oracle-blind
+  = 0%** — the requested deduction), D_w2p 108 (107 tricky = 91.1%, 1
+  oracle-blind), D_ssg 78 (77 tricky = 93.6%, 1 oracle-blind).
+- **The paper's story, cleanly:** D (Klonpad + override dictionary) catches
+  **64/65** oracle-blind rhymes (its `เพชร→เพ็ด` / `เนตร→เนด` overrides)
+  where stock 5.3.5 (B) misses **all 65** — the overrides fix the base
+  library's silent-ร blind spot. A, the other baseline, catches only 6/65.
+- **Merged-with-gold preview (A/B/D/Dssg, skip C)**: A P 94.9% / R 73.0% /
+  F1 82.5%; B 100.0% / 87.4% / 93.3%; D_w2p 99.2% / 87.0% / 92.7%; D_ssg
+  99.7% / 88.2% / 93.6%. (B's 65 oracle-blind FNs are ~0.14% of 47,740 gold
+  stanzas, so the merged recall drop is tiny; the deduction lives in the
+  augment-only view.)
+- **Checker C differentiator stays:** C3_short_long is now 3,100/10,000 —
+  C (tltk collapses short/long vowels) is expected to fail most of these,
+  driving C's augment precision toward ~79-80% while A/B/D sit far above.
+- ⏳ **author review gate** before the full Checker C run (~40 min) and the
+  final report notebook.
+
 ## Session 4 — Checker runtime, parity validation, smoke test (2026-08-09)
 
 ### Checker C runtime (resolved)

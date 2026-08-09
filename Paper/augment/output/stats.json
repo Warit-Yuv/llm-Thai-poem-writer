@@ -1,60 +1,59 @@
 {
   "negatives_per_rule": {
-    "r1_w1_w2": 1500,
-    "r2_w2_w3": 1500,
-    "r3_w3_w4": 1500,
-    "rX_inter": 1500
+    "r1_w1_w2": 2500,
+    "r2_w2_w3": 2500,
+    "r3_w3_w4": 2500,
+    "rX_inter": 2500
   },
   "negatives_by_op": {
-    "C6_random": 180,
-    "C0_same_mattra": 300,
-    "C1_same_vowel": 300,
-    "C3_short_long": 1855,
-    "C4_old_disagree": 720,
-    "C9_old_accept": 1500,
-    "C5_lead_head": 360,
-    "C2_trap": 600,
-    "C8_oracle_blind": 185
+    "C6_random": 300,
+    "C0_same_mattra": 500,
+    "C1_same_vowel": 500,
+    "C3_short_long": 3100,
+    "C4_old_disagree": 1200,
+    "C9_old_accept": 2800,
+    "C5_lead_head": 600,
+    "C2_trap": 1000
   },
   "negatives_by_op_pct": {
     "C0_same_mattra": 5.0,
     "C1_same_vowel": 5.0,
     "C2_trap": 10.0,
-    "C3_short_long": 30.9,
+    "C3_short_long": 31.0,
     "C4_old_disagree": 12.0,
     "C5_lead_head": 6.0,
     "C6_random": 3.0,
-    "C8_oracle_blind": 3.1,
-    "C9_old_accept": 25.0
+    "C9_old_accept": 28.0
   },
   "positives_per_rule": {
-    "r1_w1_w2": 300,
+    "r1_w1_w2": 360,
     "r2_w2_w3": 300,
-    "r3_w3_w4": 300,
+    "r3_w3_w4": 305,
     "rX_inter": 300
   },
   "positive_instances_by_tag": {
-    "mattra_family": 867,
-    "karun": 278,
-    "true_final": 21,
-    "karun|sara_norm": 1,
-    "sara_norm|true_final": 17,
+    "mattra_family": 848,
+    "karun": 295,
+    "true_final": 23,
+    "karun|sara_norm": 2,
+    "sara_norm|true_final": 16,
     "karun|rue": 2,
-    "karun|sara_norm|true_final": 1,
-    "rue": 4,
-    "sara_norm": 7,
-    "karun|true_final": 2
+    "karun|sara_norm|true_final": 2,
+    "rue": 5,
+    "karun|true_final": 1,
+    "sara_norm": 6,
+    "oracle_blind": 65
   },
-  "positive_instances_both_normalize": 19,
-  "positive_instances_old_fail": 217,
-  "positive_instances_classical": 914,
-  "positive_instances_dict": 286,
+  "positive_instances_both_normalize": 18,
+  "positive_instances_old_fail": 209,
+  "positive_instances_classical": 985,
+  "positive_instances_dict": 215,
   "positive_pool_pairs": 5920,
   "positive_pool_both_normalize": 91,
   "positive_pool_old_fail": 15,
   "candidate_words": 6070,
   "inventory_size": 8046,
   "dictionary_syllables": 9114,
-  "total_instances": 7200,
+  "total_instances": 11265,
   "seed": 42
 }
