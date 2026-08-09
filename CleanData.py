@@ -517,16 +517,20 @@ def write_eval(path):
     (an interleaved window scores the same บท two or three times, which quietly
     weights whatever it overlaps).
 
-    A บท is kept when all 4 วรรค are `body` — that is the TEXT check: `irregular`
-    means >=10 syllables (a merge or shatter) and `opener` means <=6, both signs
-    the line itself is wrong. Beat flags do NOT block: 'straddles a beat
-    boundary' and '7 syllables — ambiguous' say the จังหวะ is uncertain, not the
-    text, and eval never looks at จังหวะ. A human 'exclude' still blocks — that
-    is a judgement about the line, not the beats.
+    NOTHING IS FILTERED. Completeness is the requirement: สัมผัสระหว่างบท chains
+    บท to บท and chapter to chapter, so dropping any บท severs the chain for its
+    neighbours too. The only cut is the 3-วรรค opener บท at the START of the
+    chapter (วรรครับ absent), which cannot fill a 4-วรรค row.
 
-    Uses no review.json answers beyond excludes, so eval data needs no review
-    pass to be usable."""
-    ck = _load_review(path)
+    An earlier version blocked บท whose วรรค fell outside 7-9 syllables. That
+    silently removed the chapter-opening บท of ตอน 2, 3 and 4 — the narrative
+    'จะกล่าวถึง...' formula counts 10 — and each one carried the rhyme linking
+    it to the previous chapter. The text was sound; only the count was wrong.
+    Syllable counts are a training-side concern; eval reads text alone.
+
+    ๏ acts are also ignored here: บท are grouped consecutively from the opener
+    offset, so an act failing the x4 checksum no longer deletes its whole
+    stretch. Anything structurally wrong stays visible in Export/not_ok."""
     with open(path, encoding="utf-8") as fh:
         results, _, sections = scan_ton(fh.read())
     # One subfolder per work so Evaluate stays navigable — 191 flat files across
@@ -539,24 +543,21 @@ def write_eval(path):
     os.makedirs(outdir, exist_ok=True)
     out = os.path.join(outdir, stem + "_ok.csv")
 
-    def ok(r):
-        return r["kind"] == "body" and not (ck.get(r["wak"]) or {}).get("exclude")
-
-    acts, skipped = _bots(sections)
-    kept = blocked = 0
+    # The opening บท of a ตอน has 3 วรรค, not 4 (วรรครับ absent). Detect it from
+    # the FIRST ๏ act only — a later act with 4k+3 วรรค means a วรรค went
+    # missing there, and skipping 3 more would compound the damage, not fix it.
+    opener = 3 if sections and sections[0][1] % 4 == 3 else 0
+    kept = 0
     with open(out, "w", encoding="utf-8-sig", newline="") as fh:
         w = csv.writer(fh)
         w.writerow(["w1", "w2", "w3", "w4"])
-        for act in acts:
-            for idx in act:
-                bot = [results[j] for j in idx]
-                if all(ok(r) for r in bot):
-                    w.writerow([r["wak"] for r in bot])
-                    kept += 1
-                else:
-                    blocked += 1
-    return {"eval": out, "bot_kept": kept, "bot_blocked": blocked,
-            "sections_skipped": skipped}
+        for i in range(opener, len(results) - 3, 4):
+            w.writerow([results[j]["wak"] for j in range(i, i + 4)])
+            kept += 1
+    # วรรค left over at the end cannot fill a row; report rather than hide them.
+    tail = len(results) - opener - kept * 4
+    return {"eval": out, "bot_kept": kept, "bot_blocked": 0,
+            "opener_cut": opener, "tail_dropped": tail, "sections_skipped": 0}
 
 
 def import_attention(path):
@@ -662,9 +663,9 @@ if __name__ == "__main__":
         if "--eval" in sys.argv:
             s = write_eval(path)
             print(f"eval:       {s['bot_kept']} บท (1 per row, columns w1..w4) -> {s['eval']}")
-            print(f"blocked:    {s['bot_blocked']} บท with a non-body วรรค (>=10 or <=6 syllables)")
-            if s["sections_skipped"]:
-                print(f"๏ acts skipped (bad %4): {s['sections_skipped']}")
+            print(f"opener cut: {s['opener_cut']} วรรค (3-วรรค วรรครับ บท at the start)")
+            if s["tail_dropped"]:
+                print(f"tail:       {s['tail_dropped']} วรรค left over — cannot fill a 4-วรรค row")
             print("NOTE: this is a FORMAT, not a split — the same ตอน is also in Export/ok.")
             print("      whoever trains must hold the eval ตอน out, or it scores memorisation.")
             sys.exit()

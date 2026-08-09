@@ -190,9 +190,14 @@ def test_resolve_refuses_keep_auto_on_irregular():
 
 
 def test_eval_keeps_beat_flagged_waks():
-    """Eval blocks on TEXT problems only. The 7-syllable วรรค is flagged for the
-    training export (its จังหวะ is a guess) but its text is sound, so eval keeps
-    the บท — no beats, no windows, one row, columns w1..w4."""
+    """Eval filters NOTHING. สัมผัสระหว่างบท chains บท to บท, so dropping one
+    severs its neighbours too. A 7-syllable วรรค (จังหวะ ambiguous) and a
+    10-syllable one (`irregular`) both ship — the text is sound either way, and
+    eval never reads syllable counts.
+
+    Regression guard: the old rule blocked non-`body` วรรค, which silently
+    deleted the chapter-opening บท of ตอน 2, 3 and 4, each carrying the rhyme
+    that linked it to the previous chapter."""
     with tempfile.TemporaryDirectory() as td:
         C.EVAL_DIR = td
         p = os.path.join(td, "e.txt")
@@ -200,10 +205,12 @@ def test_eval_keeps_beat_flagged_waks():
             fh.write("๏ ดนตรีมีคุณที่ข้อไหน	" + "	".join(["ทั้งสามคนคู่ชีวิตเป็นมิตรกัน"] * 3)
                      + "	" + "	".join(["พระชนนีรักใคร่ดังนัยนา"] + ["ทั้งสามคนคู่ชีวิตเป็นมิตรกัน"] * 3))
         s = C.write_eval(p)
-        assert (s["bot_kept"], s["bot_blocked"]) == (1, 1), s   # beat-flagged in, 10-syl out
+        assert (s["bot_kept"], s["bot_blocked"]) == (2, 0), s   # BOTH บท ship
         rows = _read(s["eval"])
         assert list(rows[0]) == ["w1", "w2", "w3", "w4"], rows[0]
-        assert len(rows) == 1 and rows[0]["w1"] == "ดนตรีมีคุณที่ข้อไหน", rows
+        assert len(rows) == 2, rows
+        assert rows[0]["w1"] == "ดนตรีมีคุณที่ข้อไหน", rows      # 7-syl วรรค kept
+        assert rows[1]["w1"] == "พระชนนีรักใคร่ดังนัยนา", rows   # 10-syl วรรค kept
 
 
 def test_eval_writes_into_a_per_work_subfolder():
