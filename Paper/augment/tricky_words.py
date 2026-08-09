@@ -159,7 +159,8 @@ def is_clean_syllable(x, max_len=6) -> bool:
         return False
     if x in BAD_SYLLABLES:
         return False
-    if not _THAI_ONLY.match(x) or any(c in _THAI_DIGITS for c in x):
+    if not _THAI_ONLY.match(x) or any(
+            c in _THAI_DIGITS or c in "ฯๆ" for c in x):
         return False
     if "ฤ" in x or "ฦ" in x:
         return x in RUE_PRONUNCIATION and len(RUE_PRONUNCIATION[x]) == 1
@@ -181,7 +182,8 @@ def is_clean_neg_syllable(x, max_len=6) -> bool:
         return False
     if x in BAD_SYLLABLES:
         return False
-    if not _THAI_ONLY.match(x) or any(c in _THAI_DIGITS for c in x):
+    if not _THAI_ONLY.match(x) or any(
+            c in _THAI_DIGITS or c in "ฯๆ" for c in x):
         return False
     if "ฤ" in x or "ฦ" in x:
         return x in RUE_PRONUNCIATION

@@ -582,20 +582,37 @@ as a single รึ (ฤทัย = รึ-ไท, the final ไท is never seen
 ### Final generated profile (2026-08-10, `Paper/augment/output/`)
 
 - Negatives 6,000 / positives 1,200 (7,200 instances), ~2-4 min per run.
+- **Rule-slice fix (important):** the generator's `oracle_rules` used
+  `Wak2[1:6]`/`Wak4[1:6]` while every checker uses `Wak2[:5]`/`Wak4[:5]`
+  (B/D and the 5.3.5 core; A uses `[1:5]`). This caused *phantom FPs* -- a
+  negative verified broken against `[1:6]` could still rhyme with Wak2's
+  FIRST syllable, which the checkers check. After aligning to `[:5]`, B's
+  FPs went 51 -> **0** and D's ~55 phantom FPs disappeared. (Gold recall is
+  unaffected -- the harness treats gold as all-positive.)
+- **C9_old_accept (the big A-vs-B trap):** systematically builds negatives
+  where the 5.0.1 (sara, mattra) class of the candidate matches a target's
+  (so OLD thinks they rhyme) but 5.3.5's does not. 943 candidate words
+  participate (กนก/กรก/ครก lumped as (ออ,กก) by old vs กรณ์/กรอก/ค็อก split
+  by new; plus ตัว, กัณ/กุณ ณ-bug, ก็/ก๊ก tone marks, etc.).
 - Realized negative mix (baseline 13%): `C6_random` 180, `C0_same_mattra`
-  300, `C1_same_vowel` 300, `C3_short_long` 2035, `C4_old_disagree` 1800,
-  `C5_lead_head` 480, `C2_trap` 720, `C8_oracle_blind` 185. `C4_old_disagree`
-  = syllables where the 5.0.1 checker extracts a different สระ/มาตรา than
-  5.3.5 (611 in the clean corpus: ตัว, กัณ/กุณ ณ-bug, กรก/กรด clusters, ก็/ก๊ก
-  tone marks, ...) -- the A-vs-B precision differentiator.
-- **FP-by-operator on the 6,000 negatives**: A 212 total (C3 117, C8 54, C1
-  18, C4 18), B 51 (C3 26, C4 10), D_ssg 197 (C3 85, C8 47, C4 26). Augment-
-  only precision: **A 96.5% vs B 99.2% vs D_ssg 96.7%** (the merged-with-gold
-  figure is diluted by the 36,475 gold positives). C8 is the sharpest A-vs-B
-  probe (A 29% FP rate, B 0%) at its family limit (185).
-- Positives: 915/1200 classical, 19 both-normalise, 212 where 5.0.1 rejects
+  300, `C1_same_vowel` 300, `C3_short_long` 1855, `C4_old_disagree` 720,
+  `C9_old_accept` 1500, `C5_lead_head` 360, `C2_trap` 600,
+  `C8_oracle_blind` 185.
+- **FP-by-operator on the 6,000 negatives**: A **1,136** (C9 961, C3 102,
+  C8 48, C1 15), B **0**, D_w2p 315 (C9 154, C3 65, C8 63), D_ssg 174
+  (C3 55, C8 63, C9 32). Augment-only precision: **A 81.1% vs B 100% vs
+  D_ssg 97.1% vs D_w2p 94.8%**.
+- **Merged-with-gold preview (A/B/D/Dssg, skip C)**: A P 96.9% / R 73.1% /
+  F1 83.4%; B 100.0% / 87.5% / 93.3%; D_w2p 99.5% / 87.0% / 92.8%; D_ssg
+  99.8% / 88.2% / 93.6%. The C9 traps made the precision gap visible even
+  in the diluted merged metric.
+- **B = 0 FPs is expected**: B *is* the 5.3.5 oracle, so on oracle-verified
+  negatives it always agrees (the เพชร/เจ็ด C8 cases are True Negatives for
+  B -- its blind spot is recall-side, documented in ORACLE_LIMITATIONS;
+  A/D take the C8 precision hits for hearing the real rhyme).
+- Positives: 914/1200 classical, 19 both-normalise, 217 where 5.0.1 rejects
   (A-vs-B recall differentiators).
-- Review files: `candidates_review.tsv` (6,075 word-list rows with สระ/มาตรา
+- Review files: `candidates_review.tsv` (6,070 word-list rows with สระ/มาตรา
   spelled out), `review_negatives.tsv` (6,000), `review_positives.tsv`
   (1,200). ⏳ **author review gate** before use in the final report.
 

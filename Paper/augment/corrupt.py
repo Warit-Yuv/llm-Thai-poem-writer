@@ -5,9 +5,10 @@ Hard negative/positive generation for the Klon-8 evaluation.
 Method
 ------
 * **Oracle** = the 5.3.5 ``is_sumpus`` (the shared rhyme predicate), applied
-  with the canonical rule semantics (r1: Wak1[-1] vs any of Wak2[1..5]; r2:
-  Wak2[-1] vs Wak3[-1]; r3: Wak3[-1] vs any of Wak4[1..5]; rX: previous
-  Wak4[-1] vs Wak2[-1]). Only oracle-confirmed verdicts label the data.
+  with the canonical rule semantics matching the checkers (r1: Wak1[-1] vs any
+  of Wak2[:5]; r2: Wak2[-1] vs Wak3[-1]; r3: Wak3[-1] vs any of Wak4[:5]; rX:
+  previous Wak4[-1] vs Wak2[-1]). Only oracle-confirmed verdicts label the
+  data.
 
 * **Negatives** (precision probes) are a MIX of operators so the test is not
   saturated by one easy family:
@@ -69,6 +70,7 @@ from augment.tricky_words import (  # noqa: E402
     ORACLE_BLIND_FAMILIES,
     ORACLE_LIMITATIONS,
     VOWEL_LENGTH_SWAP,
+    _OLD_CORE_EXC,
     build_positive_pairs,
     clean_neg_syllables,
     clean_syllables,
@@ -84,21 +86,22 @@ RULES = ("r1_w1_w2", "r2_w2_w3", "r3_w3_w4", "rX_inter")
 kv = _dev_core.KhaveeVerifier()
 old_kv = _orig_core.KhaveeVerifier()
 
-# Target negative mix (fraction of --per-rule). Simple baselines are kept tiny
-# (C6+C0+C1 ~13%) so precision is not saturated; edge cases dominate. The main
-# differentiator is C4_old_disagree (words the 5.0.1 checker reads with a
-# different สระ/มาตรา than 5.3.5), plus short<->long (C3), karun/ฤ traps
-# (C2), ห/อ นำ (C5) and the oracle-blind probes (C8). If an edge family
-# exhausts its pool, leftover quota is redistributed to the other edge
-# families first; C0 only absorbs what is still missing.
+# Target negative mix (fraction of --per-rule). Simple baselines are tiny
+# (C6+C0+C1 ~13%); edge cases dominate. The A-vs-B differentiators carry most
+# weight: C9_old_accept (systematic: 5.0.1 reads the candidate with the same
+# สระ/มาตรา as a target but 5.3.5 does not -> old falsely accepts), C4_old_
+# disagree (generic old!=new words), C3 short<->long, C2 karun/ฤ traps,
+# C5 ห/อ นำ, C8 oracle-blind probes. Leftover quota is redistributed to the
+# other edge families first; C0 only absorbs what is still missing.
 NEG_MIX = [
     ("C6_random", 0.03),
     ("C0_same_mattra", 0.05),
     ("C1_same_vowel", 0.05),
     ("C3_short_long", 0.22),
-    ("C4_old_disagree", 0.30),
-    ("C5_lead_head", 0.08),
-    ("C2_trap", 0.12),
+    ("C4_old_disagree", 0.12),
+    ("C9_old_accept", 0.25),
+    ("C5_lead_head", 0.06),
+    ("C2_trap", 0.10),
     ("C8_oracle_blind", 0.06),
 ]
 FILL_OP = "C0_same_mattra"
@@ -109,6 +112,7 @@ OP_NOTES = {
     "C6_random": "diff sara+mat (baseline)",
     "C3_short_long": "short<->long sara",
     "C4_old_disagree": "old pythainlp sara/mattra differ (A-vs-B diff)",
+    "C9_old_accept": "old-class matches target but new does not (A-trap)",
     "C5_lead_head": "ห/อ นำ",
     "C2_trap": "karun/ฤ/cluster",
     "C8_oracle_blind": "oracle-blind limitation",
@@ -121,12 +125,17 @@ def syl(w: str) -> list:
 
 
 def oracle_rules(w1, w2, w3, w4, prev_w4):
-    """Canonical rule truths via ssg segmentation + the 5.3.5 is_sumpus."""
+    """Canonical rule truths via ssg segmentation + the 5.3.5 is_sumpus.
+
+    Matches the checkers' definitions exactly: r1 = Wak1[-1] vs any of
+    Wak2[:5] (first 5 syllables, incl. the first); r3 = Wak3[-1] vs Wak4[:5];
+    r2/rX = last-to-last. (A 5.0.1 uses Wak2[1:5] instead -- its own variant.)
+    """
     s1, s2, s3, s4 = syl(w1), syl(w2), syl(w3), syl(w4)
     return {
-        "r1_w1_w2": any(kv.is_sumpus(s1[-1], t) for t in s2[1:6]),
+        "r1_w1_w2": any(kv.is_sumpus(s1[-1], t) for t in s2[:5]),
         "r2_w2_w3": bool(s2 and s3 and kv.is_sumpus(s2[-1], s3[-1])),
-        "r3_w3_w4": any(kv.is_sumpus(s3[-1], t) for t in s4[1:6]),
+        "r3_w3_w4": any(kv.is_sumpus(s3[-1], t) for t in s4[:5]),
         "rX_inter": None if prev_w4 is None
         else bool(kv.is_sumpus(syl(prev_w4)[-1], s2[-1])),
     }
@@ -171,6 +180,18 @@ def _pool_for(op, S, avoid, mi, vi, sm_idx, pools, inv):
         return sm_idx.get((s, kv.check_marttra(S)), []) if s else []
     if op == "C4_old_disagree":
         return pools["old_disagree"]
+    if op == "C9_old_accept":
+        out = set()
+        for t in avoid:
+            try:
+                ot = (old_kv.check_sara(t), old_kv.check_marttra(t))
+            except _OLD_CORE_EXC:
+                ot = ("ERR", "ERR")
+            nt = (kv.check_sara(t), kv.check_marttra(t))
+            for c, nc in pools["old_accept"].get(ot, {}).items():
+                if c != t and nc != nt:
+                    out.add(c)
+        return sorted(out)
     if op == "C5_lead_head":
         return pools["lead"]
     if op == "C2_trap":
@@ -208,6 +229,20 @@ def _neg_note(op, S, C) -> str:
             if S in entry["pair"] or C in entry["pair"]:
                 return f"{base}:{entry['reason']}"
     return base
+
+
+def build_old_groups(syls):
+    """Map the 5.0.1 (sara, mattra) class -> {word: 5.3.5 (sara, mattra)} so
+    C9 can find candidates that old thinks rhyme with a target but new does
+    not (the systematic A-vs-B precision trap)."""
+    groups = defaultdict(dict)
+    for w in syls:
+        try:
+            ok = (old_kv.check_sara(w), old_kv.check_marttra(w))
+        except _OLD_CORE_EXC:
+            ok = ("ERR", "ERR")
+        groups[ok][w] = (kv.check_sara(w), kv.check_marttra(w))
+    return dict(groups)
 
 
 def _ordered_candidates(plist, rng):
@@ -282,11 +317,11 @@ def _replace_last(wak, S, C):
 def _rule_site(rid, s):
     """Return (wak_index_1based, original_syllable, avoid_list) for a rule."""
     if rid == "r1_w1_w2":
-        return 1, syl(s.w1)[-1], syl(s.w2)[1:6]
+        return 1, syl(s.w1)[-1], syl(s.w2)[:5]
     if rid == "r2_w2_w3":
         return 3, syl(s.w3)[-1], [syl(s.w2)[-1]]
     if rid == "r3_w3_w4":
-        return 3, syl(s.w3)[-1], syl(s.w4)[1:6]
+        return 3, syl(s.w3)[-1], syl(s.w4)[:5]
     # rX
     return 2, syl(s.w2)[-1], [syl(s.prev_w4)[-1]]
 
@@ -330,6 +365,7 @@ def main() -> None:
 
     pools = {
         "old_disagree": old_disagree_pool(all_syls, kv, old_kv),
+        "old_accept": build_old_groups(all_syls),
         "lead": clean_syllables(LEAD_POOL),
         # trap pool allows curated multi-sound ฤ words (ฤดู/พฤษภ) as
         # negative candidates -- the oracle gate still verifies non-rhyme
