@@ -74,7 +74,7 @@ from augment.tricky_words import (  # noqa: E402
     clean_syllables,
     dictionary_syllables,
     is_clean_syllable,
-    liquid_final_pool,
+    old_disagree_pool,
     phenomenon_tags,
     rhyme_class,
     syllable_report,
@@ -84,19 +84,20 @@ RULES = ("r1_w1_w2", "r2_w2_w3", "r3_w3_w4", "rX_inter")
 kv = _dev_core.KhaveeVerifier()
 old_kv = _orig_core.KhaveeVerifier()
 
-# Target negative mix (fraction of --per-rule). C0 is minor (same-mattra
-# saturates); edge cases dominate. If an edge family exhausts its pool, the
-# leftover quota is redistributed to the OTHER edge families first, and C0
-# only absorbs whatever is still missing (so C0 stays ~10-15%). C2_trap is
-# kept modest (too many karun/loanword traps looked noisy); C8 (oracle-blind)
-# only fires when the rhyme target is genuinely in the silent-ร/เอะ+กด family.
+# Target negative mix (fraction of --per-rule). Simple baselines are kept tiny
+# (C6+C0+C1 ~13%) so precision is not saturated; edge cases dominate. The main
+# differentiator is C4_old_disagree (words the 5.0.1 checker reads with a
+# different สระ/มาตรา than 5.3.5), plus short<->long (C3), karun/ฤ traps
+# (C2), ห/อ นำ (C5) and the oracle-blind probes (C8). If an edge family
+# exhausts its pool, leftover quota is redistributed to the other edge
+# families first; C0 only absorbs what is still missing.
 NEG_MIX = [
-    ("C6_random", 0.05),
-    ("C0_same_mattra", 0.08),
-    ("C1_same_vowel", 0.08),
-    ("C3_short_long", 0.26),
-    ("C4_liquid_final", 0.18),
-    ("C5_lead_head", 0.10),
+    ("C6_random", 0.03),
+    ("C0_same_mattra", 0.05),
+    ("C1_same_vowel", 0.05),
+    ("C3_short_long", 0.22),
+    ("C4_old_disagree", 0.30),
+    ("C5_lead_head", 0.08),
     ("C2_trap", 0.12),
     ("C8_oracle_blind", 0.06),
 ]
@@ -107,7 +108,7 @@ OP_NOTES = {
     "C1_same_vowel": "same sara",
     "C6_random": "diff sara+mat (baseline)",
     "C3_short_long": "short<->long sara",
-    "C4_liquid_final": "ร/ล/ว final (old disagrees)",
+    "C4_old_disagree": "old pythainlp sara/mattra differ (A-vs-B diff)",
     "C5_lead_head": "ห/อ นำ",
     "C2_trap": "karun/ฤ/cluster",
     "C8_oracle_blind": "oracle-blind limitation",
@@ -168,8 +169,8 @@ def _pool_for(op, S, avoid, mi, vi, sm_idx, pools, inv):
     if op == "C3_short_long":
         s = VOWEL_LENGTH_SWAP.get(kv.check_sara(S))
         return sm_idx.get((s, kv.check_marttra(S)), []) if s else []
-    if op == "C4_liquid_final":
-        return pools["liquid"]
+    if op == "C4_old_disagree":
+        return pools["old_disagree"]
     if op == "C5_lead_head":
         return pools["lead"]
     if op == "C2_trap":
@@ -328,7 +329,7 @@ def main() -> None:
     classical_set = set(inv_clean)
 
     pools = {
-        "liquid": clean_syllables(liquid_final_pool(all_syls, kv, old_kv)),
+        "old_disagree": old_disagree_pool(all_syls, kv, old_kv),
         "lead": clean_syllables(LEAD_POOL),
         # trap pool allows curated multi-sound ฤ words (ฤดู/พฤษภ) as
         # negative candidates -- the oracle gate still verifies non-rhyme

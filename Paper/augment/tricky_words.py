@@ -518,6 +518,25 @@ ORACLE_BLIND_FAMILIES: dict = {
 }
 
 
+def old_disagree_pool(syls, kv, old_kv) -> list:
+    """Syllables where the 5.0.1 checker extracts a different สระ/มาตรา than
+    the 5.3.5 core (e.g. ตัว: old (อะ,เกอว) vs new (อัว,กา); กัณ: old กา vs
+    new กน (the ญ/ณ bug); กรก/กรด: cluster-ร handling; ก็/ก๊ก: tone marks).
+    These are the A-vs-B differentiator negatives -- old logic mis-judges
+    them, so a checker running old `is_sumpus` takes precision hits on them."""
+    out = []
+    for w in syls:
+        try:
+            old_key = (old_kv.check_sara(w), old_kv.check_marttra(w))
+            new_key = (kv.check_sara(w), kv.check_marttra(w))
+        except _OLD_CORE_EXC:
+            out.append(w)
+            continue
+        if old_key != new_key:
+            out.append(w)
+    return sorted(out)
+
+
 def liquid_final_pool(inv, kv, old_kv) -> list:
     """ร/ล/ว final words where old pythainlp disagrees with the 5.3.5 core
     (computed from the inventory) plus curated seeds."""
