@@ -35,8 +35,9 @@ Method
   A-vs-B differentiator).
 
 * **Oracle-blind positives** (``HP_oracle_blind``): genuine rhymes the 5.3.5
-  oracle CANNOT see. Families: (a) silent-ร -> สระ เอะ + แม่กด
-  (เพชร/เนตร/เกษตร); (b) first_sara words ssg keeps as ONE syllable
+  oracle CANNOT see. Families: (a) silent-ร -> สระ เอะ + แม่กด (เพชร only;
+  เนตร/เกษตร/เขตร are LONG เอ so the oracle reads them correctly and they
+  are NOT blind); (b) first_sara words ssg keeps as ONE syllable
   token where the oracle hears only the first vowel (ศัตรู -> true อู+กา,
   กษัตรี/กษัตรีย์ -> true อี+กา). The gold label is the LINGUISTIC truth
   (gold=1), so B -- the oracle itself -- takes a false-negative deduction

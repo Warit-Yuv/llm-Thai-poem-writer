@@ -88,9 +88,12 @@ ORACLE_LIMITATIONS: list[dict] = [
         "pair": ("เพชร", "เพ็ด"),
         "reason": "silent_r",
         "note": ("final ร silent from a Pali/Sanskrit root (NOT การันต์); "
-                 "เพชร = /phet/. The oracle keeps the long เอ because the "
-                 "dead final (แม่กด) has no ็. Rhymes with anything "
-                 "สระ เอะ + แม่กด: เพ็ด เห็ด เจ็ด เบ็ด เกร็ด."),
+                 "เพชร = /phet/ (SHORT เอะ). The oracle keeps the long เอ "
+                 "because the dead final (แม่กด) has no ็. Rhymes with "
+                 "anything สระ เอะ + แม่กด: เพ็ด เห็ด เจ็ด เบ็ด เกร็ด. "
+                 "NOTE: only เพชร is short here -- เนตร (เนด) and เกษตร "
+                 "(กะ-เสด) are LONG เอ and the oracle reads them correctly, "
+                 "so they are NOT oracle-blind."),
     },
     {
         "pair": ("วิศวกรรม", "กำ"),
@@ -524,10 +527,13 @@ TRUE_FINAL_TRAPS = [
 #
 # 1) silent_r -- final ร silent from a Pali/Sanskrit root (NOT การันต์)
 #    makes them true สระ เอะ + แม่กด, but the oracle keeps the long เอ (no
-#    ็ on the dead final): เพชร/เนตร/เกษตร rhyme with anything
-#    สระ เอะ + แม่กด (เพ็ด เห็ด เจ็ด เบ็ด เกร็ด ...). (เขตร is EXCLUDED:
-#    it is the ancient spelling of เขต -- the oracle reads it correctly as
-#    long เอ + แม่กด, so it is NOT oracle-blind.)
+#    ็ on the dead final): ONLY เพชร (= /phet/, author-confirmed, rhymes with
+#    anything สระ เอะ + แม่กด: เพ็ด เห็ด เจ็ด เบ็ด เกร็ด ...). เนตร/เกษตร/
+#    เขตร are EXCLUDED: they are LONG-เอ (เนตร = เนด, เกษตร = กะ-เสด,
+#    เขตร = เขต; the author's own override dictionary writes เนด, no ็) so
+#    the oracle reads them correctly as (เอ,กด) and they are NOT
+#    oracle-blind -- this was the เขตร-class vowel-length trap, caught by
+#    the recheck agent and confirmed against POETRY_OVERRIDES + w2p.
 # 2) first_sara -- check_sara keeps only sara[0] of the WHOLE input string;
 #    ssg keeps the word as ONE syllable token, so the oracle hears the first
 #    vowel and never the rhyming final one: ศัตรู = [สัด-ตฺรู] (true อู+กา,
@@ -537,7 +543,7 @@ TRUE_FINAL_TRAPS = [
 # Each probe only fires when the rhyme TARGET is in the true family, so it
 # genuinely tests oracle blindness. Reviewed by the author in the review file.
 ORACLE_BLIND_POOL: list[str] = [
-    "เพชร", "เนตร", "เกษตร",   # silent_r -> เอะ+กด
+    "เพชร",                  # silent_r -> เอะ+กด (the ONLY short-เอ one)
     "ศัตรู", "กษัตรี", "กษัตรีย์",  # first_sara -> อู+กา / อี+กา
 ]
 
@@ -546,8 +552,6 @@ ORACLE_BLIND_POOL: list[str] = [
 # family, so it genuinely tests oracle blindness.
 ORACLE_BLIND_FAMILIES: dict = {
     "เพชร": ("เอะ", "กด"),
-    "เนตร": ("เอะ", "กด"),
-    "เกษตร": ("เอะ", "กด"),
     "ศัตรู": ("อู", "กา"),
     "กษัตรี": ("อี", "กา"),
     "กษัตรีย์": ("อี", "กา"),
@@ -555,7 +559,7 @@ ORACLE_BLIND_FAMILIES: dict = {
 
 # mechanism tag per oracle-blind word (for the review file / note)
 ORACLE_BLIND_REASON: dict = {
-    "เพชร": "silent_r", "เนตร": "silent_r", "เกษตร": "silent_r",
+    "เพชร": "silent_r",
     "ศัตรู": "first_sara", "กษัตรี": "first_sara",
     "กษัตรีย์": "first_sara",
 }
