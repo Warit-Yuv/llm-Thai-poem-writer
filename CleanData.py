@@ -47,7 +47,15 @@ OVERRIDES = {"อินทคาม", "มไหสวรรย์", "สาน�
 # Real one-character words in classical verse — NOT shatter fragments.
 SINGLE_CHAR_OK = {"ณ", "ธ", "บ", "ก", "อ", "ฤ", "ฦ", "ฤๅ", "ฦๅ"}
 
-_tok = Tokenizer(custom_dict=set(thai_words()) | OVERRIDES, engine="newmm")
+# Words REMOVED from the tokenizer dictionary. วจะ ("speech", Pali) is real but
+# never used in this corpus, while ว is a common word-final letter — so newmm
+# steals it from the word before and both splits tie at 2 tokens:
+# แล้วจะ -> แล้|วจะ, ท้าวจะ -> ท้า|วจะ, แก้วจะ -> แก้|วจะ. That inflates 261 วรรค
+# by one syllable each. Deleting the rare word beats whitelisting every X+ว|จะ.
+TOKENIZER_BLOCKLIST = {"วจะ"}
+
+_tok = Tokenizer(custom_dict=(set(thai_words()) | OVERRIDES) - TOKENIZER_BLOCKLIST,
+                 engine="newmm")
 
 # Wiktionary IPA lookup (g2p/SOURCE.md — CC-BY-SA 3.0). Counts come from the
 # " . " syllable separators, so no phonetic respelling is involved and the
