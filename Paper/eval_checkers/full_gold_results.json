@@ -1,0 +1,811 @@
+{
+  "date": "2026-08-09",
+  "gold": {
+    "files": 191,
+    "stanzas": 36475,
+    "waks": 145900,
+    "inter_links": 36284
+  },
+  "checkers": {
+    "A_pythainlp_5.0.1": {
+      "SuphasaetSonYing": {
+        "n": 199,
+        "pass": 153,
+        "drop": 1,
+        "we": 0,
+        "stanza_ok_pct": 76.88,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 199,
+            "ok": 180,
+            "accept_pct": 90.45
+          },
+          "r2_w2_w3": {
+            "n": 199,
+            "ok": 175,
+            "accept_pct": 87.94
+          },
+          "r3_w3_w4": {
+            "n": 0,
+            "ok": 0,
+            "accept_pct": 0.0
+          },
+          "rX_inter": {
+            "n": 198,
+            "ok": 177,
+            "accept_pct": 89.39
+          }
+        }
+      },
+      "khobut": {
+        "n": 1301,
+        "pass": 917,
+        "drop": 2,
+        "we": 0,
+        "stanza_ok_pct": 70.48,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 1301,
+            "ok": 1113,
+            "accept_pct": 85.55
+          },
+          "r2_w2_w3": {
+            "n": 1301,
+            "ok": 1129,
+            "accept_pct": 86.78
+          },
+          "r3_w3_w4": {
+            "n": 0,
+            "ok": 0,
+            "accept_pct": 0.0
+          },
+          "rX_inter": {
+            "n": 1287,
+            "ok": 1129,
+            "accept_pct": 87.72
+          }
+        }
+      },
+      "khunChangKhunPhaen": {
+        "n": 10534,
+        "pass": 8029,
+        "drop": 9,
+        "we": 0,
+        "stanza_ok_pct": 76.22,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 10534,
+            "ok": 9018,
+            "accept_pct": 85.61
+          },
+          "r2_w2_w3": {
+            "n": 10534,
+            "ok": 9655,
+            "accept_pct": 91.66
+          },
+          "r3_w3_w4": {
+            "n": 0,
+            "ok": 0,
+            "accept_pct": 0.0
+          },
+          "rX_inter": {
+            "n": 10491,
+            "ok": 9692,
+            "accept_pct": 92.38
+          }
+        }
+      },
+      "phraAphai": {
+        "n": 24309,
+        "pass": 17594,
+        "drop": 33,
+        "we": 0,
+        "stanza_ok_pct": 72.38,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 24309,
+            "ok": 21042,
+            "accept_pct": 86.56
+          },
+          "r2_w2_w3": {
+            "n": 24309,
+            "ok": 21315,
+            "accept_pct": 87.68
+          },
+          "r3_w3_w4": {
+            "n": 0,
+            "ok": 0,
+            "accept_pct": 0.0
+          },
+          "rX_inter": {
+            "n": 24177,
+            "ok": 21082,
+            "accept_pct": 87.2
+          }
+        }
+      },
+      "phukaoTong": {
+        "n": 87,
+        "pass": 59,
+        "drop": 0,
+        "we": 0,
+        "stanza_ok_pct": 67.82,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 87,
+            "ok": 75,
+            "accept_pct": 86.21
+          },
+          "r2_w2_w3": {
+            "n": 87,
+            "ok": 70,
+            "accept_pct": 80.46
+          },
+          "r3_w3_w4": {
+            "n": 0,
+            "ok": 0,
+            "accept_pct": 0.0
+          },
+          "rX_inter": {
+            "n": 86,
+            "ok": 71,
+            "accept_pct": 82.56
+          }
+        }
+      }
+    },
+    "B_pythainlp_5.3.5": {
+      "SuphasaetSonYing": {
+        "n": 200,
+        "pass": 182,
+        "drop": 0,
+        "we": 0,
+        "stanza_ok_pct": 91.0,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 200,
+            "ok": 196,
+            "accept_pct": 98.0
+          },
+          "r2_w2_w3": {
+            "n": 200,
+            "ok": 194,
+            "accept_pct": 97.0
+          },
+          "r3_w3_w4": {
+            "n": 200,
+            "ok": 192,
+            "accept_pct": 96.0
+          },
+          "rX_inter": {
+            "n": 199,
+            "ok": 194,
+            "accept_pct": 97.49
+          }
+        }
+      },
+      "khobut": {
+        "n": 1303,
+        "pass": 1129,
+        "drop": 0,
+        "we": 0,
+        "stanza_ok_pct": 86.65,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 1303,
+            "ok": 1229,
+            "accept_pct": 94.32
+          },
+          "r2_w2_w3": {
+            "n": 1303,
+            "ok": 1262,
+            "accept_pct": 96.85
+          },
+          "r3_w3_w4": {
+            "n": 1303,
+            "ok": 1231,
+            "accept_pct": 94.47
+          },
+          "rX_inter": {
+            "n": 1289,
+            "ok": 1252,
+            "accept_pct": 97.13
+          }
+        }
+      },
+      "khunChangKhunPhaen": {
+        "n": 10543,
+        "pass": 9206,
+        "drop": 0,
+        "we": 0,
+        "stanza_ok_pct": 87.32,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 10543,
+            "ok": 9936,
+            "accept_pct": 94.24
+          },
+          "r2_w2_w3": {
+            "n": 10543,
+            "ok": 10292,
+            "accept_pct": 97.62
+          },
+          "r3_w3_w4": {
+            "n": 10543,
+            "ok": 9979,
+            "accept_pct": 94.65
+          },
+          "rX_inter": {
+            "n": 10500,
+            "ok": 10273,
+            "accept_pct": 97.84
+          }
+        }
+      },
+      "phraAphai": {
+        "n": 24342,
+        "pass": 21312,
+        "drop": 0,
+        "we": 0,
+        "stanza_ok_pct": 87.55,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 24342,
+            "ok": 23092,
+            "accept_pct": 94.86
+          },
+          "r2_w2_w3": {
+            "n": 24342,
+            "ok": 23364,
+            "accept_pct": 95.98
+          },
+          "r3_w3_w4": {
+            "n": 24342,
+            "ok": 23340,
+            "accept_pct": 95.88
+          },
+          "rX_inter": {
+            "n": 24210,
+            "ok": 23275,
+            "accept_pct": 96.14
+          }
+        }
+      },
+      "phukaoTong": {
+        "n": 87,
+        "pass": 71,
+        "drop": 0,
+        "we": 0,
+        "stanza_ok_pct": 81.61,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 87,
+            "ok": 79,
+            "accept_pct": 90.8
+          },
+          "r2_w2_w3": {
+            "n": 87,
+            "ok": 82,
+            "accept_pct": 94.25
+          },
+          "r3_w3_w4": {
+            "n": 87,
+            "ok": 83,
+            "accept_pct": 95.4
+          },
+          "rX_inter": {
+            "n": 86,
+            "ok": 81,
+            "accept_pct": 94.19
+          }
+        }
+      }
+    },
+    "D_klonpad_w2p": {
+      "SuphasaetSonYing": {
+        "n": 200,
+        "pass": 178,
+        "drop": 0,
+        "we": 0,
+        "stanza_ok_pct": 89.0,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 200,
+            "ok": 195,
+            "accept_pct": 97.5
+          },
+          "r2_w2_w3": {
+            "n": 200,
+            "ok": 190,
+            "accept_pct": 95.0
+          },
+          "r3_w3_w4": {
+            "n": 200,
+            "ok": 193,
+            "accept_pct": 96.5
+          },
+          "rX_inter": {
+            "n": 199,
+            "ok": 190,
+            "accept_pct": 95.48
+          }
+        }
+      },
+      "khobut": {
+        "n": 1303,
+        "pass": 1115,
+        "drop": 0,
+        "we": 0,
+        "stanza_ok_pct": 85.57,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 1303,
+            "ok": 1229,
+            "accept_pct": 94.32
+          },
+          "r2_w2_w3": {
+            "n": 1303,
+            "ok": 1264,
+            "accept_pct": 97.01
+          },
+          "r3_w3_w4": {
+            "n": 1303,
+            "ok": 1206,
+            "accept_pct": 92.56
+          },
+          "rX_inter": {
+            "n": 1289,
+            "ok": 1256,
+            "accept_pct": 97.44
+          }
+        }
+      },
+      "khunChangKhunPhaen": {
+        "n": 10543,
+        "pass": 8770,
+        "drop": 0,
+        "we": 0,
+        "stanza_ok_pct": 83.18,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 10543,
+            "ok": 9767,
+            "accept_pct": 92.64
+          },
+          "r2_w2_w3": {
+            "n": 10543,
+            "ok": 10203,
+            "accept_pct": 96.78
+          },
+          "r3_w3_w4": {
+            "n": 10543,
+            "ok": 9771,
+            "accept_pct": 92.68
+          },
+          "rX_inter": {
+            "n": 10500,
+            "ok": 10191,
+            "accept_pct": 97.06
+          }
+        }
+      },
+      "phraAphai": {
+        "n": 24342,
+        "pass": 21693,
+        "drop": 0,
+        "we": 0,
+        "stanza_ok_pct": 89.12,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 24342,
+            "ok": 23506,
+            "accept_pct": 96.57
+          },
+          "r2_w2_w3": {
+            "n": 24342,
+            "ok": 23340,
+            "accept_pct": 95.88
+          },
+          "r3_w3_w4": {
+            "n": 24342,
+            "ok": 23349,
+            "accept_pct": 95.92
+          },
+          "rX_inter": {
+            "n": 24210,
+            "ok": 23280,
+            "accept_pct": 96.16
+          }
+        }
+      },
+      "phukaoTong": {
+        "n": 87,
+        "pass": 67,
+        "drop": 0,
+        "we": 0,
+        "stanza_ok_pct": 77.01,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 87,
+            "ok": 78,
+            "accept_pct": 89.66
+          },
+          "r2_w2_w3": {
+            "n": 87,
+            "ok": 80,
+            "accept_pct": 91.95
+          },
+          "r3_w3_w4": {
+            "n": 87,
+            "ok": 81,
+            "accept_pct": 93.1
+          },
+          "rX_inter": {
+            "n": 86,
+            "ok": 80,
+            "accept_pct": 93.02
+          }
+        }
+      }
+    },
+    "D_klonpad_ssg_fallback": {
+      "SuphasaetSonYing": {
+        "n": 200,
+        "pass": 179,
+        "drop": 0,
+        "we": 0,
+        "stanza_ok_pct": 89.5,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 200,
+            "ok": 195,
+            "accept_pct": 97.5
+          },
+          "r2_w2_w3": {
+            "n": 200,
+            "ok": 191,
+            "accept_pct": 95.5
+          },
+          "r3_w3_w4": {
+            "n": 200,
+            "ok": 193,
+            "accept_pct": 96.5
+          },
+          "rX_inter": {
+            "n": 199,
+            "ok": 192,
+            "accept_pct": 96.48
+          }
+        }
+      },
+      "khobut": {
+        "n": 1303,
+        "pass": 1122,
+        "drop": 0,
+        "we": 0,
+        "stanza_ok_pct": 86.11,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 1303,
+            "ok": 1235,
+            "accept_pct": 94.78
+          },
+          "r2_w2_w3": {
+            "n": 1303,
+            "ok": 1267,
+            "accept_pct": 97.24
+          },
+          "r3_w3_w4": {
+            "n": 1303,
+            "ok": 1204,
+            "accept_pct": 92.4
+          },
+          "rX_inter": {
+            "n": 1289,
+            "ok": 1261,
+            "accept_pct": 97.83
+          }
+        }
+      },
+      "khunChangKhunPhaen": {
+        "n": 10543,
+        "pass": 8921,
+        "drop": 0,
+        "we": 0,
+        "stanza_ok_pct": 84.62,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 10543,
+            "ok": 9832,
+            "accept_pct": 93.26
+          },
+          "r2_w2_w3": {
+            "n": 10543,
+            "ok": 10245,
+            "accept_pct": 97.17
+          },
+          "r3_w3_w4": {
+            "n": 10543,
+            "ok": 9823,
+            "accept_pct": 93.17
+          },
+          "rX_inter": {
+            "n": 10500,
+            "ok": 10245,
+            "accept_pct": 97.57
+          }
+        }
+      },
+      "phraAphai": {
+        "n": 24342,
+        "pass": 21963,
+        "drop": 0,
+        "we": 0,
+        "stanza_ok_pct": 90.23,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 24342,
+            "ok": 23609,
+            "accept_pct": 96.99
+          },
+          "r2_w2_w3": {
+            "n": 24342,
+            "ok": 23488,
+            "accept_pct": 96.49
+          },
+          "r3_w3_w4": {
+            "n": 24342,
+            "ok": 23401,
+            "accept_pct": 96.13
+          },
+          "rX_inter": {
+            "n": 24210,
+            "ok": 23422,
+            "accept_pct": 96.75
+          }
+        }
+      },
+      "phukaoTong": {
+        "n": 87,
+        "pass": 69,
+        "drop": 0,
+        "we": 0,
+        "stanza_ok_pct": 79.31,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 87,
+            "ok": 79,
+            "accept_pct": 90.8
+          },
+          "r2_w2_w3": {
+            "n": 87,
+            "ok": 80,
+            "accept_pct": 91.95
+          },
+          "r3_w3_w4": {
+            "n": 87,
+            "ok": 82,
+            "accept_pct": 94.25
+          },
+          "rX_inter": {
+            "n": 86,
+            "ok": 81,
+            "accept_pct": 94.19
+          }
+        }
+      }
+    },
+    "C_kongfha_word_check": {
+      "SuphasaetSonYing": {
+        "n": 394,
+        "pass": 343,
+        "drop": 4,
+        "we": 0,
+        "stanza_ok_pct": 87.06,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 394,
+            "ok": 375,
+            "accept_pct": 95.18
+          },
+          "r2_w2_w3": {
+            "n": 394,
+            "ok": 390,
+            "accept_pct": 98.98
+          },
+          "r3_w3_w4": {
+            "n": 394,
+            "ok": 364,
+            "accept_pct": 92.39
+          },
+          "rX_inter": {
+            "n": 197,
+            "ok": 193,
+            "accept_pct": 97.97
+          }
+        }
+      },
+      "khobut": {
+        "n": 2546,
+        "pass": 2131,
+        "drop": 32,
+        "we": 0,
+        "stanza_ok_pct": 83.7,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 2546,
+            "ok": 2344,
+            "accept_pct": 92.07
+          },
+          "r2_w2_w3": {
+            "n": 2546,
+            "ok": 2450,
+            "accept_pct": 96.23
+          },
+          "r3_w3_w4": {
+            "n": 2546,
+            "ok": 2379,
+            "accept_pct": 93.44
+          },
+          "rX_inter": {
+            "n": 1273,
+            "ok": 1216,
+            "accept_pct": 95.52
+          }
+        }
+      },
+      "khunChangKhunPhaen": {
+        "n": 19244,
+        "pass": 15482,
+        "drop": 1756,
+        "we": 0,
+        "stanza_ok_pct": 80.45,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 19244,
+            "ok": 17510,
+            "accept_pct": 90.99
+          },
+          "r2_w2_w3": {
+            "n": 19244,
+            "ok": 18747,
+            "accept_pct": 97.42
+          },
+          "r3_w3_w4": {
+            "n": 19244,
+            "ok": 17345,
+            "accept_pct": 90.13
+          },
+          "rX_inter": {
+            "n": 9622,
+            "ok": 9380,
+            "accept_pct": 97.48
+          }
+        }
+      },
+      "phraAphai": {
+        "n": 47134,
+        "pass": 41282,
+        "drop": 1284,
+        "we": 2,
+        "stanza_ok_pct": 87.58,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 47134,
+            "ok": 44342,
+            "accept_pct": 94.08
+          },
+          "r2_w2_w3": {
+            "n": 47134,
+            "ok": 45335,
+            "accept_pct": 96.18
+          },
+          "r3_w3_w4": {
+            "n": 47134,
+            "ok": 45158,
+            "accept_pct": 95.81
+          },
+          "rX_inter": {
+            "n": 23567,
+            "ok": 22709,
+            "accept_pct": 96.36
+          }
+        }
+      },
+      "phukaoTong": {
+        "n": 160,
+        "pass": 128,
+        "drop": 12,
+        "we": 0,
+        "stanza_ok_pct": 80.0,
+        "rules": {
+          "r1_w1_w2": {
+            "n": 160,
+            "ok": 148,
+            "accept_pct": 92.5
+          },
+          "r2_w2_w3": {
+            "n": 160,
+            "ok": 150,
+            "accept_pct": 93.75
+          },
+          "r3_w3_w4": {
+            "n": 160,
+            "ok": 148,
+            "accept_pct": 92.5
+          },
+          "rX_inter": {
+            "n": 80,
+            "ok": 74,
+            "accept_pct": 92.5
+          }
+        }
+      }
+    }
+  },
+  "cross_chapter_rX": {
+    "SuphasaetSonYing": {
+      "boundaries": 0,
+      "rhyme": 0,
+      "exceptions": [],
+      "nexceptions": 0
+    },
+    "khobut": {
+      "boundaries": 13,
+      "rhyme": 12,
+      "exceptions": [
+        [
+          "khobut_5",
+          "khobut_6",
+          "งูเหลือมยังไม่วางขาดกลางตัว",
+          "ขนระบัดพึ่งขึ้นพอบินได้"
+        ]
+      ],
+      "nexceptions": 1
+    },
+    "khunChangKhunPhaen": {
+      "boundaries": 42,
+      "rhyme": 40,
+      "exceptions": [
+        [
+          "khunChangKhunPhaen_30",
+          "khunChangKhunPhaen_31",
+          "เลี้ยงกองทัพไทยทุกเพลา",
+          "พระท้ายน้ำพลายงามนั่งปรึกษา"
+        ],
+        [
+          "khunChangKhunPhaen_33",
+          "khunChangKhunPhaen_34",
+          "พอฝนถั่งลมก็ถอยผอยนิทรา",
+          "ปิ่นปักหลักโลกนาถา"
+        ]
+      ],
+      "nexceptions": 2
+    },
+    "phraAphai": {
+      "boundaries": 131,
+      "rhyme": 129,
+      "exceptions": [
+        [
+          "phraAphai_22",
+          "phraAphai_23",
+          "ดังจะล่องลอยฟ้าในราศี",
+          "บำรุงราษฎร์เจริญจิตทุกทิศา"
+        ],
+        [
+          "phraAphai_88",
+          "phraAphai_89",
+          "ออกเกลื่อนกล่นยกออกนอกกำแพง",
+          "ครั้นแจ้งเหตุศึกมานั้นกล้าแข็ง"
+        ]
+      ],
+      "nexceptions": 2
+    },
+    "phukaoTong": {
+      "boundaries": 0,
+      "rhyme": 0,
+      "exceptions": [],
+      "nexceptions": 0
+    }
+  }
+}
