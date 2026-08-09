@@ -136,6 +136,62 @@ _THAI_DIGITS = set("๐๑๒๓๔๕๖๗๘๙")
 # are already excluded by the curated rule below; this list is for the rest.
 BAD_SYLLABLES = {"ไหม้ร"}
 
+# Candidates the 5.3.5 oracle MISREADS so badly that using them as either a
+# positive or a negative produces a WRONG gold label. Two systemic oracle
+# limitations (checked independently with IPA by the recheck agents,
+# 2026-08-10, and verified against the oracle + w2p):
+#  (a) การันต์ clusters the oracle does not silence: ไฟลท์->ไฟ (ไอ/กา, oracle
+#      ไอ/กน), นันทน์->นัน (อะ/กน, oracle อะ/กด), มิตร์->มิด (อิ/กด, oracle
+#      อิ/กา), เปิล->เปิน (เออ/กน, oracle เออ/กา), เชาวน์->เชา (เอา/กา,
+#      oracle เอา/เกอว), กรุณ์->รุน (อุ/กน, oracle อุ/กา);
+#  (b) multi-syllable words ssg keeps as ONE token: สังฆ->สัง-คะ, ศิลป->
+#      สิน-ละ-ปะ, สห->สะ-หะ, มห->มะ-หะ, พยัคฆ->พะ-ยัก-คะ (the oracle hears
+#      the whole token's wrong (สระ,มาตรา) instead of the true FINAL
+#      syllable).
+# Excluded from BOTH candidate pools so the oracle gate can never bless a
+# rhyme/non-rhyme against the wrong class. Some entries are also plain junk
+# fragments / nonsense (กรบ, ฉล, ปุร, สถ, มม, แอ้ง, กวัย, ปรัห, กนน, วรรคย์).
+# The โ+cluster+ง/ก words (โสร่ง/โขมง/โขยง/โขยก) are excluded too because
+# the short-vowel rule (โ + cluster + ง -> โอะ) makes their true family
+# ambiguous -- safer to drop them than to risk wrong gold.
+ORACLE_MISREAD_EXCLUDE = frozenset({
+    # --- multi-syllable / first_sara misreads (positives audit) ---
+    "ถรรพณ์", "กรบ", "วล", "ปุร", "ฉล", "วน", "สถ", "ศิลป",
+    "มม", "สังฆ", "แอ้ง", "กวัย",
+    # --- การันต์-cluster misreads (negatives audit) ---
+    "ไฟลท์", "ไจร", "ไวลด์",                 # ท์ silent -> ไอ/กา
+    "นันทน์", "จันทน์", "พันธน์",             # ์ silent -> อะ/กน
+    "มิตร์", "จิตร์", "ภัทร์", "กิติ์", "พิตร์",
+    "ทัตร์", "พัทร์", "วัตร์",                # การันต์ -> แม่กด
+    "กรุณ์",                                  # -> อุ/กน
+    "เปิล", "เคิล", "เกิล", "เกิลส์", "เกิ้ล",
+    "เปิ้ล", "เหิร", "เลนส์", "เหลน",         # -ล/-ลส์ -> แม่กน
+    "เชาวน์", "เยาว",                        # ว์ silent -> เอา/กา
+    # --- multi-syllable-final misreads (negatives audit) ---
+    "โสร่ง", "โขมง", "โขยง", "โขยก",         # โ+cluster+ง/ก short rule
+    "พยัคฆ", "สห", "มห",
+    # --- junk / disputed / probable ---
+    "วรรคย์", "ปรัห", "กนน",
+    "ปัตย", "ศัลย", "ปฐ", "แคล",
+    "เก็น", "ราท์", "ไลน์ส์", "กูย", "เกง", "ปอร์",
+    "แวงค์", "ไอน์", "รินจ์", "คอล์น",
+    # --- pool-level misassignments (candidate-list audit): the oracle reads
+    #     these with a WRONG (สระ,มาตรา) so both pools poison their gold ---
+    # Group A: multi-syllable Pali, true class = FINAL syllable
+    "มังส", "จัตุร", "จตุร", "สิงห", "สมุห", "ฉันท", "วัชร", "สมรรถ",
+    "วุฒิ", "มุติ", "เทว", "เสว", "มโน", "สโม", "สโต",
+    # Group B: karan/glide finals (ร/ว/ย์ silent or folded into the vowel)
+    "เชาว", "พอยน์ท", "สเปรย์", "สแปร์", "สแควร์", "ไทร", "ไดรด์", "ไดรฟ์",
+    # Group C: โ + cluster + ง/ก -> short โอะ (the pool applied this to the
+    #          อ-clusters already; these oracle-โอ spellings were missed)
+    "โขลก", "โผลก", "โฉลก", "โครง", "โคร่ง", "โปร่ง", "โขลง",
+    # Group D: เ-อ (เออ) misread by the oracle as เอ
+    "เทอม", "เดอร์ม", "เดอร์น", "เทอด", "เปอร์ส", "เตอร์ส", "เตอร์ด",
+    "เจอร์ค", "เบอร์ก", "เวอร์ค", "เออร์ค", "เธร์", "เธ่ย์", "เอร์",
+    # Group E
+    "เหม่",
+})
+
 # Curated ฤ/ฦ words with their TRUE (Royal-Society) pronunciations. ฤ words
 # are only usable as candidates when their sound is known -- the oracle's
 # default ฤ -> อึ reading is unreliable (พฤษภ is พรึก-สบ, not a single อึ+กบ
@@ -176,7 +232,7 @@ def is_clean_syllable(x, max_len=6) -> bool:
     pronunciation (ตฤณ->ติน)."""
     if not x or len(x) < 2 or len(x) > max_len:
         return False
-    if x in BAD_SYLLABLES:
+    if x in BAD_SYLLABLES or x in ORACLE_MISREAD_EXCLUDE:
         return False
     if not _THAI_ONLY.match(x) or any(
             c in _THAI_DIGITS or c in "ฯๆ" for c in x):
@@ -199,7 +255,7 @@ def is_clean_neg_syllable(x, max_len=6) -> bool:
     non-rhyme, and they probe the oracle's ฤ mis-reading."""
     if not x or len(x) < 2 or len(x) > max_len:
         return False
-    if x in BAD_SYLLABLES:
+    if x in BAD_SYLLABLES or x in ORACLE_MISREAD_EXCLUDE:
         return False
     if not _THAI_ONLY.match(x) or any(
             c in _THAI_DIGITS or c in "ฯๆ" for c in x):

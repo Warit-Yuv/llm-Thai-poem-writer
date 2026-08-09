@@ -717,8 +717,61 @@ r2 87, r3 80, rX 6) — by candidate: ศัตรู 145, กษัตรีย
 - **FN-pos reporting convention:** report combined FN-pos (tricky +
   oracle-blind) as the primary number, with the breakdown secondary — recall
   is naturally combined in the metrics since all positives are gold=1.
-- ⏳ **author review gate** (esp. the 398 first_sara rows: ศัตรู/กษัตรี/
-  กษัตรีย์) before the full Checker C run and the final report notebook.
+
+### v5.2–v5.6 — recheck-agent audit (author: "release the hound") (2026-08-10)
+
+Four parallel recheck agents audited the review files (oracle-blind
+positives, tricky positives, negatives, candidate pool) with independent IPA
++ spelled-out สระ/มาตรา (vowel length explicit). They caught a systemic
+oracle limitation that the generator's oracle-gate could not self-detect:
+**the 5.3.5 oracle misreads (a) การันต์ clusters it does not silence
+(ไฟลท์->ไฟ ไอ/กา, นันทน์->นัน อะ/กน, มิตร์->มิด อิ/กด, เปิล->เปิน เออ/กน,
+เชาวน์->เชา เอา/กา), (b) multi-syllable words ssg keeps as ONE token
+(สังฆ->สัง-คะ, ศิลป->สิน-ละ-ปะ, สห->สะ-หะ, มโน->มะ-โน), (c) เ-อ (เออ) as เอ
+(เทอม = /tʰɤːm/), and (d) โ+cluster+ง/ก as long โอ instead of short โอะ
+(โครง/โปร่ง/โขลก).** Any such candidate poisons BOTH directions (the oracle
+"confirms" a rhyme/non-rhyme against the wrong class).
+
+**Fixes applied (all committed):**
+- **v5.3** — dropped เนตร/เกษตร from oracle-blind (they are long-เอ เนด/
+  กะ-เสด, NOT เอะ — same เขตร-class trap; confirmed by the author's own
+  override dict เพชร->เพ็ด vs เนตร->เนด). 12 wrong rows gone; only เพชร
+  remains silent_ร.
+- **v5.4** — Agent 2: 13/67 broken tricky positives -> excluded 12
+  candidates (ถรรพณ์ กรบ วล ปุร ฉล วน สถ ศิลป มม สังฆ แอ้ง กวัย); the other
+  54 flagged were w2p false alarms (ซอฟต์ = ออ/กบ, มารร์ = อา/กน — oracle
+  right, w2p hallucinating).
+- **v5.5** — Agent 3: ~284/10,000 negatives had wrong gold=0 (real rhymes
+  mislabeled non-rhyme) -> excluded ~50 การันต์/multi-syllable/junk
+  candidates (ไฟลท์ ไจร ไวลด์ นันทน์ จันทน์ พันธน์ -ตร์/-ทร์/-ติ์ เปิล/เคิล/
+  เกิล เลนส์ เหลน เชาวน์ เยาว กรุณ์ โสร่ง/โขมง/โขยง/โขยก พยัคฆ สห มห
+  วรรคย์ ปรัห กนน ...). D_w2p's apparent FPs fell 526->285 — it was being
+  penalized for correctly hearing the misread rhymes.
+- **v5.6** — Agent 4 (candidate pool): 47 misassigned + 49 junk. Applied the
+  45 orthographically-certain exclusions (multi-syllable Pali finals: มังส
+  จัตุร จตุร วุฒิ มุติ เทว มโน สโม สโต ฉันท วัชร สมรรถ สิงห สมุห เสว; karan/
+  glide: เชาว พอยน์ท สเปรย์ สแปร์ สแควร์ ไทร ไดรด์ ไดรฟ์; short-โอะ rule:
+  โขลก โผลก โฉลก โครง โคร่ง โปร่ง โขลง; เออ-vs-เอ: เทอม เดอร์ม เดอร์น เทอด
+  เปอร์ส เตอร์ส เตอร์ด เจอร์ค เบอร์ก เวอร์ค เออร์ค เธร์ เธ่ย์ เอร์; เหม่).
+  The 49-word "junk" list was NOT blanket-applied — several are valid
+  syllables of compounds (รวจ/นวณ/ฌงค์) the agents disagreed on; ⏳ author
+  adjudication.
+- **v5.6 eval (A/B/D/Dssg, skip C):** A P 95.1% / R 72.6% / F1 82.3% (1,949
+  FPs: C9 1,761 + C3 157); B 100% / 86.5% / 92.8% (0 FPs, 0% oracle-blind);
+  D_w2p 99.6% / 86.8% / 92.8% (285 FPs, 95.5% oracle-blind recall);
+  D_ssg 99.7% / 87.8% / 93.4% (224 FPs, 66.2% oracle-blind recall). Combined
+  FN-pos: A ~835, B 423, D_w2p ~125, D_ssg ~209.
+- **Review files enriched for the gate:** `S_pron`/`C_pron` with `_src`
+  (override = curated, authoritative; w2p = ML hint that CAN hallucinate —
+  labeled, never trusted), plus a `partner` column (the rhyme-target
+  syllables with their oracle (สระ/มาตรา)) so reviewers can verify in-file;
+  `Paper/augment/output/README.md` documents the column semantics + w2p
+  caution.
+- **Residual risk (documented):** the misread detector is w2p-driven and
+  ~80% noise; the full-set stratified sample (0/80) was clean, so remaining
+  wrong-gold is estimated <1%; the ~49 contested junk entries and the
+  เอ-อ/เอ + โ-cluster rules are flagged for the author's final sign-off
+  before the full Checker C run.
 
 ## Session 4 — Checker runtime, parity validation, smoke test (2026-08-09)
 
