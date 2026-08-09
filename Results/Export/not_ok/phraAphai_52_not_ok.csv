@@ -1,7 +1,5 @@
 ﻿wak,syllables,flag,guess,a,b,c
-เหมือนมารดรแต่พระเกศเนตรขนง,10,10 syllables — likely shatter/miscount,เหมือนมารดรแต่พระเกศเนตรขนง,,,
 เหมือนสินสมุทรเนตรแดงดังแสงฝาง,9,word straddles a beat boundary,เหมือนสินสมุทร | เนตรแดง | ดังแสงฝาง,,,
-ทั้งเอวบางร่างรัดชื่อหัสกัน,9,word straddles a beat boundary,ทั้งเอวบาง | ร่างรัด | ชื่อหัสกัน,,,
 การภิเษกขัดข้องไม่ผ่องใส,9,word straddles a beat boundary,การภิเษก | ขัดข้อง | ไม่ผ่องใส,,,
 นิจจาเอ๋ยเคยหอมถนอมสนิท,9,word straddles a beat boundary,นิจจาเอ๋ย | เคยหอมถนอม | สนิท,,,
 จนใช้เหล่าสาวสุรางค์นางกำนัล,10,10 syllables — likely shatter/miscount,จนใช้เหล่าสาวสุรางค์นางกำนัล,,,
@@ -26,6 +24,7 @@
 เข้าเคียงบรรจถรณ์ที่พระพี่ยา,9,word straddles a beat boundary,เข้าเคียงบรรจถรณ์ | ที่ | พระพี่ยา,,,
 อย่าอดเสวยเลยถ้าแม้นแค้นเต็มที,10,10 syllables — likely shatter/miscount,อย่าอดเสวยเลยถ้าแม้นแค้นเต็มที,,,
 น้องก็นึกอยู่ทุกสิ่งจริงจริงหนะ,10,10 syllables — likely shatter/miscount,น้องก็นึกอยู่ทุกสิ่งจริงจริงหนะ,,,
+ฆ่าก็ตายขายก็ขาดตามอาชญา,9,reading chosen by meter: อาชญา 3->2,ฆ่าก็ตาย | ขายก็ขาด | ตามอาชญา,,,
 แม่สร้อยสุวรรณจันทร์สุดาหนักหนานัก,10,10 syllables — likely shatter/miscount,แม่สร้อยสุวรรณจันทร์สุดาหนักหนานัก,,,
 ขึ้นไสยาสน์อาสน์อ่อนบรรจถรณ์แท่น,9,word straddles a beat boundary,ขึ้นไสยาสน์ | อาสน์อ่อนบรรจถรณ์ | แท่น,,,
 กระบิดกระบวนรวนเรประเวประวิง,10,10 syllables — likely shatter/miscount,กระบิดกระบวนรวนเรประเวประวิง,,,
@@ -48,7 +47,6 @@
 ชวนนงลักษณ์อัคเรศร่วมชีวี,10,10 syllables — likely shatter/miscount,ชวนนงลักษณ์อัคเรศร่วมชีวี,,,
 พร้อมเสนีนักสนมกรมใน,8,word straddles a beat boundary,พร้อมเสนี | นักสนม | กรมใน,,,
 ถึงจังหวัดรัตนามหาสถาน,10,10 syllables — likely shatter/miscount,ถึงจังหวัดรัตนามหาสถาน,,,
-พระชวนมิ่งมเหสีนีรมล,10,10 syllables — likely shatter/miscount,พระชวนมิ่งมเหสีนีรมล,,,
 ขึ้นไพชยนต์แก้วกุดั่นพรรณราย,10,10 syllables — likely shatter/miscount,ขึ้นไพชยนต์แก้วกุดั่นพรรณราย,,,
 ครั้งนี้พระสวรรคครรไล,7,"7 syllables — ambiguous, [3,2,2] is only a guess",ครั้งนี้พระ | สวรรค | ครรไล,,,
 ทั้งนงลักษณ์อัคเรศเกษรา,10,10 syllables — likely shatter/miscount,ทั้งนงลักษณ์อัคเรศเกษรา,,,
