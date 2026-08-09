@@ -26,7 +26,7 @@ from pythainlp.tokenize import Tokenizer, subword_tokenize, syllable_tokenize
 from pythainlp.corpus import thai_words
 from pythainlp.transliterate import pronunciate
 
-from Noto_tokenizer import POETRY_OVERRIDES
+from poetry_overrides import POETRY_OVERRIDES
 
 THAI = r"[ก-ฮ]"
 
@@ -40,8 +40,9 @@ THAI = r"[ก-ฮ]"
 # after a real วรรค breaks, then re-check the corpus for collateral splits.
 OVERRIDES = {"อินทคาม", "มไหสวรรย์", "สานน", "นครา"}
 
-# Words w2p miscounts go in Noto_tokenizer.POETRY_OVERRIDES (full syllable
-# lists — the count is len(); the syllables themselves feed rhyme work later).
+# Words w2p miscounts go in poetry_overrides.py (full syllable lists — the
+# count is len(); the syllables themselves feed rhyme work later). It is the
+# single override source, shared with ui/checker.py and Paper/eval_checkers/.
 
 # Real one-character words in classical verse — NOT shatter fragments.
 SINGLE_CHAR_OK = {"ณ", "ธ", "บ", "ก", "อ", "ฤ", "ฦ", "ฤๅ", "ฦๅ"}

@@ -25,6 +25,12 @@ from pythainlp.transliterate import pronunciate  # noqa: E402
 
 
 THAI_RE = re.compile(r"[ก-ฮฤฦ]")
+# วรรค separators accepted on input. Hyphens are deliberately absent: they carry
+# meaning inside a word, so splitting on them would tear real วรรค apart.
+# A space is weaker than the rest — it also occurs *inside* a วรรค — so it only
+# joins the set when the strong separators alone fail to produce whole บท.
+STRONG_SEPARATORS = re.compile(r"[,\r\n;:|/\\•]+")
+ANY_SEPARATOR = re.compile(r"[\s,;:|/\\•]+")
 TONE_MARKS = "่้๊๋"
 WAK_NAMES = ("วรรคสดับ", "วรรครับ", "วรรครอง", "วรรคส่ง")
 SUPPORTED_KLON_TYPES = {4, 8}
@@ -346,13 +352,21 @@ def _rhyme_checks(lines: list[dict[str, Any]], k_type: int = 8) -> list[dict[str
 
 
 def parse_waks(poem_text: str) -> list[str]:
-    """Prefer one wak per line; support whitespace-separated legacy input."""
-    lines = [line.strip() for line in poem_text.replace("\r", "").split("\n") if line.strip()]
-    if len(lines) == 1:
-        chunks = [chunk.strip() for chunk in re.split(r"\s+", lines[0]) if chunk.strip()]
-        if len(chunks) >= 4:
-            return chunks
-    return lines
+    """Split a poem into วรรค on any separator: newline, space, comma, slash…
+
+    Newline and comma carry equal weight, so four lines of four comma-separated
+    วรรค parse as 16, not 4. A space only counts as a separator when the strong
+    ones alone do not yield whole บท — otherwise a วรรค written with an internal
+    space would be torn in two.
+
+    app.py shares this function rather than splitting again, so the วรรค count
+    shown to the user is always the one that gets analyzed.
+    """
+    waks = [wak.strip() for wak in STRONG_SEPARATORS.split(poem_text) if wak.strip()]
+    if len(waks) >= 4 and len(waks) % 4 == 0:
+        return waks
+    spaced = [wak.strip() for wak in ANY_SEPARATOR.split(poem_text) if wak.strip()]
+    return spaced or waks
 
 
 def _humanize_core_message(message: str) -> str:

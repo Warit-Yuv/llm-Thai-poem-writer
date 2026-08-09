@@ -16,7 +16,7 @@ UI_ROOT = Path(__file__).resolve().parent
 if str(UI_ROOT) not in sys.path:
     sys.path.insert(0, str(UI_ROOT))
 
-from checker import check_klon, compare_rhyme  # noqa: E402
+from checker import check_klon, compare_rhyme, parse_waks  # noqa: E402
 
 
 EXAMPLE_POEMS = {
@@ -30,6 +30,34 @@ EXAMPLE_POEMS = {
 ไปหาดทรายเต็มกลัวหนังหัวพอง""",
 }
 KLON_NAMES = {4: "กลอนสี่", 8: "กลอนแปด"}
+
+# ponytail: copied verbatim from core.KhaveeVerifier.check_klon's docstring
+# rather than parsed out of it at runtime — core.py is vendored third-party, so
+# reformatting upstream would silently break a regex but cannot touch a literal.
+KLON_MAPS = {
+    4: """วรรคที่ ๑ (สดับ)    วรรคที่ ๒ (รับ)
+วรรคที่ ๓ (รอง)    วรรคที่ ๔ (ส่ง)
+
+      ┏━━━━━━━━┯━┓    [สัมผัสคำที่ 1 หรือ 2]
+O O O X        X X O O
+      ┏━━━━━━━━┯━┳━━━┛
+O O O X        X X O X ━┓
+      ┏━━━━━━━━┯━┓      ┃ สัมผัสระหว่างบท (Inter-stanza rhyme)
+O O O X        X X O O ━┛
+      ┏━━━━━━━━┯━┳━━━┛
+O O O X        X X O X""",
+    8: """วรรคที่ ๑ (สดับ)    วรรคที่ ๒ (รับ)
+วรรคที่ ๓ (รอง)    วรรคที่ ๔ (ส่ง)
+
+              ┏━━━━━━━━┯━┯━┳━┯━┑    [สัมผัสคำที่ 3 หรือ 5 / อนุโลม 1,2,4]
+O O O O O O O X        O O X O O O O X
+              ┏━━━━━━━━┯━┯━┳━┯━━━━━━━┛
+O O O O O O O X        O O X O O O O X ━┓
+              ┏━━━━━━━━┯━┯━┳━┯━┑        ┃ สัมผัสระหว่างบท (Inter-stanza rhyme)
+O O O O O O O X        O O X O O O O X ━┛
+              ┏━━━━━━━━┯━┯━┳━┯━━━━━━━┛
+O O O O O O O X        O O X O O O O X""",
+}
 
 
 def decorative_font_css() -> str:
@@ -117,6 +145,7 @@ h1,h2,h3 { color:var(--ink); letter-spacing:-.02em; }
 .summary-tile { position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:8.8rem; height:100%; background:rgba(255,253,248,.9); border:1px solid var(--line); border-radius:9px; padding:.9rem; text-align:center; }
 .summary-tile-label { color:var(--ink); font-size:.94rem; font-weight:700; line-height:1.35; }
 .summary-tile-value { margin-top:.55rem; color:#18110e; font-family:Georgia,'Times New Roman',serif; font-size:2.05rem; font-weight:700; line-height:1; }
+.klon-map { overflow-x:auto; white-space:nowrap; background:var(--paper-light); border:1px solid var(--line); border-radius:9px; padding:.9rem 1.05rem; margin:.1rem 0 1rem; color:#4f433c; font-family:Consolas,"Courier New",monospace; font-size:.74rem; font-variant-ligatures:none; line-height:1.6; scrollbar-color:#c9a895 #f4ece3; scrollbar-width:thin; }
 .rule { background:var(--paper-light); border:1px solid var(--line); border-radius:7px; padding:.9rem 1rem; margin:.55rem 0; line-height:1.65; }
 .rule > strong { font-size:.98rem; }
 .rule-pair { color:#493d36; font-size:.94rem; }
@@ -256,6 +285,7 @@ div[data-testid="stDialog"] div[role="dialog"] { background:#fffdf9 !important; 
   .block-container { padding-top:1rem; }
   .hero { padding:1.15rem 1rem 1.05rem; }
   .hero .project-link { letter-spacing:.025em; }
+  .klon-map { font-size:.6rem; padding:.7rem .8rem; }
   .mobile-summary-strip { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.42rem; margin:.55rem 0 1rem; }
   .inspection-grid { grid-template-columns:1fr; gap:.65rem; margin-top:0; }
   .inspection-heading { grid-column:auto; margin-top:.35rem; }
@@ -407,9 +437,13 @@ def render_inspection_grid(report: dict) -> None:
         """
         for label, value in items
     ]
+    # There are always 4 summary tiles but any number of วรรค. Pad the right
+    # column with empty cells: a bare zip() would truncate to 4 line cards and
+    # silently drop every บท after the first.
+    cells = summary_tiles + ["<div></div>"] * (len(report["lines"]) - len(summary_tiles))
     rows = "".join(
-        line_card_html(line) + tile
-        for line, tile in zip(report["lines"], summary_tiles)
+        line_card_html(line) + cell
+        for line, cell in zip(report["lines"], cells)
     )
     st.markdown(
         f"""
@@ -471,6 +505,19 @@ klon_type = st.segmented_control(
     width="stretch",
 )
 klon_name = KLON_NAMES[klon_type]
+
+st.caption(f"ผังสัมผัสบังคับของ{klon_name} · X คือตำแหน่งคำสัมผัส เส้นเชื่อมคือสัมผัสที่บังคับ")
+# Emitted as ONE line of HTML with explicit <br>/&nbsp; rather than a <pre>:
+# markdown ends a raw HTML block at the diagram's blank line, which drops the
+# element and leaves the art as flowing text. This shape has no newlines to
+# break on and no reliance on white-space:pre surviving Streamlit's CSS.
+st.markdown(
+    '<div class="klon-map">'
+    + escape(KLON_MAPS[klon_type]).replace(" ", "&nbsp;").replace("\n", "<br>")
+    + "</div>",
+    unsafe_allow_html=True,
+)
+
 action_left, action_right, action_space = st.columns([1.25, 1, 3])
 action_left.button("ใช้กลอนตัวอย่าง", key="use_example", on_click=use_example, width="stretch")
 action_right.button("ล้างข้อความ", key="clear_input", on_click=clear_input, width="stretch")
@@ -486,7 +533,7 @@ poem = st.text_area(
     label_visibility="collapsed",
 )
 
-waks = [line.strip() for line in poem.replace("\r", "").split("\n") if line.strip()]
+waks = parse_waks(poem)
 line_count = len(waks)
 valid_input = line_count > 0 and line_count % 4 == 0
 

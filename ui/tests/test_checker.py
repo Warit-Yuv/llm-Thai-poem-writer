@@ -1,5 +1,7 @@
+import ast
 from pathlib import Path
 import sys
+import textwrap
 import unittest
 
 
@@ -7,7 +9,8 @@ UI_ROOT = Path(__file__).resolve().parents[1]
 if str(UI_ROOT) not in sys.path:
     sys.path.insert(0, str(UI_ROOT))
 
-from checker import analyze_wak, check_klon, compare_rhyme
+from checker import analyze_wak, check_klon, compare_rhyme, parse_waks
+from core import KhaveeVerifier
 
 
 VALID_EXAMPLE = """บาทหลวงงกตกประหม่าให้ล่าทัพ
@@ -87,6 +90,89 @@ class CheckerTests(unittest.TestCase):
         result = analyze_wak("ดนตรีมีคุณที่ข้อไหน")
         self.assertEqual(result["syllable_count"], 7)
         self.assertEqual(result["meter_status"], "ควรตรวจ")
+
+
+class ParseWaksTests(unittest.TestCase):
+    WAKS = VALID_EXAMPLE.splitlines()
+
+    def test_newlines(self):
+        self.assertEqual(parse_waks(VALID_EXAMPLE), self.WAKS)
+
+    def test_commas_on_one_line(self):
+        self.assertEqual(parse_waks(",".join(self.WAKS)), self.WAKS)
+
+    def test_spaces_on_one_line(self):
+        self.assertEqual(parse_waks(" ".join(self.WAKS)), self.WAKS)
+
+    def test_four_lines_of_four_commas_is_sixteen_waks(self):
+        # Evaluate-CSV shape: one บท per line, วรรค separated by commas.
+        pasted = """ทั้งสองถันสันทัดดอกบัวหลวง,เป็นพุ่มพวงงามสุดแรกผุดเผย,พลางประคองต้องเต้ามณฑาเชย,เจ้าพี่เอ๋ยนอนนิ่งไม่ติงองค์
+โอบพระกรช้อนอุ้มแล้วจุมพิต,พระทรงฤทธิ์ปลุกชวนนวลหง,โฉมอำพันมาลาผวาองค์,เห็นพระทรงฤทธิไกรวิไลงาม
+เบือนสะบัดหัตถาผวาหวาด,ลงจากอาสน์เมียงเมินให้เขินขาม,พระกุมกรวอนว่าพะงางาม,ขอฝากความรักเจ้าอย่าเฝ้าเคือง
+กุศลพี่ชี้ช่วยอำนวยชัก,ให้สมรักชิดเชื้อแม่เนื้อเหลือง,มาอยู่สวนโศกศัลย์ถึงขวัญเมือง,พี่ร่างเรื่องให้สาลิกามา"""
+        waks = parse_waks(pasted)
+        self.assertEqual(len(waks), 16)
+        self.assertEqual(waks[0], "ทั้งสองถันสันทัดดอกบัวหลวง")
+        self.assertEqual(waks[-1], "พี่ร่างเรื่องให้สาลิกามา")
+        self.assertTrue(all("," not in wak for wak in waks))
+
+    def test_mixed_separators_and_stray_padding(self):
+        messy = f"  {self.WAKS[0]} , {self.WAKS[1]}\n\n{self.WAKS[2]} / {self.WAKS[3]},  "
+        self.assertEqual(parse_waks(messy), self.WAKS)
+
+    def test_a_wak_may_contain_an_internal_space(self):
+        # Four lines already form a บท, so the line split wins and the spaced
+        # วรรค stays whole instead of being torn into two.
+        spaced = list(self.WAKS)
+        spaced[2] = "ให้รีบเร่ง พวกพหลพลนิกาย"
+        self.assertEqual(parse_waks("\n".join(spaced)), spaced)
+
+    def test_incomplete_input_still_reports_its_real_count(self):
+        self.assertEqual(len(parse_waks(",".join(self.WAKS[:3]))), 3)
+
+    def test_app_and_checker_agree_on_the_count(self):
+        # The วรรค count app.py shows must be the count check_klon analyzes.
+        for text in (VALID_EXAMPLE, ",".join(self.WAKS), " ".join(self.WAKS)):
+            self.assertEqual(check_klon(text)["line_count"], len(parse_waks(text)))
+
+
+class KlonMapTests(unittest.TestCase):
+    """The diagrams in app.py are transcribed from core.py. Catch any drift.
+
+    Read app.py with ast rather than importing it, so this runs without
+    streamlit installed.
+    """
+
+    @staticmethod
+    def app_maps() -> dict[int, str]:
+        tree = ast.parse((UI_ROOT / "app.py").read_text(encoding="utf-8"))
+        for node in tree.body:
+            targets = getattr(node, "targets", [])
+            if targets and getattr(targets[0], "id", None) == "KLON_MAPS":
+                return ast.literal_eval(node.value)
+        raise AssertionError("KLON_MAPS not found in app.py")
+
+    @staticmethod
+    def core_maps() -> dict[int, str]:
+        doc = KhaveeVerifier.check_klon.__doc__ or ""
+        maps = {}
+        for block in doc.split("═" * 72):
+            if "Diagram:" not in block:
+                continue
+            lines = textwrap.dedent(block).strip("\n").split("\n")
+            maps[4 if "Klon 4" in lines[0] else 8] = "\n".join(lines[1:]).strip("\n")
+        return maps
+
+    def test_diagrams_match_core_docstring_exactly(self):
+        self.assertEqual(self.app_maps(), self.core_maps())
+
+    def test_each_supported_klon_type_has_a_diagram(self):
+        self.assertEqual(set(self.app_maps()), {4, 8})
+
+    def test_diagrams_need_no_html_escaping(self):
+        # The app injects these raw into a <pre>; escape() must be a no-op.
+        for diagram in self.app_maps().values():
+            self.assertNotRegex(diagram, r"[<>&]")
 
 
 if __name__ == "__main__":
