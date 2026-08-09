@@ -1,0 +1,5 @@
+streamlit>=1.44,<2
+pandas>=2.2,<4
+pythainlp>=5.1,<6
+ssg>=0.0.8,<1
+tqdm>=4.66,<5

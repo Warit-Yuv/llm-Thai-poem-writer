@@ -1,0 +1,18 @@
+[client]
+toolbarMode = "minimal"
+showErrorDetails = "none"
+showSidebarNavigation = false
+
+[theme]
+primaryColor = "#b73527"
+backgroundColor = "#f5efe2"
+secondaryBackgroundColor = "#fffdf8"
+textColor = "#342821"
+font = "sans serif"
+
+[server]
+headless = true
+maxUploadSize = 25
+
+[browser]
+gatherUsageStats = false
