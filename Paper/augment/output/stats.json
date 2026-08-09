@@ -26,10 +26,10 @@
     "C9_old_accept": 28.0
   },
   "positives_per_rule": {
-    "r1_w1_w2": 360,
-    "r2_w2_w3": 300,
-    "r3_w3_w4": 305,
-    "rX_inter": 300
+    "r1_w1_w2": 550,
+    "r2_w2_w3": 387,
+    "r3_w3_w4": 380,
+    "rX_inter": 306
   },
   "positive_instances_by_tag": {
     "mattra_family": 848,
@@ -42,18 +42,18 @@
     "rue": 5,
     "karun|true_final": 1,
     "sara_norm": 6,
-    "oracle_blind": 65
+    "oracle_blind": 423
   },
   "positive_instances_both_normalize": 18,
   "positive_instances_old_fail": 209,
-  "positive_instances_classical": 985,
-  "positive_instances_dict": 215,
+  "positive_instances_classical": 1083,
+  "positive_instances_dict": 117,
   "positive_pool_pairs": 5920,
   "positive_pool_both_normalize": 91,
   "positive_pool_old_fail": 15,
   "candidate_words": 6070,
   "inventory_size": 8046,
   "dictionary_syllables": 9114,
-  "total_instances": 11265,
+  "total_instances": 11623,
   "seed": 42
 }

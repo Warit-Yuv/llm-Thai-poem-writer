@@ -35,10 +35,15 @@ Method
   A-vs-B differentiator).
 
 * **Oracle-blind positives** (``HP_oracle_blind``): genuine rhymes the 5.3.5
-  oracle CANNOT see (silent-ร family: เพชร/เนตร/เกษตร vs สระ เอะ + แม่กด).
-  The gold label is the LINGUISTIC truth (gold=1), so B -- the oracle itself
-  -- takes a false-negative deduction here for missing them (its documented
-  limitation), while checkers that hear the real rhyme get the credit.
+  oracle CANNOT see. Families: (a) silent-ร -> สระ เอะ + แม่กด
+  (เพชร/เนตร/เกษตร/เขตร); (b) first_sara words ssg keeps as ONE syllable
+  token where the oracle hears only the first vowel (ศัตรู -> true อู+กา,
+  กษัตรี/กษัตรีย์ -> true อี+กา). The gold label is the LINGUISTIC truth
+  (gold=1), so B -- the oracle itself -- takes a false-negative deduction
+  here for missing them (its documented limitation), while checkers that
+  hear the real rhyme get the credit. Each is verified blind on the actual
+  wak (same ssg as the checkers) and standalone; the review file records the
+  mechanism (silent_r / first_sara) per row.
 
 * **Review**: two human-readable TSVs are written so the author can check the
   data before it is used in metrics:
@@ -75,6 +80,7 @@ from augment.tricky_words import (  # noqa: E402
     HARD_POSITIVE_PAIRS,
     LEAD_POOL,
     ORACLE_BLIND_FAMILIES,
+    ORACLE_BLIND_REASON,
     ORACLE_LIMITATIONS,
     VOWEL_LENGTH_SWAP,
     _OLD_CORE_EXC,
@@ -351,9 +357,10 @@ def main() -> None:
                     help="target negatives per rule (default 2500)")
     ap.add_argument("--positives", type=int, default=300,
                     help="target positives per rule (default 300)")
-    ap.add_argument("--ob-positives", type=int, default=60,
-                    help="target oracle-blind positives per rule (default 60; "
-                         "limited by the silent-ร/เอะ+กด family availability)")
+    ap.add_argument("--ob-positives", type=int, default=250,
+                    help="target oracle-blind positives per rule (default "
+                         "250; limited by the blind-family target "
+                         "availability in the corpus)")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--out-dir", default=os.path.join(_HERE, "output"))
     args = ap.parse_args()
@@ -578,8 +585,12 @@ def main() -> None:
 
     # ---- oracle-blind positives (gold=1 = linguistic truth; the 5.3.5
     # oracle CANNOT see these rhymes, so B -- the oracle itself -- takes
-    # false negatives here for missing them) ----
+    # false negatives here for missing them). Families: silent-ร -> เอะ+กด
+    # (เพชร/เนตร/เกษตร/เขตร) and first_sara -> อู+กา / อี+กา (ศัตรู/กษัตรี/
+    # กษัตรีย์). Every emitted instance is verified blind on the ACTUAL wak
+    # (same ssg as the checkers) and standalone. ----
     ob_counts = defaultdict(int)
+    ob_by_cand = Counter()
     for rid in RULES:
         for story in stories:
             if ob_counts[rid] >= args.ob_positives:
@@ -598,30 +609,36 @@ def main() -> None:
                          if fam in fams and c != S]
                 if not cands:
                     continue
-                C = cands[0]
-                if (S, C) in used_pos_pairs:
-                    continue
-                new_wak = _replace_last(s.waks()[wak_idx - 1], S, C)
-                if new_wak is None:
-                    continue
-                waks = list(s.waks())
-                waks[wak_idx - 1] = new_wak
-                o = oracle_rules(waks[0], waks[1], waks[2], waks[3],
-                                 s.prev_w4)
-                if o[rid] is not False:
-                    continue  # oracle must NOT see this rhyme
-                if any(o[r] != o_orig[r] for r in RULES if r != rid):
-                    continue  # standalone: other rhymes unchanged
-                used_pos_pairs.add((S, C))
-                _emit("positive", s, rid, waks, s.prev_w4, S, C,
-                      "HP_oracle_blind", [], wak_idx,
-                      tag="oracle_blind",
-                      note="oracle-blind: real rhyme the oracle misses")
-                pos_tags["oracle_blind"] += 1
-                pos_classical += int(C in classical_set)
-                pos_counts[rid] += 1
-                ob_counts[rid] += 1
+                rng.shuffle(cands)  # rotate through all blind words
+                for C in cands:
+                    if (S, C) in used_pos_pairs:
+                        continue
+                    new_wak = _replace_last(s.waks()[wak_idx - 1], S, C)
+                    if new_wak is None:
+                        continue
+                    waks = list(s.waks())
+                    waks[wak_idx - 1] = new_wak
+                    o = oracle_rules(waks[0], waks[1], waks[2], waks[3],
+                                     s.prev_w4)
+                    if o[rid] is not False:
+                        continue  # oracle must NOT see this rhyme
+                    if any(o[r] != o_orig[r] for r in RULES if r != rid):
+                        continue  # standalone: other rhymes unchanged
+                    used_pos_pairs.add((S, C))
+                    _emit("positive", s, rid, waks, s.prev_w4, S, C,
+                          "HP_oracle_blind", [], wak_idx,
+                          tag="oracle_blind",
+                          note=f"oracle-blind "
+                               f"({ORACLE_BLIND_REASON.get(C, '?')}): "
+                               "real rhyme the oracle misses")
+                    pos_tags["oracle_blind"] += 1
+                    pos_classical += int(C in classical_set)
+                    pos_counts[rid] += 1
+                    ob_counts[rid] += 1
+                    ob_by_cand[C] += 1
+                    break
     print(f"oracle-blind positives: {dict(ob_counts)}", flush=True)
+    print(f"  by candidate: {dict(ob_by_cand.most_common())}", flush=True)
 
     # ---- review word lists (per rhyme class) ----
     word_info = {}

@@ -502,21 +502,45 @@ TRUE_FINAL_TRAPS = [
     "เสีย", "เสียว", "เปล", "แปร", "โปร", "ไกล", "ใกล้", "ไกว",
 ]
 
-# Words the 5.3.5 oracle MISREADS: final ร silent from Pali/Sanskrit roots
-# (NOT การันต์) makes them true สระ เอะ + แม่กด, but the oracle keeps the long
-# เอ (no ็ on the dead final). Author-confirmed: anything with สระ เอะ + แม่กด
-# rhymes with เพชร (เพ็ด เห็ด เจ็ด เบ็ด เกร็ด ...). These are the ONLY
-# documented, author-confirmed oracle-blind single syllables, so the C8 probe
-# is restricted to them.
-ORACLE_BLIND_POOL: list[str] = ["เพชร", "เนตร", "เกษตร"]
+# Words the 5.3.5 oracle MISREADS (gold = the LINGUISTIC truth, so the
+# oracle takes false NEGATIVES on these and a checker that hears the real
+# rhyme gets the credit). Two documented mechanisms:
+#
+# 1) silent_r -- final ร silent from a Pali/Sanskrit root (NOT การันต์)
+#    makes them true สระ เอะ + แม่กด, but the oracle keeps the long เอ (no
+#    ็ on the dead final): เพชร/เนตร/เกษตร/เขตร rhyme with anything
+#    สระ เอะ + แม่กด (เพ็ด เห็ด เจ็ด เบ็ด เกร็ด ...).
+# 2) first_sara -- check_sara keeps only sara[0] of the WHOLE input string;
+#    ssg keeps the word as ONE syllable token, so the oracle hears the first
+#    vowel and never the rhyming final one: ศัตรู = สัด-ตรู (true อู+กา,
+#    oracle reads ไอ+กา), กษัตรี/กษัตรีย์ = กะ-สัด-ตรี (true อี+กา, oracle
+#    reads ไอ+กา).
+#
+# Each probe only fires when the rhyme TARGET is in the true family, so it
+# genuinely tests oracle blindness. Reviewed by the author in the review file.
+ORACLE_BLIND_POOL: list[str] = [
+    "เพชร", "เนตร", "เกษตร", "เขตร",   # silent_r -> เอะ+กด
+    "ศัตรู", "กษัตรี", "กษัตรีย์",       # first_sara -> อู+กา / อี+กา
+]
 
 # Linguistic rhyme family (rhyme class of the partner side) each oracle-blind
-# word belongs to. The C8 probe only fires when the rhyme TARGET is in this
+# word belongs to. The probe only fires when the rhyme TARGET is in this
 # family, so it genuinely tests oracle blindness.
 ORACLE_BLIND_FAMILIES: dict = {
     "เพชร": ("เอะ", "กด"),
     "เนตร": ("เอะ", "กด"),
     "เกษตร": ("เอะ", "กด"),
+    "เขตร": ("เอะ", "กด"),
+    "ศัตรู": ("อู", "กา"),
+    "กษัตรี": ("อี", "กา"),
+    "กษัตรีย์": ("อี", "กา"),
+}
+
+# mechanism tag per oracle-blind word (for the review file / note)
+ORACLE_BLIND_REASON: dict = {
+    "เพชร": "silent_r", "เนตร": "silent_r", "เกษตร": "silent_r",
+    "เขตร": "silent_r", "ศัตรู": "first_sara", "กษัตรี": "first_sara",
+    "กษัตรีย์": "first_sara",
 }
 
 
