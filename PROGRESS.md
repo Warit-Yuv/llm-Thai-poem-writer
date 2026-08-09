@@ -22,9 +22,12 @@ This file is updated after each working session so progress is visible at a glan
 | Full-corpus gold re-eval (post data-completeness fix) | ✅ A 73.4% / B 87.5% / C 85.4% / D 87.2% (rX 89/97/97/96) |
 | Cross-chapter boundary rX check | ✅ 181/186 = 97.3% rhyme (report-only) |
 | Checker C slowness mitigation (persistent workers + G2P cache) | ✅ Done (~49 min wall) |
-| Augmentation (hard pos/neg operators) | ⏳ Deferred by author until re-eval is final |
-| Evaluation harness + metrics | ⏳ Planned, not built |
+| Parallel A/B/D eval (`--workers`/`--dw-workers`, `parallel_eval.py`) | ✅ Done (95s -> ~33s: `--workers 10 --dw-workers 4`) |
+| Augmentation (mixed neg operators + standalone positives) | 🔄 Redesigned (Session 8); author review pending |
+| Augmentation review (word lists + readable TSVs) | 🔄 Written on next run; author gate |
+| Evaluation harness + metrics (`eval_harness.py`, `metrics.py`) | ✅ Done |
 | Report notebook (`Method_evaluation_script.ipynb`) | ⏳ Stub only |
+| Final full eval incl. Checker C on augment | ⏳ After author approves augmentation |
 
 ---
 
@@ -339,6 +342,258 @@ added (`klonpad_checker.py`; `fallback` param threaded through
 4. **Paper note**: D is reported two ways — `D_klonpad_w2p` (faithful to the
    original Klonpad notebook) and `D_klonpad_ssg_fallback` (ablation; best
    Klonpad configuration). Both are in `full_gold_results.json`.
+
+## Session 6 — Paper framing, W2P failure taxonomy, parallel A/B/D (2026-08-09)
+
+### Authorship & paper narrative
+
+The author wrote **both B and D** (they are the paper's contribution), so the
+paper should be framed as: B = the general-purpose KhaveeVerifier shipped in
+pythainlp 5.3.5 (pure ssg, no dictionary — "good enough for most text");
+D = the dictionary-enhanced Klonpad variant = B's rules + a gold-standard G2P
+override dictionary (built on phraAphai) + a fallback segmenter. A (5.0.1) and
+C (Kongfha) are the external baselines. The ablation (Session 5) supports this
+story: overrides help in-domain (phraAphai coverage 92.8% -> D beats B +2.6pp),
+the w2p fallback hurts everywhere, and the best Klonpad config is D_ssg
+(88.4% vs B 87.5%).
+
+### W2P failure taxonomy (for the paper's limitations / future-work sections)
+
+The w2p `pronunciate` fallback fails in four documented modes:
+
+1. **Greedy newmm -> w2p hallucinates** on over-long compound tokens:
+   `ทศพิธราชธรรม์` tokenized as one word -> 9-syllable garbage
+   (`ทด-สะ-พิด-ทะ-ราด-ชะ-ดา-มะ-รัด`); split as `ทศพิธ ราชธรรม์` it is correct
+   (`ทด-สะ-พิด / ราด-ชะ-ทำ`).
+2. **Very short words (<=2-3 chars)**: `ก->กะ-โหฺมด`, `ก็->ก็อย`, `บ่->บ่อ`,
+   `ธ->ทอน`.
+3. **Long (>=3 syllable) compounds**: `ใจน้ำ->ไจ-น้าม`, `น้ำตา->น้าม-ตา`.
+4. **Consonant/final + long/short vowel swaps**: `ได้->ด้าย`.
+
+Future work (author-deferred, documented for the paper): expand the G2P
+override dictionary to more corpora (currently phraAphai-optimised); a better
+word segmenter to avoid greedy-newmm over-merging; context-sensitive
+pronunciation for words with multiple valid pronunciations.
+
+### Parallel A/B/D (`--workers`) — measured scaling
+
+Added `Paper/eval_checkers/parallel_eval.py` (`run_checkers`): splits stanzas
+into contiguous slices and evaluates them in a `multiprocessing.Pool`, returning
+compact per-story aggregates. One-time per-process overhead is tiny (~0.5 s:
+imports + data load + ssg model + override trie + w2p model).
+
+Per-checker scaling over the full corpus (results identical at every count):
+
+| checker | 1 | 4 | 6 | 8 | 10 |
+|---|---|---|---|---|---|
+| A (dict) | 17.7s | 5.8s | – | – | 4.4s |
+| B (ssg) | 34.8s | 11.0s | – | – | 7.8s |
+| D_ssg | 26.3s | 9.5s | – | – | 6.3s |
+| D_w2p | 32.7s | 18.9s | 20.4s | 23.9s | 24.1s |
+| **all four** | **94.8s** | **40.3s** | **40.0s** | **40.9s** | **38.5s** |
+| **all four, mixed (D_w2p=4, rest=10)** | – | – | – | – | **~33s** |
+
+- B / A / D_ssg scale ~4x. **D_w2p does not scale** (best at 4 workers; worse at
+  6+). Root cause: the w2p engine is a **pure-numpy GRU RNN**
+  (`pythainlp/transliterate/w2p.py`); under concurrent numpy/BLAS load the
+  per-call cost inflates (CPU frequency/power throttling), so extra processes
+  hurt rather than help. BLAS thread capping (`OMP_NUM_THREADS=1` etc.) is set
+  in the parallel path before the pool spawns — it helps a little but does not
+  fully fix w2p.
+- **Best setting: mixed workers** — `--workers 10 --dw-workers 4` caps D_w2p
+  at its 4-worker optimum while B/A/D_ssg use 10: all-four 95s -> ~33s.
+  (`--dw-workers N` sets the worker count for D_w2p only.)
+
+### Flags / usage guide
+
+- `Paper/eval_checkers/consolidate_results.py`
+  - `--workers N` — parallel processes for the A/B/D/Dssg eval loop (default 1;
+    recommended 10). B/A/D_ssg scale up to ~10x; D_w2p does not.
+  - `--dw-workers N` — worker count for **D_w2p only** (defaults to `--workers`);
+    D_w2p is fastest at 4, so the optimal combo is
+    `--workers 10 --dw-workers 4` (~95s -> ~33s).
+  - `--skip-c` — skip reading the Checker C checkpoint files (use before
+    `run_c_full` has been run; C is omitted from the JSON).
+  - `--out PATH` — output JSON path (default `full_gold_results.json`).
+- `Paper/eval_checkers/compare_d_fallbacks.py`
+  - `--workers N` — parallel processes for B/D_w2p/D_ssg (default 1). The
+    single-process diagnostics (w2p `cache_info`, syllable-source stats) only
+    run with `--workers 1`.
+  - `--dw-workers N` — worker count for D_w2p only (defaults to `--workers`).
+- `Paper/eval_checkers/run_c_full.py`
+  - `--workers N` — persistent tltk subprocesses for Checker C (default 10).
+  - `--chunk N` — units per checkpoint chunk (default 3000).
+- `Paper/eval_checkers/parallel_eval.py` — shared helper (`run_checkers`); not
+  a CLI.
+
+## Session 7 — Metrics, eval harness, and augmentation (2026-08-09)
+
+### New modules
+
+- `Paper/eval_checkers/metrics.py` — confusion-metric functions: Wilson 95%
+  CIs, coverage, accuracy/precision/recall/F1, and a conservative
+  drop-as-fail variant. Handles mixed 0/1 gold (so negatives merge cleanly).
+- `Paper/eval_checkers/eval_harness.py` — per-instance evaluation harness:
+  collects verdicts for A/B/D_w2p/D_ssg (parallel) and C (gold from the
+  `run_c_full` checkpoints; augment via the tltk worker pool), computes
+  per-rule + per-stanza metrics, and merges the augmentation for
+  precision/F1. Flags: `--workers`, `--dw-workers`, `--skip-c`,
+  `--augment PATH`, `--out`.
+- `Paper/augment/tricky_words.py` — curated hard-positive pairs (oracle-True)
+  and trap-category syllables (karun / ฤ / clusters / true-final ล-ย); also
+  `ORACLE_LIMITATIONS` (pairs that linguistically rhyme but the 5.3.5 oracle
+  rejects, e.g. เพชร/เพ็ด — karun).
+- `Paper/augment/corrupt.py` — hard negative/positive generator. Oracle = 5.3.5
+  `is_sumpus` with canonical rule semantics; inventory = all corpus syllables +
+  override syllables + traps, indexed by mattra/vowel. Each corruption is
+  oracle-verified and written to a review TSV for the author gate. Flags:
+  `--per-rule`, `--positives`, `--seed`, `--out-dir`.
+
+### Augmentation generated (author review gate)
+
+`Paper/augment/output/` — **6,000 negatives + 1,200 positives (7,200
+instances)** in ~75 s:
+
+| kind | r1 | r2 | r3 | rX | total |
+|---|---|---|---|---|---|
+| negatives | 1,500 | 1,500 | 1,500 | 1,500 | 6,000 |
+| positives | 300 | 300 | 300 | 300 | 1,200 |
+
+- **Every negative is `C0_same_mattra`** (same mattra as the original, different
+  vowel, oracle-confirmed non-rhyme) — the candidate search returns at the
+  first bucket, so no trap-category negatives were produced. Positives are
+  `HP_trap` (trap syllable the oracle confirms rhymes).
+- **Oracle limitation (confirmed by author):** เพชร/เพ็ด genuinely rhyme but
+  the 5.3.5 `is_sumpus` rejects them (karun ร). Documented in
+  `ORACLE_LIMITATIONS`; excluded from hard positives; the residual risk for
+  negatives (a C0 candidate against a karun avoid-syllable) is rare and is what
+  the author review gate is for.
+- **`review.tsv`** (7,200 rows: original vs corrupted waks, op, candidate,
+  broken rules) — the author reviews this before the augmentation is used.
+
+### Preview: precision/recall/F1 with gold + augment (A/B/D/Dssg)
+
+Stanza-level (n = 36,475 gold + 7,200 augment; C pending in the full run):
+
+| checker | precision | recall | F1 |
+|---|---|---|---|
+| A (5.0.1) | 99.8% | 73.4% | 84.6% |
+| B (5.3.5) | 99.9% | 87.5% | 93.3% |
+| D_w2p | 99.5% | 87.0% | 92.8% |
+| D_ssg | 99.6% | 88.2% | 93.6% |
+
+Per-rule precision is ~99.6-100% for every checker. **Honest reading:** with
+all negatives being the same easy type (C0 different-vowel), precision is
+near-ceiling for everyone and does not differentiate the checkers — recall is
+what separates them (73.4% vs 87-88%). If the paper wants precision to
+discriminate, the negatives need harder/diverse operators (e.g. ล/ย mattra
+swaps, long/short vowel swaps, karun/ฤ traps that specific checkers falsely
+accept) — this is a decision for the author review. The current dataset is
+valid as-is (genuine non-rhymes, oracle-verified) and will be reported with the
+"oracle-defined truth" caveat.
+
+### Status
+
+- `metrics.py`, `eval_harness.py`: ✅ done (gold + augment pipeline works).
+- Augmentation: ✅ generated (7,200 instances) — ⏳ **author review gate**
+  (`Paper/augment/output/review.tsv`) before it is used in the final report.
+- Report notebook (`Method_evaluation_script.ipynb`): ⏳ next.
+
+## Session 8 — Augmentation redesign: taxonomy, mixed negatives, standalone positives, review UX (2026-08-10)
+
+### Augmentation taxonomy (full)
+
+**Negatives — precision probes (gold=0, oracle-confirmed non-rhyme).** Mixed
+operators so precision is not saturated by one easy family:
+
+| op | what it tests | share |
+|---|---|---|
+| `C6_random` | different สระ AND มาตรา (trivial baseline) | ~5% |
+| `C0_same_mattra` | same มาตรา, different สระ (saturates; minor) | ~8% (last-resort fill → ~10-15%) |
+| `C1_same_vowel` | same สระ, different มาตรา (saturates for A/B/D, but is where Checker C fails — it ignores the final consonant) | ~8% |
+| `C3_short_long` | short↔long สระ swap, same มาตรา (เจ็ด/เชด, แข็ง/แขง) | ~22% |
+| `C4_liquid_final` | ร/ล/ว finals where old pythainlp disagrees (ตัว: old (อะ,เกอว) vs new (อัว,กา); ทร: old กด vs new กน; หงส์: old returns error string) | ~15% |
+| `C5_lead_head` | ห/อ นำ (leading) words (หงส์ หน อยาก อย่า อยู่) | ~9% |
+| `C2_trap` | karun / ฤ / cluster traps (เพชร ฤทธิ์ สวรรค์...) | ~22% |
+| `C8_oracle_blind` | known oracle misses — genuine rhymes the 5.3.5 oracle labels non-rhyme (เพชร/เพ็ด, วิศวกรรม/กำ, ฤทัย/ไท) → precision probes so precision is not 100% everywhere | ~11% |
+
+Simple baselines (`C6`+`C0`+`C1`) ≈ 21-25%; edge cases dominate the rest.
+Leftover quota (when an edge pool is exhausted) is redistributed to the OTHER
+edge families first; `C0` only absorbs what is still missing.
+
+**Positives — recall probes (gold=1, oracle-confirmed rhyme).**
+
+- `P_tricky`: swap the source syllable of a genuine gold rhyme with a tricky
+  rhyming candidate from the same (สระ, มาตรา) rhyme class. **Standalone:**
+  every other rule's truth must be unchanged, so only the target rule is
+  tested and inter-stanza (rX) / other rhymes are never disturbed.
+- Tags: `sara_norm` (สระลดรูป/เปลี่ยนรูป), `rue` (ฤ), `karun` (การันต์ the
+  oracle handles), `true_final` (-าย/-าว glides), `mattra_family` (plain),
+  `both_normalize` (BOTH sides need the `is_sumpus` phonetic normalisation;
+  emitted ~3:1 old_fail:old_pass so the genuine 5.0.1-vs-5.3.5 differentiators
+  dominate but are not exclusive).
+- Source balance: classical corpus ~50% / dictionary incl. loanwords ~50%
+  (loanwords are fine — they appear in modern Thai poetry — every pair is
+  oracle-verified).
+
+**Oracle blind spots documented (precision not 100%):** `first_sara` —
+`check_sara` returns only `sara[0]`, so a multi-syllable word passed whole
+loses its final (rhyming) syllable's vowel (วิศวกรรม → อิ, loses กรรม);
+`silent_r` — เพชร = /phet/ (silent ร from Pali/Sanskrit, NOT การันต์); the
+oracle keeps the long เอ because the dead final has no ็; `rue_2syl` — ฤ read
+as a single รึ (ฤทัย = รึ-ไท, the final ไท is never seen). เจ็ด/เชด, แข็ง/แขง,
+ปฏิสนธิ์/สัน, พฤษภ/พิด are NOT rhymes (different สระ) and are excluded.
+
+### Review UX (readable)
+
+- `Paper/augment/output/candidates_review.tsv` — the candidate **word list**
+  per rhyme class, with every word's สระ/มาตรา spelled out (raw,
+  post-normalisation, and old pythainlp), an `old_differs` flag, phenomenon
+  tags and source (classical/dict). Review the pool once instead of 7,000+
+  rows.
+- `Paper/augment/output/review_negatives.tsv` / `review_positives.tsv` —
+  compact instances: `swap(S->C)`, `orig_wak`, `new_wak`, `S_sara`, `S_mat`,
+  `C_sara`, `C_mat`, `tag`, `both_norm`, `oldA_fail`, `broken`, `loc`, `note`.
+
+### Status
+
+- `tricky_words.py`: dictionaries (thai_words + orst + **thai_syllables**
+  whitelist; **icu dropped** as it flooded transliterated loanwords),
+  `VOWEL_LENGTH_SWAP`, liquid/lead/oracle-blind pools, combination-based
+  both-normalise builder, `is_clean_syllable`/`clean_syllables` filters
+  (pure-Thai, single-ssg-syllable, length ≤ 6; whitelisted against the
+  curated `thai_syllables` list so ssg over-merges like แลลอด and fragments
+  like ทธิ์/หัตถ์น never enter). ✅
+- `corrupt.py`: per-op quota passes; leftover redistributed only to true edge
+  families (baselines capped); C8 restricted to the author-confirmed
+  silent-ร/เอะ+กด family and only fires when the rhyme target is in that
+  family (real precision probes); standalone positives; readable review +
+  candidates files. ✅
+- **Curated ฤ (2026-08-10):** `RUE_PRONUNCIATION` table (ตฤณ->ติน, ฤทธิ์->ริด,
+  ฤกษ์->เริก, กฤษ->กิด, ฤา/ฤๅ->รือ, and multi-sound ฤดู->รึ-ดู, ฤทัย->รึ-ไท,
+  พฤษภ->พรึก-สบ, ฤๅษี->รือ-สี). ฤ words are candidates **only when curated**;
+  single-sound ones feed positives+negatives, multi-sound ones feed negatives
+  only (oracle-gated, probing the oracle's ฤ mis-read). The `thai_syllables`
+  whitelist now applies to **all** candidates (corpus + dict) so ssg
+  artifacts (แลลอด, กกง, ไหม้ร), digits and single chars never enter.
+  Deferred (author): 2-3 syllable-word handling (ศาสนา สาด-สะ-หนา) and a
+  dedicated loanword-negative op (~1%, agent-checked later).
+
+### Final generated profile (2026-08-10, `Paper/augment/output/`)
+
+- Negatives 6,000 / positives 1,200 (7,200 instances), ~2-4 min per run.
+- Realized negative mix: `C0_same_mattra` 480, `C1_same_vowel` 480,
+  `C2_trap` 720, `C3_short_long` 2155, `C4_liquid_final` 1080,
+  `C5_lead_head` 600, `C6_random` 300, `C8_oracle_blind` 185 (baseline 21%,
+  edges 79%). C8 = genuine oracle-blind probes (avoid contains the เอะ+กด
+  family).
+- Positives: 971/1200 classical (81%), 21 both-normalise, 211 where 5.0.1
+  rejects (A-vs-B recall differentiators).
+- **0 junk candidates** (no multi-syllable extensions, no fragments, no
+  whitespace/punctuation).
+- Review files: `candidates_review.tsv` (6,699 word-list rows with สระ/มาตรา
+  spelled out), `review_negatives.tsv` (6,000), `review_positives.tsv`
+  (1,200). ⏳ **author review gate** before use in the final report.
 
 ## Session 4 — Checker runtime, parity validation, smoke test (2026-08-09)
 

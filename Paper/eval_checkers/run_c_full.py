@@ -145,6 +145,31 @@ def process_chunk(pw, units, k, chunk_size=CH):
     return k, len(res), dt, we
 
 
+def score_units_parallel(units, workers=10):
+    """Score a list of 8-wak units with a pool of persistent tltk workers.
+
+    ``units`` is a list of ``(id, [w1..w8])``. Results are returned in input
+    order (ids are remapped internally to preserve order). Used for Checker C
+    on the augmented instances (the gold corpus path reads checkpoints).
+    """
+    C = KongfhaChecker()
+    n = len(units)
+    k = max(1, min(workers, n))
+    pws = [_PersistentWorker(C._python, C._worker, label=f"w{i}") for i in range(k)]
+    batches = [[] for _ in range(k)]
+    for idx, (_uid, waks) in enumerate(units):
+        batches[idx % k].append((str(idx), waks))
+    results_by_id = {}
+    try:
+        for i, pw in enumerate(pws):
+            for r in pw.score(batches[i]):
+                results_by_id[int(r["id"])] = r
+    finally:
+        for pw in pws:
+            pw.close()
+    return [results_by_id[i] for i in range(n)]
+
+
 def aggregate(meta, nchunks):
     """Recompute per-story stats from the checkpoint files."""
     rows = []

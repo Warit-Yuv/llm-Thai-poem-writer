@@ -1,0 +1,58 @@
+{
+  "negatives_per_rule": {
+    "r1_w1_w2": 1500,
+    "r2_w2_w3": 1500,
+    "r3_w3_w4": 1500,
+    "rX_inter": 1500
+  },
+  "negatives_by_op": {
+    "C6_random": 300,
+    "C0_same_mattra": 480,
+    "C1_same_vowel": 480,
+    "C3_short_long": 2155,
+    "C4_liquid_final": 1080,
+    "C5_lead_head": 600,
+    "C2_trap": 720,
+    "C8_oracle_blind": 185
+  },
+  "negatives_by_op_pct": {
+    "C0_same_mattra": 8.0,
+    "C1_same_vowel": 8.0,
+    "C2_trap": 12.0,
+    "C3_short_long": 35.9,
+    "C4_liquid_final": 18.0,
+    "C5_lead_head": 10.0,
+    "C6_random": 5.0,
+    "C8_oracle_blind": 3.1
+  },
+  "positives_per_rule": {
+    "r1_w1_w2": 300,
+    "r2_w2_w3": 300,
+    "r3_w3_w4": 300,
+    "rX_inter": 300
+  },
+  "positive_instances_by_tag": {
+    "mattra_family": 851,
+    "karun": 289,
+    "true_final": 25,
+    "karun|sara_norm": 2,
+    "sara_norm|true_final": 15,
+    "karun|rue": 2,
+    "rue": 6,
+    "karun|sara_norm|true_final": 2,
+    "sara_norm": 7,
+    "karun|true_final": 1
+  },
+  "positive_instances_both_normalize": 20,
+  "positive_instances_old_fail": 215,
+  "positive_instances_classical": 910,
+  "positive_instances_dict": 290,
+  "positive_pool_pairs": 5921,
+  "positive_pool_both_normalize": 91,
+  "positive_pool_old_fail": 15,
+  "candidate_words": 6072,
+  "inventory_size": 8046,
+  "dictionary_syllables": 9115,
+  "total_instances": 7200,
+  "seed": 42
+}
