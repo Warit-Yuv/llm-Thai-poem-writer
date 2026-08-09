@@ -9,7 +9,13 @@ UI_ROOT = Path(__file__).resolve().parents[1]
 if str(UI_ROOT) not in sys.path:
     sys.path.insert(0, str(UI_ROOT))
 
-from checker import analyze_wak, check_klon, compare_rhyme, parse_waks
+from checker import (
+    analyze_wak,
+    check_klon,
+    compare_rhyme,
+    parse_waks,
+    tokenize_editor_units,
+)
 from core import KhaveeVerifier
 
 
@@ -25,6 +31,20 @@ VALID_KLON_4 = """ฉันชื่อหมูกรอบ
 
 
 class CheckerTests(unittest.TestCase):
+    def test_editor_uses_readable_units_without_changing_the_spelling(self):
+        self.assertEqual(
+            tokenize_editor_units("ฉันชื่อหมูกรอบ"),
+            ["ฉัน", "ชื่อ", "หมู", "กรอบ"],
+        )
+        self.assertEqual(
+            tokenize_editor_units("บาทหลวงงกตกประหม่าให้ล่าทัพ"),
+            ["บาท", "หลวง", "งก", "ตก", "ประ", "หม่า", "ให้", "ล่า", "ทัพ"],
+        )
+        irregular = "ให้รีบเร่งพวกพหลพลนิกาย"
+        units = tokenize_editor_units(irregular)
+        self.assertEqual(units, ["ให้", "รีบ", "เร่ง", "พวก", "พหล", "พล", "นิ", "กาย"])
+        self.assertEqual("".join(units), irregular)
+
     def test_known_eight_syllable_wak(self):
         result = analyze_wak("พระอย่าได้ถือความข้าสามคน")
         self.assertEqual(result["syllable_count"], 8)
@@ -34,6 +54,19 @@ class CheckerTests(unittest.TestCase):
     def test_rhyme_pair(self):
         self.assertTrue(compare_rhyme("หมาย", "กาย")["passed"])
         self.assertFalse(compare_rhyme("หมาย", "พอง")["passed"])
+
+    def test_rhyme_pair_exposes_pronunciation_and_each_syllable(self):
+        result = compare_rhyme("ความหมาย", "ร่างกาย")
+
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["first_analysis"]["pronunciation"], "ความ-หมาย")
+        self.assertEqual(result["first_analysis"]["rhyme_syllable"], "หมาย")
+        self.assertEqual(result["second_analysis"]["rhyme_syllable"], "กาย")
+        self.assertEqual(len(result["first_analysis"]["sound_details"]), 2)
+        self.assertEqual(
+            set(result["first_analysis"]["sound_details"][0]),
+            {"syllable", "vowel", "final_class", "weight", "tone_role"},
+        )
 
     def test_complete_poem_report_is_explainable(self):
         report = check_klon(VALID_EXAMPLE)

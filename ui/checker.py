@@ -57,6 +57,50 @@ def _clean_token(token: str) -> str:
     return "".join(ch for ch in token.strip() if THAI_RE.search(ch) or ch in TONE_MARKS or ch in "ะาิีึืุูเแโใไัำ็์ฺๅๆ")
 
 
+def tokenize_written_words(text: str) -> list[str]:
+    """Split written Thai into editable word cells without keeping punctuation.
+
+    The editor and the analyzer deliberately share the same curated dictionary,
+    so text pasted into the grid is arranged in the same word units that the
+    report later explains.
+    """
+    words: list[str] = []
+    for raw in word_tokenize(text, engine="newmm", custom_dict=poetry_trie()):
+        word = _clean_token(raw)
+        if word and THAI_RE.search(word):
+            words.append(word)
+    return words
+
+
+def tokenize_editor_units(text: str) -> list[str]:
+    """Return readable editable units while preserving the exact source text.
+
+    Curated/project pronunciations give better Thai boundaries (for example
+    ``หมู|กรอบ`` instead of ``หมูก|รอบ``). They are used only when joining the
+    syllables recreates the written word exactly. Otherwise a lossless written
+    split is accepted only when it does not create one-letter fragments. Words
+    such as ``พหล`` therefore remain whole instead of becoming ``พ|หล``;
+    joining the editor cells always recreates the original poem exactly.
+    """
+    units: list[str] = []
+    for word in tokenize_written_words(text):
+        spoken, _ = pronounce_word(word)
+        spoken_units = [unit.replace("ฺ", "").strip() for unit in spoken if unit.strip()]
+        if spoken_units and "".join(spoken_units) == word:
+            units.extend(spoken_units)
+            continue
+        written_units = [unit.strip() for unit in syllable_tokenize(word, engine="ssg") if unit.strip()]
+        if (
+            len(written_units) > 1
+            and "".join(written_units) == word
+            and all(len(unit) >= 2 for unit in written_units)
+        ):
+            units.extend(written_units)
+        else:
+            units.append(word)
+    return units
+
+
 @lru_cache(maxsize=20_000)
 def pronounce_word(word: str) -> tuple[tuple[str, ...], str]:
     """Return spoken syllables and provenance for one written token."""
@@ -148,10 +192,7 @@ def analyze_wak(text: str, index: int = 0, k_type: int = 8) -> dict[str, Any]:
     words: list[dict[str, Any]] = []
     spoken_syllables: list[str] = []
 
-    for raw in word_tokenize(text, engine="newmm", custom_dict=poetry_trie()):
-        word = _clean_token(raw)
-        if not word or not THAI_RE.search(word):
-            continue
+    for word in tokenize_written_words(text):
         syllables, source = pronounce_word(word)
         spoken_syllables.extend(syllables)
         words.append(
@@ -232,15 +273,35 @@ def _sound_signature(syllable: str) -> dict[str, str]:
 
 
 def compare_rhyme(first: str, second: str) -> dict[str, Any]:
-    """Explain one Khavee rhyme decision for the rhyme laboratory."""
-    first = first.strip()
-    second = second.strip()
+    """Explain one Khavee rhyme decision together with teachable sound data."""
+    first = _clean_token(first)
+    second = _clean_token(second)
+    first_syllables, first_source = pronounce_word(first) if first else ((), "—")
+    second_syllables, second_source = pronounce_word(second) if second else ((), "—")
+    first_rhyme = first_syllables[-1] if first_syllables else first
+    second_rhyme = second_syllables[-1] if second_syllables else second
+    first_details = [analyze_sound(syllable) for syllable in first_syllables]
+    second_details = [analyze_sound(syllable) for syllable in second_syllables]
     return {
         "first": first,
         "second": second,
-        "passed": _safe_rhyme(first, second),
-        "first_sound": _sound_signature(first),
-        "second_sound": _sound_signature(second),
+        "passed": _safe_rhyme(first_rhyme, second_rhyme),
+        "first_sound": _sound_signature(first_rhyme),
+        "second_sound": _sound_signature(second_rhyme),
+        "first_analysis": {
+            "pronunciation": "-".join(first_syllables) if first_syllables else "—",
+            "syllables": list(first_syllables),
+            "rhyme_syllable": first_rhyme or "—",
+            "sound_details": first_details,
+            "source": first_source,
+        },
+        "second_analysis": {
+            "pronunciation": "-".join(second_syllables) if second_syllables else "—",
+            "syllables": list(second_syllables),
+            "rhyme_syllable": second_rhyme or "—",
+            "sound_details": second_details,
+            "source": second_source,
+        },
         "engine": "project core.KhaveeVerifier",
     }
 

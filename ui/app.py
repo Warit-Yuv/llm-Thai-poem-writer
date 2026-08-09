@@ -5,7 +5,9 @@ import csv
 from html import escape
 import io
 import json
+import math
 from pathlib import Path
+import re
 import sys
 
 import pandas as pd
@@ -16,7 +18,13 @@ UI_ROOT = Path(__file__).resolve().parent
 if str(UI_ROOT) not in sys.path:
     sys.path.insert(0, str(UI_ROOT))
 
-from checker import check_klon, compare_rhyme, parse_waks  # noqa: E402
+from checker import (  # noqa: E402
+    check_klon,
+    compare_rhyme,
+    parse_waks,
+    pronounce_word,
+    tokenize_editor_units,
+)
 
 
 EXAMPLE_POEMS = {
@@ -30,6 +38,10 @@ EXAMPLE_POEMS = {
 ไปหาดทรายเต็มกลัวหนังหัวพอง""",
 }
 KLON_NAMES = {4: "กลอนสี่", 8: "กลอนแปด"}
+WAK_NAMES = ("วรรคสดับ", "วรรครับ", "วรรครอง", "วรรคส่ง")
+WORD_SLOTS = {4: 4, 8: 8}
+EDITOR_SCHEMA_VERSION = 10
+STRONG_PASTE_SEPARATOR = re.compile(r"[,\r\n;:|/\\•]+")
 
 # ponytail: copied verbatim from core.KhaveeVerifier.check_klon's docstring
 # rather than parsed out of it at runtime — core.py is vendored third-party, so
@@ -152,6 +164,110 @@ h1,h2,h3 { color:var(--ink); letter-spacing:-.02em; }
 .pass { color:#16704d; } .review { color:#9a6411; } .fail { color:#ad3434; }
 .small-note { color:#6a5b52; font-size:.88rem; }
 .research-result { background:var(--paper-light); border:1px solid var(--line); border-radius:10px; padding:.85rem 1rem; margin-top:.7rem; line-height:1.65; }
+.poem-editor-heading { display:flex; align-items:baseline; justify-content:space-between; gap:1rem; margin:.15rem 0 .35rem; }
+.poem-editor-heading strong { color:var(--vermilion); font-size:.92rem; letter-spacing:.025em; }
+.poem-editor-heading span { color:var(--muted); font-size:.78rem; }
+.st-key-poem_grid {
+  position:relative;
+  overflow-x:clip;
+  overflow-y:visible;
+  margin:.45rem 0 1.05rem;
+  padding:1rem 2.05rem .85rem;
+  background:rgba(255,253,248,.78);
+  border:1px solid var(--line) !important;
+  border-radius:12px !important;
+  box-shadow:0 7px 20px rgba(77,43,28,.045);
+  scrollbar-color:#c9a895 #f4ece3;
+  scrollbar-width:thin;
+}
+[class*="st-key-baht_row_"] { position:relative; min-height:5.35rem; }
+.rhyme-wire { position:relative; color:#342821; pointer-events:none; }
+.rhyme-wire .wire { position:absolute; display:block; box-sizing:border-box; }
+.rhyme-wire.top { height:1.65rem; margin:-.15rem 0 -.15rem; }
+.rhyme-wire.top .wire-main {
+  left:var(--source); width:calc(var(--target) - var(--source)); bottom:0; height:1.3rem;
+  border-left:1.6px solid currentColor; border-right:1.6px solid currentColor; border-top:1.6px solid currentColor;
+}
+.rhyme-wire.middle { height:2.25rem; margin:-1.2rem 0 -.2rem; }
+.rhyme-wire.middle .wire-start {
+  right:var(--edge); top:0; height:2.45rem; border-right:1.6px solid currentColor;
+}
+.rhyme-wire.middle .wire-bridge {
+  left:var(--source); right:var(--edge); top:2.45rem; border-top:1.6px solid currentColor;
+}
+.rhyme-wire.middle .wire-end {
+  left:var(--source); top:2.45rem; height:3.5rem; border-left:1.6px solid currentColor;
+}
+.rhyme-wire.bottom { height:1.75rem; margin:-3rem 0 .35rem; }
+.rhyme-wire.bottom .wire-main {
+  left:var(--source); width:calc(var(--target) - var(--source)); top:0; height:1.3rem;
+  border-left:1.6px solid currentColor; border-right:1.6px solid currentColor; border-bottom:1.6px solid currentColor;
+}
+.rhyme-wire.inter-stanza { height:1.75rem; margin:-.15rem 0 -.1rem; }
+.rhyme-wire.inter-stanza .wire-main {
+  left:calc(100% - var(--edge) + 1rem); top:-4.45rem; width:1.05rem; height:10.4rem;
+  border-right:1.6px solid currentColor; border-top:1.6px solid currentColor; border-bottom:1.6px solid currentColor;
+}
+.stanza-title { display:flex; align-items:center; gap:.65rem; margin:.1rem 0 .15rem; color:var(--vermilion); font-size:.8rem; font-weight:700; }
+.stanza-title::after { content:""; flex:1; height:1px; background:rgba(183,53,39,.18); }
+.wak-label { display:flex; align-items:center; margin:.26rem 0 .18rem; color:var(--ink); font-size:.76rem; font-weight:700; }
+.wak-label.right { justify-content:flex-end; text-align:right; }
+.rhyme-route { position:relative; width:max-content; margin:-.05rem auto .08rem; padding:0 .55rem; color:#9b7568; background:#fffdf8; font-size:.66rem; line-height:1.4; }
+.rhyme-route::before,.rhyme-route::after { content:""; position:absolute; top:50%; width:2.1rem; height:1px; background:rgba(183,53,39,.3); }
+.rhyme-route::before { right:100%; } .rhyme-route::after { left:100%; }
+[class*="st-key-poem_cell_"] { min-width:2.45rem; }
+[class*="st-key-poem_cell_"] [data-testid="stTextAreaRootElement"] {
+  min-height:2.45rem !important;
+  border:1px solid #ddcdbd !important;
+  border-radius:999px !important;
+  background:#fffdfa !important;
+}
+[class*="st-key-poem_cell_"] [data-testid="stTextAreaRootElement"]:focus-within {
+  border-color:var(--vermilion) !important;
+  box-shadow:0 0 0 2px rgba(183,53,39,.1) !important;
+}
+[class*="st-key-poem_cell_"] textarea {
+  min-height:2.45rem !important;
+  height:2.45rem !important;
+  padding:.5rem .2rem !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  resize:none !important;
+  white-space:pre !important;
+  word-break:normal !important;
+  text-align:center;
+  color:var(--ink) !important;
+  font-size:.72rem !important;
+  line-height:1.35 !important;
+  scrollbar-width:none;
+}
+[class*="st-key-poem_cell_"] textarea::-webkit-scrollbar { display:none; }
+[class*="st-key-poem_cell_"] textarea::placeholder { color:#a8998e; opacity:1; }
+.st-key-add_baht button {
+  display:flex; align-items:center; justify-content:center;
+  width:2.65rem !important; height:2.65rem; min-height:2.65rem;
+  margin:.28rem auto 0; padding:0 !important;
+  border:2px solid #d8c6b3 !important; border-radius:50% !important;
+  background:#fffdf8 !important; color:var(--vermilion) !important;
+  font-size:1.45rem !important; box-shadow:none !important;
+}
+.st-key-add_baht [data-testid="stButton"] { display:flex; justify-content:center; width:100%; }
+.st-key-add_baht button:hover { border-color:var(--vermilion) !important; background:#fff7ef !important; transform:none !important; }
+.st-key-add_baht button p { color:var(--vermilion) !important; font-size:1.45rem !important; line-height:1 !important; }
+.input-workbench { margin-top:.2rem; }
+.workbench-title { margin:0 0 .48rem; color:var(--ink); font-size:1.08rem; font-weight:700; line-height:1.45; }
+.workbench-kicker { margin:-.24rem 0 .55rem; color:var(--muted); font-size:.76rem; line-height:1.45; }
+.rhyme-lab-result { display:grid; grid-template-columns:minmax(8.4rem,.72fr) minmax(0,1.55fr); gap:.65rem; margin-top:.65rem; }
+.rhyme-verdict { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:7rem; padding:.72rem; border:1px solid var(--line); border-radius:10px; background:#fffdf9; text-align:center; }
+.rhyme-verdict.pass { border-color:#b9dccb; background:#f3fbf6; color:#176443; }
+.rhyme-verdict.fail { border-color:#e7bcbc; background:#fff7f5; color:#8e2929; }
+.rhyme-verdict strong { font-size:1rem; line-height:1.4; }
+.rhyme-verdict span { margin-top:.25rem; color:var(--ink); font-size:.8rem; }
+.rhyme-sound-table { width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border:1px solid #eadace; border-radius:10px; background:#fff; font-size:.72rem; }
+.rhyme-sound-table th { padding:.46rem .4rem; background:var(--vermilion); color:#fff; font-weight:700; text-align:left; }
+.rhyme-sound-table td { padding:.42rem .4rem; border-top:1px solid #eee3d8; background:#fff; vertical-align:top; }
+.rhyme-sound-table td:first-child { color:#6f2e25; font-weight:700; }
+.rhyme-sound-table .rhyme-pronunciation small { display:block; margin-top:.14rem; color:var(--muted); font-size:.68rem; font-weight:400; }
 .structure-summary { display:grid; grid-template-columns:5.2rem 1fr; gap:1rem; align-items:center; background:#fffdf9; border:1px solid var(--line); border-radius:12px; padding:1rem 1.1rem; margin:.15rem 0 .8rem; box-shadow:0 6px 16px rgba(77,43,28,.055); }
 .structure-score { display:flex; flex-direction:column; align-items:center; justify-content:center; width:4.6rem; height:4.6rem; border:2px solid rgba(183,53,39,.72); border-radius:50%; color:var(--vermilion); background:#fff8f1; line-height:1; }
 .structure-score strong { font-family:Georgia,'Times New Roman',serif; font-size:1.45rem; }
@@ -298,6 +414,8 @@ div[data-testid="stDialog"] div[role="dialog"] { background:#fffdf9 !important; 
   .sound-table-wrap { overflow-x:auto; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain; }
   .sound-table { width:max-content; min-width:780px; table-layout:auto; }
   .sound-table td { overflow:visible; text-overflow:clip; }
+  .st-key-poem_grid { padding:.8rem; }
+  .rhyme-lab-result { grid-template-columns:1fr; }
   [data-testid="stButtonGroup"] div[role="radiogroup"] { grid-template-columns:1fr; }
 }
 @media (max-width:480px) {
@@ -317,14 +435,236 @@ def clear_analysis() -> None:
     st.session_state.pop("analysis_error", None)
 
 
+def poem_cell_key(klon_type: int, line_index: int, slot_index: int) -> str:
+    return f"poem_cell_{klon_type}_{line_index}_{slot_index}"
+
+
+def _clear_poem_cells(klon_type: int | None = None) -> None:
+    prefix = "poem_cell_" if klon_type is None else f"poem_cell_{klon_type}_"
+    for key in list(st.session_state):
+        if key.startswith(prefix):
+            del st.session_state[key]
+
+
+def _fit_words_to_slots(words: list[str], slot_count: int) -> list[str]:
+    """Preserve pasted text even when tokenization produces extra UI cells."""
+    if len(words) <= slot_count:
+        return words + [""] * (slot_count - len(words))
+    return words[: slot_count - 1] + ["".join(words[slot_count - 1 :])]
+
+
+def poem_from_grid(klon_type: int) -> str:
+    slot_count = WORD_SLOTS[klon_type]
+    baht_count = max(2, int(st.session_state.get("editor_baht_count", 2)))
+    rows = []
+    for line_index in range(baht_count * 2):
+        words = [
+            st.session_state.get(poem_cell_key(klon_type, line_index, slot_index), "").strip()
+            for slot_index in range(slot_count)
+        ]
+        rows.append("".join(word for word in words if word))
+    return "\n".join(rows).rstrip()
+
+
+def load_poem_into_grid(poem_text: str, klon_type: int) -> None:
+    """Normalize pasted punctuation/spacing and distribute text into word cells."""
+    waks = parse_waks(poem_text)
+    baht_count = max(2, math.ceil(len(waks) / 2))
+    st.session_state.editor_baht_count = baht_count
+    _clear_poem_cells(klon_type)
+    slot_count = WORD_SLOTS[klon_type]
+    normalized_waks: list[str] = []
+    for line_index in range(baht_count * 2):
+        wak = waks[line_index] if line_index < len(waks) else ""
+        words = tokenize_editor_units(wak)
+        fitted = _fit_words_to_slots(words, slot_count)
+        for slot_index, word in enumerate(fitted):
+            st.session_state[poem_cell_key(klon_type, line_index, slot_index)] = word
+        if wak:
+            normalized_waks.append("".join(words) or wak.strip())
+    st.session_state.poem_input = "\n".join(normalized_waks)
+    st.session_state.editor_klon_type = klon_type
+
+
+def sync_text_to_grid() -> None:
+    klon_type = st.session_state.get("klon_type", 8)
+    load_poem_into_grid(st.session_state.get("poem_input", ""), klon_type)
+    clear_analysis()
+
+
+def sync_cell_to_text(cell_key: str, line_index: int, slot_index: int, klon_type: int) -> None:
+    raw_value = st.session_state.get(cell_key, "")
+    if STRONG_PASTE_SEPARATOR.search(raw_value):
+        # A complete poem can be pasted into any word cell. Newlines, commas,
+        # slashes and similar separators are normalized into one วรรค per line.
+        load_poem_into_grid(raw_value, klon_type)
+        clear_analysis()
+        return
+
+    words = tokenize_editor_units(raw_value)
+    slot_count = WORD_SLOTS[klon_type]
+    if len(words) > 1:
+        fitted = _fit_words_to_slots(words, slot_count - slot_index)
+        for offset, word in enumerate(fitted):
+            st.session_state[poem_cell_key(klon_type, line_index, slot_index + offset)] = word
+    else:
+        st.session_state[cell_key] = words[0] if words else ""
+    st.session_state.poem_input = poem_from_grid(klon_type)
+    clear_analysis()
+
+
+def add_baht() -> None:
+    st.session_state.editor_baht_count = max(
+        2, int(st.session_state.get("editor_baht_count", 2))
+    ) + 1
+    clear_analysis()
+
+
+def change_klon_type() -> None:
+    klon_type = st.session_state.get("klon_type", 8)
+    load_poem_into_grid(st.session_state.get("poem_input", ""), klon_type)
+    clear_analysis()
+
+
 def use_example() -> None:
-    st.session_state.poem_input = EXAMPLE_POEMS[st.session_state.get("klon_type", 8)]
+    klon_type = st.session_state.get("klon_type", 8)
+    load_poem_into_grid(EXAMPLE_POEMS[klon_type], klon_type)
     clear_analysis()
 
 
 def clear_input() -> None:
     st.session_state.poem_input = ""
+    st.session_state.editor_baht_count = 2
+    _clear_poem_cells()
     clear_analysis()
+
+
+def rhyme_wire_html(kind: str, klon_type: int) -> str:
+    """Draw one exact route from the traditional rhyme diagram.
+
+    The source is the final word of the left-hand wak.  The target is an early
+    word of the right-hand wak: word 2 for klon si and word 3 for klon paet.
+    Keeping each route as its own in-flow element makes the diagram stay lined
+    up when Streamlit recalculates the native input widgets.
+    """
+    source = 41.6 if klon_type == 4 else 44.4
+    target = 70.3 if klon_type == 4 else 67.8
+    wire_parts = (
+        '<span class="wire wire-start"></span>'
+        '<span class="wire wire-bridge"></span>'
+        '<span class="wire wire-end"></span>'
+        if kind == "middle"
+        else '<span class="wire wire-main"></span>'
+    )
+    return (
+        f'<div class="rhyme-wire {kind}" '
+        f'style="--source:{source}%;--target:{target}%;--edge:2%;" aria-hidden="true">'
+        f'{wire_parts}'
+        '</div>'
+    )
+
+
+def render_poem_editor(klon_type: int) -> None:
+    slot_count = WORD_SLOTS[klon_type]
+    baht_count = max(2, int(st.session_state.get("editor_baht_count", 2)))
+    with st.container(border=True, key="poem_grid"):
+        for baht_index in range(baht_count):
+            with st.container(key=f"baht_row_{baht_index}"):
+                label_columns = st.columns(2, gap="large")
+                for column_offset, label_column in enumerate(label_columns):
+                    line_index = baht_index * 2 + column_offset
+                    wak_name = WAK_NAMES[line_index % 4]
+                    label_class = "right" if column_offset else "left"
+                    with label_column:
+                        st.markdown(
+                            f'<div class="wak-label {label_class}">{wak_name}</div>',
+                            unsafe_allow_html=True,
+                        )
+
+                # The first row of each stanza carries the upper สดับ → รับ route.
+                if baht_index % 2 == 0:
+                    st.markdown(rhyme_wire_html("top", klon_type), unsafe_allow_html=True)
+
+                wak_columns = st.columns(2, gap="large")
+                for column_offset, wak_column in enumerate(wak_columns):
+                    line_index = baht_index * 2 + column_offset
+                    wak_name = WAK_NAMES[line_index % 4]
+                    with wak_column:
+                        for slot_index in range(slot_count):
+                            key = poem_cell_key(klon_type, line_index, slot_index)
+                            if key not in st.session_state:
+                                st.session_state[key] = ""
+                        word_columns = st.columns(slot_count, gap="small")
+                        for slot_index, column in enumerate(word_columns):
+                            key = poem_cell_key(klon_type, line_index, slot_index)
+                            value = st.session_state.get(key, "")
+                            spoken, _ = pronounce_word(value) if value else ((), "—")
+                            column.text_area(
+                                f"{wak_name} คำที่ {slot_index + 1}",
+                                key=key,
+                                height=38,
+                                placeholder=f"คำ{slot_index + 1}",
+                                help=(f"อ่านว่า {'-'.join(spoken)}" if len(spoken) > 1 else None),
+                                label_visibility="collapsed",
+                                on_change=sync_cell_to_text,
+                                args=(key, line_index, slot_index, klon_type),
+                            )
+
+            if baht_index % 2 == 0 and baht_index < baht_count - 1:
+                # ท้ายวรรครับ → ท้ายวรรครอง
+                st.markdown(rhyme_wire_html("middle", klon_type), unsafe_allow_html=True)
+            elif baht_index % 2 == 1:
+                # ท้ายวรรครอง → พยางค์ต้นของวรรคส่ง
+                st.markdown(rhyme_wire_html("bottom", klon_type), unsafe_allow_html=True)
+                if baht_index < baht_count - 1:
+                    # ท้ายวรรคส่งของบทก่อน → ท้ายวรรครับของบทถัดไป
+                    st.markdown(
+                        rhyme_wire_html("inter-stanza", klon_type),
+                        unsafe_allow_html=True,
+                    )
+        add_left, add_center, add_right = st.columns([1, .13, 1])
+        add_center.button(
+            "＋",
+            key="add_baht",
+            help="เพิ่ม 1 บาท (2 วรรค)",
+            on_click=add_baht,
+        )
+
+
+def rhyme_lab_html(comparison: dict) -> str:
+    passed = comparison["passed"]
+    verdict_class = "pass" if passed else "fail"
+    verdict = "สัมผัสกัน" if passed else "ไม่สัมผัสกัน"
+    rows = []
+    for analysis_key in ("first_analysis", "second_analysis"):
+        analysis = comparison[analysis_key]
+        rhyme_detail = (analysis["sound_details"] or [
+            {"syllable": "—", "vowel": "—", "final_class": "—"}
+        ])[-1]
+        pronunciation_note = ""
+        if len(analysis.get("syllables", [])) > 1:
+            pronunciation_note = (
+                f'<small>ตรวจเสียงสัมผัสที่ “{escape(analysis["rhyme_syllable"])}”</small>'
+            )
+        rows.append(
+            "<tr>"
+            f'<td class="rhyme-pronunciation">{escape(analysis["pronunciation"])}{pronunciation_note}</td>'
+            f"<td>{escape(rhyme_detail['vowel'])}</td>"
+            f"<td>{escape(rhyme_detail['final_class'])}</td>"
+            "</tr>"
+        )
+    return f"""
+      <div class="rhyme-lab-result">
+        <div class="rhyme-verdict {verdict_class}">
+          <strong>{verdict}</strong>
+          <span>{escape(comparison['first'])} ↔ {escape(comparison['second'])}</span>
+        </div>
+        <table class="rhyme-sound-table" aria-label="ผลวิเคราะห์เสียงของคำทดลอง">
+          <thead><tr><th>คำอ่าน</th><th>สระ</th><th>มาตรา</th></tr></thead>
+          <tbody>{''.join(rows)}</tbody>
+        </table>
+      </div>
+    """
 
 
 def status_class(status: str) -> str:
@@ -494,6 +834,11 @@ st.markdown(
 )
 
 st.markdown("## <span class='step'>1</span> ใส่กลอน", unsafe_allow_html=True)
+if "poem_input" not in st.session_state:
+    st.session_state.poem_input = ""
+if "editor_baht_count" not in st.session_state:
+    st.session_state.editor_baht_count = 2
+
 klon_type = st.segmented_control(
     "เลือกรูปแบบคำประพันธ์",
     options=[4, 8],
@@ -501,37 +846,86 @@ klon_type = st.segmented_control(
     required=True,
     format_func=lambda value: KLON_NAMES[value],
     key="klon_type",
-    on_change=clear_analysis,
+    on_change=change_klon_type,
     width="stretch",
 )
 klon_name = KLON_NAMES[klon_type]
 
-st.caption(f"ผังสัมผัสบังคับของ{klon_name} · X คือตำแหน่งคำสัมผัส เส้นเชื่อมคือสัมผัสที่บังคับ")
-# Emitted as ONE line of HTML with explicit <br>/&nbsp; rather than a <pre>:
-# markdown ends a raw HTML block at the diagram's blank line, which drops the
-# element and leaves the art as flowing text. This shape has no newlines to
-# break on and no reliance on white-space:pre surviving Streamlit's CSS.
+if (
+    st.session_state.get("editor_klon_type") != klon_type
+    or st.session_state.get("editor_schema_version") != EDITOR_SCHEMA_VERSION
+):
+    load_poem_into_grid(st.session_state.poem_input, klon_type)
+    st.session_state.editor_schema_version = EDITOR_SCHEMA_VERSION
+
 st.markdown(
-    '<div class="klon-map">'
-    + escape(KLON_MAPS[klon_type]).replace(" ", "&nbsp;").replace("\n", "<br>")
-    + "</div>",
+    '<div class="poem-editor-heading"><strong>ตารางคำและเส้นทางสัมผัส</strong>'
+    '<span>พิมพ์ทีละคำ หรือวางกลอนลงในช่องใดก็ได้</span></div>',
     unsafe_allow_html=True,
 )
+render_poem_editor(klon_type)
 
-action_left, action_right, action_space = st.columns([1.25, 1, 3])
-action_left.button("ใช้กลอนตัวอย่าง", key="use_example", on_click=use_example, width="stretch")
-action_right.button("ล้างข้อความ", key="clear_input", on_click=clear_input, width="stretch")
+with st.container(key="input_workbench"):
+    text_column, sound_column = st.columns([.9, 1.35], gap="large")
+    with text_column:
+        st.markdown('<div class="workbench-title">วางหรือพิมพ์กลอน</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="workbench-kicker">ระบบจัดวรรคและตัดช่องว่างหรือเครื่องหมายคั่นให้</div>',
+            unsafe_allow_html=True,
+        )
+        poem = st.text_area(
+            "ข้อความกลอน",
+            key="poem_input",
+            height=165,
+            placeholder="วางกลอนที่นี่",
+            label_visibility="collapsed",
+            on_change=sync_text_to_grid,
+        )
+        action_left, action_right = st.columns(2)
+        action_left.button(
+            "ใช้กลอนตัวอย่าง",
+            key="use_example",
+            on_click=use_example,
+            width="stretch",
+        )
+        action_right.button(
+            "ล้างทั้งหมด",
+            key="clear_input",
+            on_click=clear_input,
+            width="stretch",
+        )
 
-if "poem_input" not in st.session_state:
-    st.session_state.poem_input = ""
-
-poem = st.text_area(
-    "ข้อความกลอน",
-    key="poem_input",
-    height=180,
-    placeholder="วรรคที่ 1\nวรรคที่ 2\nวรรคที่ 3\nวรรคที่ 4",
-    label_visibility="collapsed",
-)
+    with sound_column:
+        st.markdown(
+            '<div class="workbench-title">ทดลองคำสัมผัสและวิเคราะห์เสียง</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            '<div class="workbench-kicker">เครื่องมือเรียนรู้เสียงสัมผัสของคำไทย</div>',
+            unsafe_allow_html=True,
+        )
+        rhyme_columns = st.columns(2)
+        first_word = rhyme_columns[0].text_input(
+            "คำที่ 1",
+            key="rhyme_first",
+            placeholder="เช่น หมาย",
+        )
+        second_word = rhyme_columns[1].text_input(
+            "คำที่ 2",
+            key="rhyme_second",
+            placeholder="เช่น กาย",
+        )
+        if first_word.strip() and second_word.strip():
+            st.markdown(
+                rhyme_lab_html(compare_rhyme(first_word, second_word)),
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                '<div class="rhyme-verdict"><strong>รอทดลองเสียง</strong>'
+                '<span>ใส่คำให้ครบทั้งสองช่อง</span></div>',
+                unsafe_allow_html=True,
+            )
 
 waks = parse_waks(poem)
 line_count = len(waks)
@@ -667,25 +1061,3 @@ if (
             mime="text/csv",
             width="stretch",
         )
-
-with st.expander("เครื่องมือวิจัย: ทดลองคำสัมผัส"):
-    st.caption("ใส่คำหรือพยางค์สองคำเพื่อตรวจเสียงสระและมาตราตัวสะกดด้วย KhaveeVerifier")
-    with st.form("rhyme_lab_form"):
-        rhyme_cols = st.columns(2)
-        first_word = rhyme_cols[0].text_input("คำที่ 1", placeholder="เช่น หมาย")
-        second_word = rhyme_cols[1].text_input("คำที่ 2", placeholder="เช่น กาย")
-        compare = st.form_submit_button("เปรียบเทียบสัมผัส", width="stretch")
-
-    if compare:
-        if not first_word.strip() or not second_word.strip():
-            st.warning("กรุณาใส่คำให้ครบทั้งสองช่อง")
-        else:
-            comparison = compare_rhyme(first_word, second_word)
-            verdict = "สัมผัสกัน" if comparison["passed"] else "ไม่สัมผัสกัน"
-            verdict_class = "pass" if comparison["passed"] else "fail"
-            st.markdown(
-                f'<div class="research-result"><strong class="{verdict_class}">{escape(first_word)} ↔ {escape(second_word)}: {verdict}</strong><br>'
-                f'คำที่ 1 — สระ {escape(comparison["first_sound"]["vowel"])} · มาตรา {escape(comparison["first_sound"]["final_class"])}<br>'
-                f'คำที่ 2 — สระ {escape(comparison["second_sound"]["vowel"])} · มาตรา {escape(comparison["second_sound"]["final_class"])}</div>',
-                unsafe_allow_html=True,
-            )
