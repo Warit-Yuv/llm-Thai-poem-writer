@@ -666,39 +666,44 @@ emitted as **`HP_oracle_blind` POSITIVES (gold=1)** with tag `oracle_blind`:
 
 ### v5.1 — oracle-blind volume 65 -> 423 (author: "yes add more") (2026-08-10)
 
-**Probed, rejected:** บุตร/มิตร/บัตร/กอปร (the other silent-ร words in the
-5.3.5 core's safe-strip list) are NOT oracle-blind — the oracle already
-strips their ร and reads them correctly (`is_sumpus(บุตร,จุด)=True`), so they
-can never be gold=1 oracle-blind positives (only the เอะ+กด subcase is blind,
-because the long เอ cannot be shortened on a dead final without ็).
+**Probed & rejected (not oracle-blind):**
+- บุตร/มิตร/บัตร/กอปร (the other silent-ร words in the 5.3.5 core's
+  safe-strip list): the oracle already strips their ร and reads them
+  correctly (`is_sumpus(บุตร,จุด)=True`) — not blind.
+- **เขตร (author correction):** it is the ancient spelling of เขต (from Pali
+  เขตฺต), read with LONG เอ; the oracle reads it correctly as (เอ,กด)
+  (`is_sumpus(เขตร,เขต)=True`). My first draft wrongly put it in the เอะ+กด
+  silent-ร family — those 5 gold=1 rows (targets เอะ+กด) were WRONG and are
+  removed. Only เพชร/เนตร/เกษตร are silent-ร oracle-blind (true เอะ+กด).
 
-**Added (verified blind + gold-correct, 0/423 rows failed either check):**
-- `เขตร` -> true (เอะ,กด) — silent_ร, same mechanism as เพชร/เนตร/เกษตร.
+**Added (verified blind on the emitted waks + partner-in-family, 0/423 rows
+failed either check):**
 - `ศัตรู` -> true (อู,กา) — **first_sara**: ssg keeps it ONE token, the
   oracle hears only sara[0] (ไอ+กา) and misses the true final ตรู
-  (ศัตรู~ครู/ตรู/ปรู).
-- `กษัตรี`/`กษัตรีย์` -> true (อี,กา) — first_sara: final ตรี (กษัตรี~ตรี/ศรี).
+  (ศัตรู~ครู/ตรู/ปรู; pronounced [สัด-ตฺรู]).
+- `กษัตรี`/`กษัตรีย์` -> true (อี,กา) — first_sara: final ตรี
+  (กษัตรี~ตรี/ศรี; pronounced [กะ-สัด-ตฺรี]).
 - `ORACLE_BLIND_REASON` records the mechanism per word (in the review note).
 
 **Volume lever was the quota, not the pool:** (เอะ,กด) targets are abundant
 at r1/r3 (569/566 occurrences) but the old cap was 60. `--ob-positives`
 default 60 -> 250, and the pass now rotates through ALL candidate words per
 stanza (was `cands[0]`). Result: **423 oracle-blind positives** (r1 250,
-r2 87, r3 80, rX 6) — by candidate: ศัตรู 143, กษัตรีย์ 129, กษัตรี 126,
-เพชร 12, เกษตร 6, เขตร 5, เนตร 2. Total 11,623 instances.
+r2 87, r3 80, rX 6) — by candidate: ศัตรู 145, กษัตรีย์ 133, กษัตรี 120,
+เพชร 13, เนตร 7, เกษตร 5 (0 เขตร). Total 11,623 instances.
 
 **v5.1 eval (A/B/D/Dssg, skip C):**
 - **FP-by-op on 10,000 negatives** unchanged from v5: A 1,962 (C9 1,760,
   C3 167), B 0, D_w2p 461, D_ssg 217.
 - **FN-pos combined** (tricky + oracle-blind, reported as ONE number with
-  breakdown): A **827** (507 tricky = 57.8% recall + 320 oracle-blind =
-  24.3%), B **423** (0 tricky = 100% + **423/423 oracle-blind = 0%** — the
-  full deduction), D_w2p 134 (107 tricky = 91.1% + 27 oracle-blind =
-  **93.6%**), D_ssg 223 (77 tricky = 93.6% + 146 oracle-blind = 65.5%).
+  breakdown): A **833** (507 tricky = 57.8% recall + 326 oracle-blind =
+  22.9%), B **423** (0 tricky = 100% + **423/423 oracle-blind = 0%** — the
+  full deduction), D_w2p 136 (107 tricky = 91.1% + 29 oracle-blind =
+  **93.1%**), D_ssg 219 (77 tricky = 93.6% + 142 oracle-blind = 66.4%).
 - **New D_w2p vs D_ssg differentiator:** w2p's pronunciation knowledge fixes
   BOTH blind spots (silent-ร via the override dictionary AND first_sara via
-  w2p: ศัตรู->สัด-ตรู, กษัตรี->กะ-สัด-ตรี), so D_w2p catches 396/423 oracle-
-  blind while D_ssg (plain ssg, no w2p hallucinations) catches only 277/423.
+  w2p: ศัตรู->สัด-ตรู, กษัตรี->กะ-สัด-ตรี), so D_w2p catches 394/423 oracle-
+  blind while D_ssg (plain ssg, no w2p hallucinations) catches only 281/423.
 - **Merged-with-gold:** A P 94.9% / R 72.5% / F1 82.2%; B 100.0% / 86.5% /
   92.8%; D_w2p 99.2% / 86.8% / 92.6%; D_ssg 99.7% / 87.8% / 93.4%. B's 423
   oracle-blind FNs now visibly cost it recall (87.4% -> 86.5%) even in the

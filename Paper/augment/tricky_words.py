@@ -100,6 +100,22 @@ ORACLE_LIMITATIONS: list[dict] = [
                  "rhyme the oracle accepts."),
     },
     {
+        "pair": ("ศัตรู", "ครู"),
+        "reason": "first_sara",
+        "note": ("ศัตรู = [สัด-ตฺรู]; ssg keeps the word as ONE syllable "
+                 "token, so check_sara hears only sara[0] (ไอ+กา) and never "
+                 "the true final ตรู (อู+กา). A genuine rhyme with ครู/ตรู/"
+                 "ปรู that the oracle rejects."),
+    },
+    {
+        "pair": ("กษัตรี", "ตรี"),
+        "reason": "first_sara",
+        "note": ("กษัตรี/กษัตรีย์ = [กะ-สัด-ตฺรี]; ssg keeps the word as ONE "
+                 "syllable token, so check_sara hears only sara[0] (ไอ+กา) "
+                 "and never the true final ตรี (อี+กา). A genuine rhyme with "
+                 "ตรี/ศรี that the oracle rejects."),
+    },
+    {
         "pair": ("ฤทัย", "ไท"),
         "reason": "rue_2syl",
         "note": ("ฤทัย = รึ-ไท (two syllables); the oracle reads ฤ as a "
@@ -508,19 +524,21 @@ TRUE_FINAL_TRAPS = [
 #
 # 1) silent_r -- final ร silent from a Pali/Sanskrit root (NOT การันต์)
 #    makes them true สระ เอะ + แม่กด, but the oracle keeps the long เอ (no
-#    ็ on the dead final): เพชร/เนตร/เกษตร/เขตร rhyme with anything
-#    สระ เอะ + แม่กด (เพ็ด เห็ด เจ็ด เบ็ด เกร็ด ...).
+#    ็ on the dead final): เพชร/เนตร/เกษตร rhyme with anything
+#    สระ เอะ + แม่กด (เพ็ด เห็ด เจ็ด เบ็ด เกร็ด ...). (เขตร is EXCLUDED:
+#    it is the ancient spelling of เขต -- the oracle reads it correctly as
+#    long เอ + แม่กด, so it is NOT oracle-blind.)
 # 2) first_sara -- check_sara keeps only sara[0] of the WHOLE input string;
 #    ssg keeps the word as ONE syllable token, so the oracle hears the first
-#    vowel and never the rhyming final one: ศัตรู = สัด-ตรู (true อู+กา,
-#    oracle reads ไอ+กา), กษัตรี/กษัตรีย์ = กะ-สัด-ตรี (true อี+กา, oracle
-#    reads ไอ+กา).
+#    vowel and never the rhyming final one: ศัตรู = [สัด-ตฺรู] (true อู+กา,
+#    oracle reads ไอ+กา), กษัตรี/กษัตรีย์ = [กะ-สัด-ตฺรี] (true อี+กา,
+#    oracle reads ไอ+กา).
 #
 # Each probe only fires when the rhyme TARGET is in the true family, so it
 # genuinely tests oracle blindness. Reviewed by the author in the review file.
 ORACLE_BLIND_POOL: list[str] = [
-    "เพชร", "เนตร", "เกษตร", "เขตร",   # silent_r -> เอะ+กด
-    "ศัตรู", "กษัตรี", "กษัตรีย์",       # first_sara -> อู+กา / อี+กา
+    "เพชร", "เนตร", "เกษตร",   # silent_r -> เอะ+กด
+    "ศัตรู", "กษัตรี", "กษัตรีย์",  # first_sara -> อู+กา / อี+กา
 ]
 
 # Linguistic rhyme family (rhyme class of the partner side) each oracle-blind
@@ -530,7 +548,6 @@ ORACLE_BLIND_FAMILIES: dict = {
     "เพชร": ("เอะ", "กด"),
     "เนตร": ("เอะ", "กด"),
     "เกษตร": ("เอะ", "กด"),
-    "เขตร": ("เอะ", "กด"),
     "ศัตรู": ("อู", "กา"),
     "กษัตรี": ("อี", "กา"),
     "กษัตรีย์": ("อี", "กา"),
@@ -539,7 +556,7 @@ ORACLE_BLIND_FAMILIES: dict = {
 # mechanism tag per oracle-blind word (for the review file / note)
 ORACLE_BLIND_REASON: dict = {
     "เพชร": "silent_r", "เนตร": "silent_r", "เกษตร": "silent_r",
-    "เขตร": "silent_r", "ศัตรู": "first_sara", "กษัตรี": "first_sara",
+    "ศัตรู": "first_sara", "กษัตรี": "first_sara",
     "กษัตรีย์": "first_sara",
 }
 
