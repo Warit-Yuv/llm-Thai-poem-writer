@@ -48,6 +48,8 @@ DEFAULT_AUG = os.path.join(os.path.dirname(_HERE), "augment", "output",
                            "instances.json")
 DEFAULT_OUT = os.path.join(os.path.dirname(_HERE), "report",
                            "paper_tables.json")
+DEFAULT_VERD = os.path.join(os.path.dirname(_HERE), "report",
+                            "augment_verdicts.json")
 
 
 def _augment_key(inst):
@@ -62,6 +64,9 @@ def main() -> None:
     ap.add_argument("--dw-workers", type=int, default=4)
     ap.add_argument("--skip-c", action="store_true",
                     help="skip the slow Checker C pass (table preview)")
+    ap.add_argument("--dump-verdicts", default=DEFAULT_VERD,
+                    help="save per-instance verdicts to this JSON "
+                         "(None to disable)")
     args = ap.parse_args()
 
     aug = json.load(open(args.augment, encoding="utf-8"))
@@ -102,6 +107,13 @@ def main() -> None:
         for e, inst in zip(c_entries, aug):
             e["op"] = inst["op"]
         per_inst[C_NAME] = c_entries
+
+    # ---- dump per-instance verdicts (never re-run C again) ----
+    if args.dump_verdicts:
+        os.makedirs(os.path.dirname(args.dump_verdicts), exist_ok=True)
+        with open(args.dump_verdicts, "w", encoding="utf-8") as f:
+            json.dump(per_inst, f, ensure_ascii=False)
+        print("wrote", args.dump_verdicts, flush=True)
 
     # ---- tables ----
     report = {"generated": time.strftime("%Y-%m-%d %H:%M:%S"),
