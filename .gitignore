@@ -2,3 +2,6 @@
 __pycache__/
 .claude/
 test2.*
+# cloned third-party reference (KlonSuphap-LM for Checker C) -- kept local;
+# see PROGRESS.md Session 3 / paper reproducibility section
+third_party/
