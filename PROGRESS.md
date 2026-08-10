@@ -773,6 +773,82 @@ oracle limitation that the generator's oracle-gate could not self-detect:
   เอ-อ/เอ + โ-cluster rules are flagged for the author's final sign-off
   before the full Checker C run.
 
+## Session 9 — Final evaluation (incl. Checker C on the augmentation) + report notebook (2026-08-10)
+
+### Runs
+- `eval_harness.py --workers 10 --dw-workers 4 --augment ...` — **full run with Checker C**:
+  C gold read from the Session-5 checkpoints; C scored on all 11,623 augment instances via
+  the tltk worker pool (**41 min**). Output: `Paper/eval_checkers/full_metrics.json`.
+- `paper_report_data.py` — augment-only + op-level tables for all five checkers (another
+  ~40-min C pass), dumping **per-instance verdicts** to
+  `Paper/report/augment_verdicts.json` so C never needs re-scoring; tables in
+  `Paper/report/paper_tables.json`. Has `--from-verdicts` (recompute tables without
+  re-running checkers) and applies the **Checker-A r3 N/A fix** at the stanza level.
+- **Metric-design note:** each augment instance is standalone and tests exactly ONE rule,
+  so the clean metric is **per-rule** (a stanza-level aggregate over the augmentation is
+  only well-defined for B = the oracle; for A/C/D a swap that breaks their target rule can
+  also disturb a different rule they read with other slicing/syllabification, contaminating
+  stanza_ok). A has no r3 everywhere (N/A).
+
+### Gold recall (stanza level, 36,475 stanzas; A has no r3)
+
+| checker | stanza | r1 | r2 | r3 | rX |
+|---|---|---|---|---|---|
+| A · 5.0.1 | 73.4% | 86.3% | 88.8% | – | 88.7% |
+| B · 5.3.5 | 87.5% | 94.7% | 96.5% | 95.5% | 96.7% |
+| D_w2p | 87.4% | 95.4% | 96.3% | 94.9% | 96.5% |
+| **D_ssg** | **88.5%** | 95.9% | 96.7% | 95.2% | 97.0% |
+| C · Kongfha | 84.8% (cov 95.7%) | 93.2% | 96.5% | 94.1% | 96.6% |
+
+### Augmentation-only OVERALL (pooled per-rule, n=11,623 = 10,000 neg + 1,623 pos)
+
+| checker | precision | recall | F1 |
+|---|---|---|---|
+| A · 5.0.1 | 29.3% | 64.6% | 40.3% |
+| B · 5.3.5 | **100.0%** | 73.9% | 85.0% |
+| D_w2p | 84.4% | **92.3%** | **88.2%** |
+| D_ssg | 87.1% | 86.4% | 86.7% |
+| C · Kongfha | 30.6% | 88.3% | 45.4% |
+
+### Error analysis (FP by operator on the 10,000 negatives; FN on positives)
+
+| checker | total FP | C3 short↔long | C9 old-accept | FN-pos combined | =tricky | =oracle-blind |
+|---|---|---|---|---|---|---|
+| A | 1,928 | 159 | **1,757** | 824 | 492 | 332 |
+| B | **0** | 0 | 0 | 423 | 0 | **423** |
+| D_w2p | 276 | 125 | 104 | 125 | 107 | 18 |
+| D_ssg | 208 | 110 | 51 | 221 | 81 | 140 |
+| C | **3,129** | **2,714** | 286 | 244 | 154 | 90 |
+
+### Findings (for the paper)
+1. **B is the oracle**: 0 FP on oracle-verified negatives (100% precision by construction),
+   but **0% oracle-blind recall** — it misses all 423 genuine rhymes (silent-ร เพชร,
+   first-sara ศัตรู/กษัตรี/กษัตรีย์) its own is_sumpus cannot see. Gold there = linguistic
+   truth, so B loses the points (the requested "wrong oracle gets deducted" effect).
+2. **D recovers the blind spots**: D_w2p 95.7% oracle-blind (override dict + w2p read
+   เพชร→เพ็ด, ศัตรู→สัด-ตรู, กษัตรี→กะ-สัด-ตรี) vs D_ssg 66.9% — the w2p-knowledge
+   contribution, mechanistically isolated.
+3. **C is the precision contrast**: strong recall (88.3% augment, 78.7% oracle-blind —
+   tltk G2P hears the real rhymes) but **3,129 FPs, of which 2,714 (87.5% of the C3
+   family) are short↔long สระ swaps** its `replace_long_short` collapses → augment-only
+   precision 30.6%. C trades precision for recall exactly on the length distinction B/D
+   enforce.
+4. **A (5.0.1) trails everywhere**: gold recall 73.4%, augment P 29.3% (C9 drives 1,757
+   FPs — words old reads with the same (สระ,มาตรา) the modern core splits), tricky recall
+   ~59%.
+5. **Best configuration: D_ssg** (merged F1 ≈ D_w2p, gold recall 88.5%, augment F1 86.7%,
+   no w2p hallucinations). Paper narrative: B's improved rules + D's gold-standard G2P
+   overrides lift recall from A's 73% to ~88% at ~100% precision on curated negatives.
+
+### Report notebook (`Paper/Method_evaluation_script.ipynb`, 20 cells, executed ✅)
+- Reads `full_metrics.json` + `report/paper_tables.json` at runtime (pure reader of the
+  committed results); 6 tables (gold recall, augment-only per-rule P/R/F1, merged per-rule
+  P/R/F1, gold by story, oracle-blind + combined FN-pos, FP/FN by operator) + 3 figures
+  (augment P/R/F1, FP by operator, oracle-blind recall).
+- Per-rule is the primary metric; the merged-precision gold-domination caveat and the
+  stanza-level-augment caveat (B-only) are stated in the notebook.
+- **New dependency:** `matplotlib` (for figures) — added to the venv.
+
 ## Session 4 — Checker runtime, parity validation, smoke test (2026-08-09)
 
 ### Checker C runtime (resolved)
