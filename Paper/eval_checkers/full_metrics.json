@@ -1,4125 +1,4125 @@
 {
-  "date": "2026-08-09",
-  "gold": {
-    "stanzas": 36475,
-    "waks": 145900,
-    "rule_instances": {
-      "r1_w1_w2": 36475,
-      "r2_w2_w3": 36475,
-      "r3_w3_w4": 36475,
-      "rX_inter": 36284
+ "date": "2026-08-09",
+ "gold": {
+  "stanzas": 36475,
+  "waks": 145900,
+  "rule_instances": {
+   "r1_w1_w2": 36475,
+   "r2_w2_w3": 36475,
+   "r3_w3_w4": 36475,
+   "rX_inter": 36284
+  }
+ },
+ "checkers": {
+  "A_pythainlp_5.0.1": {
+   "stanza": {
+    "SuphasaetSonYing": {
+     "tp": 153,
+     "fp": 0,
+     "fn": 46,
+     "tn": 0,
+     "evaluated": 199,
+     "dropped": 1,
+     "total": 200,
+     "coverage": 0.995,
+     "accuracy": 0.768844,
+     "precision": 1.0,
+     "precision_ci": [
+      0.975506,
+      1.0
+     ],
+     "recall": 0.768844,
+     "recall_ci": [
+      0.705513,
+      0.821992
+     ],
+     "f1": 0.869318,
+     "conservative": {
+      "precision": 0.993506,
+      "recall": 0.765,
+      "f1": 0.864407
+     }
+    },
+    "khobut": {
+     "tp": 917,
+     "fp": 0,
+     "fn": 384,
+     "tn": 0,
+     "evaluated": 1301,
+     "dropped": 2,
+     "total": 1303,
+     "coverage": 0.998465,
+     "accuracy": 0.704842,
+     "precision": 1.0,
+     "precision_ci": [
+      0.995828,
+      1.0
+     ],
+     "recall": 0.704842,
+     "recall_ci": [
+      0.679483,
+      0.728995
+     ],
+     "f1": 0.826871,
+     "conservative": {
+      "precision": 0.997824,
+      "recall": 0.703761,
+      "f1": 0.825383
+     }
+    },
+    "khunChangKhunPhaen": {
+     "tp": 8029,
+     "fp": 0,
+     "fn": 2505,
+     "tn": 0,
+     "evaluated": 10534,
+     "dropped": 9,
+     "total": 10543,
+     "coverage": 0.999146,
+     "accuracy": 0.762199,
+     "precision": 1.0,
+     "precision_ci": [
+      0.999522,
+      1.0
+     ],
+     "recall": 0.762199,
+     "recall_ci": [
+      0.753974,
+      0.770232
+     ],
+     "f1": 0.865054,
+     "conservative": {
+      "precision": 0.99888,
+      "recall": 0.761548,
+      "f1": 0.864216
+     }
+    },
+    "phraAphai": {
+     "tp": 17594,
+     "fp": 0,
+     "fn": 6715,
+     "tn": 0,
+     "evaluated": 24309,
+     "dropped": 33,
+     "total": 24342,
+     "coverage": 0.998644,
+     "accuracy": 0.723765,
+     "precision": 1.0,
+     "precision_ci": [
+      0.999782,
+      1.0
+     ],
+     "recall": 0.723765,
+     "recall_ci": [
+      0.718109,
+      0.72935
+     ],
+     "f1": 0.839749,
+     "conservative": {
+      "precision": 0.998128,
+      "recall": 0.722784,
+      "f1": 0.838429
+     }
+    },
+    "phukaoTong": {
+     "tp": 59,
+     "fp": 0,
+     "fn": 28,
+     "tn": 0,
+     "evaluated": 87,
+     "dropped": 0,
+     "total": 87,
+     "coverage": 1.0,
+     "accuracy": 0.678161,
+     "precision": 1.0,
+     "precision_ci": [
+      0.938869,
+      1.0
+     ],
+     "recall": 0.678161,
+     "recall_ci": [
+      0.574259,
+      0.766994
+     ],
+     "f1": 0.808219,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.678161,
+      "f1": 0.808219
+     }
+    },
+    "TOTAL": {
+     "tp": 27595,
+     "fp": 1450,
+     "fn": 10448,
+     "tn": 8469,
+     "evaluated": 47962,
+     "dropped": 136,
+     "total": 48098,
+     "coverage": 0.997172,
+     "accuracy": 0.751929,
+     "precision": 0.950077,
+     "precision_ci": [
+      0.947513,
+      0.952523
+     ],
+     "recall": 0.725363,
+     "recall_ci": [
+      0.720856,
+      0.729826
+     ],
+     "f1": 0.82265,
+     "conservative": {
+      "precision": 0.94565,
+      "recall": 0.72278,
+      "f1": 0.819329
+     }
+    },
+    "augment_n": 11623
+   },
+   "rules": {
+    "r1_w1_w2": {
+     "SuphasaetSonYing": {
+      "tp": 180,
+      "fp": 0,
+      "fn": 19,
+      "tn": 0,
+      "evaluated": 199,
+      "dropped": 1,
+      "total": 200,
+      "coverage": 0.995,
+      "accuracy": 0.904523,
+      "precision": 1.0,
+      "precision_ci": [
+       0.979104,
+       1.0
+      ],
+      "recall": 0.904523,
+      "recall_ci": [
+       0.8557,
+       0.938023
+      ],
+      "f1": 0.949868,
+      "conservative": {
+       "precision": 0.994475,
+       "recall": 0.9,
+       "f1": 0.944882
+      }
+     },
+     "khobut": {
+      "tp": 1113,
+      "fp": 0,
+      "fn": 188,
+      "tn": 0,
+      "evaluated": 1301,
+      "dropped": 2,
+      "total": 1303,
+      "coverage": 0.998465,
+      "accuracy": 0.855496,
+      "precision": 1.0,
+      "precision_ci": [
+       0.99656,
+       1.0
+      ],
+      "recall": 0.855496,
+      "recall_ci": [
+       0.835343,
+       0.873556
+      ],
+      "f1": 0.922121,
+      "conservative": {
+       "precision": 0.998206,
+       "recall": 0.854183,
+       "f1": 0.920596
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 9018,
+      "fp": 0,
+      "fn": 1516,
+      "tn": 0,
+      "evaluated": 10534,
+      "dropped": 9,
+      "total": 10543,
+      "coverage": 0.999146,
+      "accuracy": 0.856085,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999574,
+       1.0
+      ],
+      "recall": 0.856085,
+      "recall_ci": [
+       0.849252,
+       0.862658
+      ],
+      "f1": 0.922463,
+      "conservative": {
+       "precision": 0.999003,
+       "recall": 0.855354,
+       "f1": 0.921615
+      }
+     },
+     "phraAphai": {
+      "tp": 21042,
+      "fp": 0,
+      "fn": 3267,
+      "tn": 0,
+      "evaluated": 24309,
+      "dropped": 33,
+      "total": 24342,
+      "coverage": 0.998644,
+      "accuracy": 0.865605,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999817,
+       1.0
+      ],
+      "recall": 0.865605,
+      "recall_ci": [
+       0.86126,
+       0.869835
+      ],
+      "f1": 0.927962,
+      "conservative": {
+       "precision": 0.998434,
+       "recall": 0.864432,
+       "f1": 0.926613
+      }
+     },
+     "phukaoTong": {
+      "tp": 75,
+      "fp": 0,
+      "fn": 12,
+      "tn": 0,
+      "evaluated": 87,
+      "dropped": 0,
+      "total": 87,
+      "coverage": 1.0,
+      "accuracy": 0.862069,
+      "precision": 1.0,
+      "precision_ci": [
+       0.951274,
+       1.0
+      ],
+      "recall": 0.862069,
+      "recall_ci": [
+       0.774212,
+       0.919303
+      ],
+      "f1": 0.925926,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.862069,
+       "f1": 0.925926
+      }
+     },
+     "TOTAL": {
+      "tp": 31717,
+      "fp": 620,
+      "fn": 5261,
+      "tn": 1863,
+      "evaluated": 39461,
+      "dropped": 64,
+      "total": 39525,
+      "coverage": 0.998381,
+      "accuracy": 0.850967,
+      "precision": 0.980827,
+      "precision_ci": [
+       0.979274,
+       0.982265
+      ],
+      "recall": 0.857726,
+      "recall_ci": [
+       0.854128,
+       0.86125
+      ],
+      "f1": 0.915155,
+      "conservative": {
+       "precision": 0.97889,
+       "recall": 0.856244,
+       "f1": 0.913469
+      }
+     },
+     "augment_n": 3050
+    },
+    "r2_w2_w3": {
+     "SuphasaetSonYing": {
+      "tp": 175,
+      "fp": 0,
+      "fn": 24,
+      "tn": 0,
+      "evaluated": 199,
+      "dropped": 1,
+      "total": 200,
+      "coverage": 0.995,
+      "accuracy": 0.879397,
+      "precision": 1.0,
+      "precision_ci": [
+       0.97852,
+       1.0
+      ],
+      "recall": 0.879397,
+      "recall_ci": [
+       0.826822,
+       0.917602
+      ],
+      "f1": 0.935829,
+      "conservative": {
+       "precision": 0.994318,
+       "recall": 0.875,
+       "f1": 0.930851
+      }
+     },
+     "khobut": {
+      "tp": 1129,
+      "fp": 0,
+      "fn": 172,
+      "tn": 0,
+      "evaluated": 1301,
+      "dropped": 2,
+      "total": 1303,
+      "coverage": 0.998465,
+      "accuracy": 0.867794,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996609,
+       1.0
+      ],
+      "recall": 0.867794,
+      "recall_ci": [
+       0.848301,
+       0.885122
+      ],
+      "f1": 0.929218,
+      "conservative": {
+       "precision": 0.998232,
+       "recall": 0.866462,
+       "f1": 0.927691
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 9655,
+      "fp": 0,
+      "fn": 879,
+      "tn": 0,
+      "evaluated": 10534,
+      "dropped": 9,
+      "total": 10543,
+      "coverage": 0.999146,
+      "accuracy": 0.916556,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999602,
+       1.0
+      ],
+      "recall": 0.916556,
+      "recall_ci": [
+       0.911122,
+       0.921687
+      ],
+      "f1": 0.956461,
+      "conservative": {
+       "precision": 0.999069,
+       "recall": 0.915773,
+       "f1": 0.955609
+      }
+     },
+     "phraAphai": {
+      "tp": 21315,
+      "fp": 0,
+      "fn": 2994,
+      "tn": 0,
+      "evaluated": 24309,
+      "dropped": 33,
+      "total": 24342,
+      "coverage": 0.998644,
+      "accuracy": 0.876836,
+      "precision": 1.0,
+      "precision_ci": [
+       0.99982,
+       1.0
+      ],
+      "recall": 0.876836,
+      "recall_ci": [
+       0.872645,
+       0.880907
+      ],
+      "f1": 0.934377,
+      "conservative": {
+       "precision": 0.998454,
+       "recall": 0.875647,
+       "f1": 0.933027
+      }
+     },
+     "phukaoTong": {
+      "tp": 70,
+      "fp": 0,
+      "fn": 17,
+      "tn": 0,
+      "evaluated": 87,
+      "dropped": 0,
+      "total": 87,
+      "coverage": 1.0,
+      "accuracy": 0.804598,
+      "precision": 1.0,
+      "precision_ci": [
+       0.947975,
+       1.0
+      ],
+      "recall": 0.804598,
+      "recall_ci": [
+       0.709166,
+       0.874267
+      ],
+      "f1": 0.89172,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.804598,
+       "f1": 0.89172
+      }
+     },
+     "TOTAL": {
+      "tp": 32597,
+      "fp": 656,
+      "fn": 4218,
+      "tn": 1829,
+      "evaluated": 39300,
+      "dropped": 62,
+      "total": 39362,
+      "coverage": 0.998425,
+      "accuracy": 0.87598,
+      "precision": 0.980272,
+      "precision_ci": [
+       0.978721,
+       0.981713
+      ],
+      "recall": 0.885427,
+      "recall_ci": [
+       0.882133,
+       0.888641
+      ],
+      "f1": 0.930439,
+      "conservative": {
+       "precision": 0.978448,
+       "recall": 0.883938,
+       "f1": 0.928795
+      }
+     },
+     "augment_n": 2887
+    },
+    "r3_w3_w4": {
+     "SuphasaetSonYing": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "evaluated": 0,
+      "dropped": 200,
+      "total": 200,
+      "coverage": 0.0,
+      "accuracy": null,
+      "precision": null,
+      "precision_ci": null,
+      "recall": null,
+      "recall_ci": null,
+      "f1": null,
+      "conservative": {
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": null
+      }
+     },
+     "khobut": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "evaluated": 0,
+      "dropped": 1303,
+      "total": 1303,
+      "coverage": 0.0,
+      "accuracy": null,
+      "precision": null,
+      "precision_ci": null,
+      "recall": null,
+      "recall_ci": null,
+      "f1": null,
+      "conservative": {
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": null
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "evaluated": 0,
+      "dropped": 10543,
+      "total": 10543,
+      "coverage": 0.0,
+      "accuracy": null,
+      "precision": null,
+      "precision_ci": null,
+      "recall": null,
+      "recall_ci": null,
+      "f1": null,
+      "conservative": {
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": null
+      }
+     },
+     "phraAphai": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "evaluated": 0,
+      "dropped": 24342,
+      "total": 24342,
+      "coverage": 0.0,
+      "accuracy": null,
+      "precision": null,
+      "precision_ci": null,
+      "recall": null,
+      "recall_ci": null,
+      "f1": null,
+      "conservative": {
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": null
+      }
+     },
+     "phukaoTong": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "evaluated": 0,
+      "dropped": 87,
+      "total": 87,
+      "coverage": 0.0,
+      "accuracy": null,
+      "precision": null,
+      "precision_ci": null,
+      "recall": null,
+      "recall_ci": null,
+      "f1": null,
+      "conservative": {
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": null
+      }
+     },
+     "TOTAL": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "evaluated": 0,
+      "dropped": 39355,
+      "total": 39355,
+      "coverage": 0.0,
+      "accuracy": null,
+      "precision": null,
+      "precision_ci": null,
+      "recall": null,
+      "recall_ci": null,
+      "f1": null,
+      "conservative": {
+       "precision": 0.0,
+       "recall": 0.0,
+       "f1": null
+      }
+     },
+     "augment_n": 2880
+    },
+    "rX_inter": {
+     "SuphasaetSonYing": {
+      "tp": 177,
+      "fp": 0,
+      "fn": 21,
+      "tn": 0,
+      "evaluated": 198,
+      "dropped": 1,
+      "total": 199,
+      "coverage": 0.994975,
+      "accuracy": 0.893939,
+      "precision": 1.0,
+      "precision_ci": [
+       0.978757,
+       1.0
+      ],
+      "recall": 0.893939,
+      "recall_ci": [
+       0.843305,
+       0.929578
+      ],
+      "f1": 0.944,
+      "conservative": {
+       "precision": 0.994382,
+       "recall": 0.889447,
+       "f1": 0.938992
+      }
+     },
+     "khobut": {
+      "tp": 1129,
+      "fp": 0,
+      "fn": 158,
+      "tn": 0,
+      "evaluated": 1287,
+      "dropped": 2,
+      "total": 1289,
+      "coverage": 0.998448,
+      "accuracy": 0.877234,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996609,
+       1.0
+      ],
+      "recall": 0.877234,
+      "recall_ci": [
+       0.858173,
+       0.894049
+      ],
+      "f1": 0.934603,
+      "conservative": {
+       "precision": 0.998232,
+       "recall": 0.875873,
+       "f1": 0.933058
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 9692,
+      "fp": 0,
+      "fn": 799,
+      "tn": 0,
+      "evaluated": 10491,
+      "dropped": 9,
+      "total": 10500,
+      "coverage": 0.999143,
+      "accuracy": 0.923839,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999604,
+       1.0
+      ],
+      "recall": 0.923839,
+      "recall_ci": [
+       0.918607,
+       0.928762
+      ],
+      "f1": 0.960412,
+      "conservative": {
+       "precision": 0.999072,
+       "recall": 0.923048,
+       "f1": 0.959557
+      }
+     },
+     "phraAphai": {
+      "tp": 21082,
+      "fp": 0,
+      "fn": 3095,
+      "tn": 0,
+      "evaluated": 24177,
+      "dropped": 33,
+      "total": 24210,
+      "coverage": 0.998637,
+      "accuracy": 0.871986,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999818,
+       1.0
+      ],
+      "recall": 0.871986,
+      "recall_ci": [
+       0.867715,
+       0.876138
+      ],
+      "f1": 0.931616,
+      "conservative": {
+       "precision": 0.998437,
+       "recall": 0.870797,
+       "f1": 0.930259
+      }
+     },
+     "phukaoTong": {
+      "tp": 71,
+      "fp": 0,
+      "fn": 15,
+      "tn": 0,
+      "evaluated": 86,
+      "dropped": 0,
+      "total": 86,
+      "coverage": 1.0,
+      "accuracy": 0.825581,
+      "precision": 1.0,
+      "precision_ci": [
+       0.94867,
+       1.0
+      ],
+      "recall": 0.825581,
+      "recall_ci": [
+       0.731966,
+       0.891353
+      ],
+      "f1": 0.904458,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.825581,
+       "f1": 0.904458
+      }
+     },
+     "TOTAL": {
+      "tp": 32384,
+      "fp": 674,
+      "fn": 4158,
+      "tn": 1800,
+      "evaluated": 39016,
+      "dropped": 74,
+      "total": 39090,
+      "coverage": 0.998107,
+      "accuracy": 0.876153,
+      "precision": 0.979612,
+      "precision_ci": [
+       0.978031,
+       0.98108
+      ],
+      "recall": 0.886213,
+      "recall_ci": [
+       0.882917,
+       0.889429
+      ],
+      "f1": 0.930575,
+      "conservative": {
+       "precision": 0.977424,
+       "recall": 0.884422,
+       "f1": 0.9286
+      }
+     },
+     "augment_n": 2806
     }
+   }
   },
-  "checkers": {
-    "A_pythainlp_5.0.1": {
-      "stanza": {
-        "SuphasaetSonYing": {
-          "tp": 153,
-          "fp": 0,
-          "fn": 46,
-          "tn": 0,
-          "evaluated": 199,
-          "dropped": 1,
-          "total": 200,
-          "coverage": 0.995,
-          "accuracy": 0.768844,
-          "precision": 1.0,
-          "precision_ci": [
-            0.975506,
-            1.0
-          ],
-          "recall": 0.768844,
-          "recall_ci": [
-            0.705513,
-            0.821992
-          ],
-          "f1": 0.869318,
-          "conservative": {
-            "precision": 0.993506,
-            "recall": 0.765,
-            "f1": 0.864407
-          }
-        },
-        "khobut": {
-          "tp": 917,
-          "fp": 0,
-          "fn": 384,
-          "tn": 0,
-          "evaluated": 1301,
-          "dropped": 2,
-          "total": 1303,
-          "coverage": 0.998465,
-          "accuracy": 0.704842,
-          "precision": 1.0,
-          "precision_ci": [
-            0.995828,
-            1.0
-          ],
-          "recall": 0.704842,
-          "recall_ci": [
-            0.679483,
-            0.728995
-          ],
-          "f1": 0.826871,
-          "conservative": {
-            "precision": 0.997824,
-            "recall": 0.703761,
-            "f1": 0.825383
-          }
-        },
-        "khunChangKhunPhaen": {
-          "tp": 8029,
-          "fp": 0,
-          "fn": 2505,
-          "tn": 0,
-          "evaluated": 10534,
-          "dropped": 9,
-          "total": 10543,
-          "coverage": 0.999146,
-          "accuracy": 0.762199,
-          "precision": 1.0,
-          "precision_ci": [
-            0.999522,
-            1.0
-          ],
-          "recall": 0.762199,
-          "recall_ci": [
-            0.753974,
-            0.770232
-          ],
-          "f1": 0.865054,
-          "conservative": {
-            "precision": 0.99888,
-            "recall": 0.761548,
-            "f1": 0.864216
-          }
-        },
-        "phraAphai": {
-          "tp": 17594,
-          "fp": 0,
-          "fn": 6715,
-          "tn": 0,
-          "evaluated": 24309,
-          "dropped": 33,
-          "total": 24342,
-          "coverage": 0.998644,
-          "accuracy": 0.723765,
-          "precision": 1.0,
-          "precision_ci": [
-            0.999782,
-            1.0
-          ],
-          "recall": 0.723765,
-          "recall_ci": [
-            0.718109,
-            0.72935
-          ],
-          "f1": 0.839749,
-          "conservative": {
-            "precision": 0.998128,
-            "recall": 0.722784,
-            "f1": 0.838429
-          }
-        },
-        "phukaoTong": {
-          "tp": 59,
-          "fp": 0,
-          "fn": 28,
-          "tn": 0,
-          "evaluated": 87,
-          "dropped": 0,
-          "total": 87,
-          "coverage": 1.0,
-          "accuracy": 0.678161,
-          "precision": 1.0,
-          "precision_ci": [
-            0.938869,
-            1.0
-          ],
-          "recall": 0.678161,
-          "recall_ci": [
-            0.574259,
-            0.766994
-          ],
-          "f1": 0.808219,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.678161,
-            "f1": 0.808219
-          }
-        },
-        "TOTAL": {
-          "tp": 27620,
-          "fp": 1416,
-          "fn": 10425,
-          "tn": 8505,
-          "evaluated": 47966,
-          "dropped": 132,
-          "total": 48098,
-          "coverage": 0.997256,
-          "accuracy": 0.753138,
-          "precision": 0.951233,
-          "precision_ci": [
-            0.948695,
-            0.953651
-          ],
-          "recall": 0.725982,
-          "recall_ci": [
-            0.721478,
-            0.730441
-          ],
-          "f1": 0.823482,
-          "conservative": {
-            "precision": 0.946928,
-            "recall": 0.723472,
-            "f1": 0.820254
-          }
-        },
-        "augment_n": 11623
-      },
-      "rules": {
-        "r1_w1_w2": {
-          "SuphasaetSonYing": {
-            "tp": 180,
-            "fp": 0,
-            "fn": 19,
-            "tn": 0,
-            "evaluated": 199,
-            "dropped": 1,
-            "total": 200,
-            "coverage": 0.995,
-            "accuracy": 0.904523,
-            "precision": 1.0,
-            "precision_ci": [
-              0.979104,
-              1.0
-            ],
-            "recall": 0.904523,
-            "recall_ci": [
-              0.8557,
-              0.938023
-            ],
-            "f1": 0.949868,
-            "conservative": {
-              "precision": 0.994475,
-              "recall": 0.9,
-              "f1": 0.944882
-            }
-          },
-          "khobut": {
-            "tp": 1113,
-            "fp": 0,
-            "fn": 188,
-            "tn": 0,
-            "evaluated": 1301,
-            "dropped": 2,
-            "total": 1303,
-            "coverage": 0.998465,
-            "accuracy": 0.855496,
-            "precision": 1.0,
-            "precision_ci": [
-              0.99656,
-              1.0
-            ],
-            "recall": 0.855496,
-            "recall_ci": [
-              0.835343,
-              0.873556
-            ],
-            "f1": 0.922121,
-            "conservative": {
-              "precision": 0.998206,
-              "recall": 0.854183,
-              "f1": 0.920596
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 9018,
-            "fp": 0,
-            "fn": 1516,
-            "tn": 0,
-            "evaluated": 10534,
-            "dropped": 9,
-            "total": 10543,
-            "coverage": 0.999146,
-            "accuracy": 0.856085,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999574,
-              1.0
-            ],
-            "recall": 0.856085,
-            "recall_ci": [
-              0.849252,
-              0.862658
-            ],
-            "f1": 0.922463,
-            "conservative": {
-              "precision": 0.999003,
-              "recall": 0.855354,
-              "f1": 0.921615
-            }
-          },
-          "phraAphai": {
-            "tp": 21042,
-            "fp": 0,
-            "fn": 3267,
-            "tn": 0,
-            "evaluated": 24309,
-            "dropped": 33,
-            "total": 24342,
-            "coverage": 0.998644,
-            "accuracy": 0.865605,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999817,
-              1.0
-            ],
-            "recall": 0.865605,
-            "recall_ci": [
-              0.86126,
-              0.869835
-            ],
-            "f1": 0.927962,
-            "conservative": {
-              "precision": 0.998434,
-              "recall": 0.864432,
-              "f1": 0.926613
-            }
-          },
-          "phukaoTong": {
-            "tp": 75,
-            "fp": 0,
-            "fn": 12,
-            "tn": 0,
-            "evaluated": 87,
-            "dropped": 0,
-            "total": 87,
-            "coverage": 1.0,
-            "accuracy": 0.862069,
-            "precision": 1.0,
-            "precision_ci": [
-              0.951274,
-              1.0
-            ],
-            "recall": 0.862069,
-            "recall_ci": [
-              0.774212,
-              0.919303
-            ],
-            "f1": 0.925926,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.862069,
-              "f1": 0.925926
-            }
-          },
-          "TOTAL": {
-            "tp": 31732,
-            "fp": 619,
-            "fn": 5247,
-            "tn": 1859,
-            "evaluated": 39457,
-            "dropped": 68,
-            "total": 39525,
-            "coverage": 0.99828,
-            "accuracy": 0.851332,
-            "precision": 0.980866,
-            "precision_ci": [
-              0.979315,
-              0.982303
-            ],
-            "recall": 0.858109,
-            "recall_ci": [
-              0.854515,
-              0.861628
-            ],
-            "f1": 0.91539,
-            "conservative": {
-              "precision": 0.978809,
-              "recall": 0.856534,
-              "f1": 0.913598
-            }
-          },
-          "augment_n": 3050
-        },
-        "r2_w2_w3": {
-          "SuphasaetSonYing": {
-            "tp": 175,
-            "fp": 0,
-            "fn": 24,
-            "tn": 0,
-            "evaluated": 199,
-            "dropped": 1,
-            "total": 200,
-            "coverage": 0.995,
-            "accuracy": 0.879397,
-            "precision": 1.0,
-            "precision_ci": [
-              0.97852,
-              1.0
-            ],
-            "recall": 0.879397,
-            "recall_ci": [
-              0.826822,
-              0.917602
-            ],
-            "f1": 0.935829,
-            "conservative": {
-              "precision": 0.994318,
-              "recall": 0.875,
-              "f1": 0.930851
-            }
-          },
-          "khobut": {
-            "tp": 1129,
-            "fp": 0,
-            "fn": 172,
-            "tn": 0,
-            "evaluated": 1301,
-            "dropped": 2,
-            "total": 1303,
-            "coverage": 0.998465,
-            "accuracy": 0.867794,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996609,
-              1.0
-            ],
-            "recall": 0.867794,
-            "recall_ci": [
-              0.848301,
-              0.885122
-            ],
-            "f1": 0.929218,
-            "conservative": {
-              "precision": 0.998232,
-              "recall": 0.866462,
-              "f1": 0.927691
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 9655,
-            "fp": 0,
-            "fn": 879,
-            "tn": 0,
-            "evaluated": 10534,
-            "dropped": 9,
-            "total": 10543,
-            "coverage": 0.999146,
-            "accuracy": 0.916556,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999602,
-              1.0
-            ],
-            "recall": 0.916556,
-            "recall_ci": [
-              0.911122,
-              0.921687
-            ],
-            "f1": 0.956461,
-            "conservative": {
-              "precision": 0.999069,
-              "recall": 0.915773,
-              "f1": 0.955609
-            }
-          },
-          "phraAphai": {
-            "tp": 21315,
-            "fp": 0,
-            "fn": 2994,
-            "tn": 0,
-            "evaluated": 24309,
-            "dropped": 33,
-            "total": 24342,
-            "coverage": 0.998644,
-            "accuracy": 0.876836,
-            "precision": 1.0,
-            "precision_ci": [
-              0.99982,
-              1.0
-            ],
-            "recall": 0.876836,
-            "recall_ci": [
-              0.872645,
-              0.880907
-            ],
-            "f1": 0.934377,
-            "conservative": {
-              "precision": 0.998454,
-              "recall": 0.875647,
-              "f1": 0.933027
-            }
-          },
-          "phukaoTong": {
-            "tp": 70,
-            "fp": 0,
-            "fn": 17,
-            "tn": 0,
-            "evaluated": 87,
-            "dropped": 0,
-            "total": 87,
-            "coverage": 1.0,
-            "accuracy": 0.804598,
-            "precision": 1.0,
-            "precision_ci": [
-              0.947975,
-              1.0
-            ],
-            "recall": 0.804598,
-            "recall_ci": [
-              0.709166,
-              0.874267
-            ],
-            "f1": 0.89172,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.804598,
-              "f1": 0.89172
-            }
-          },
-          "TOTAL": {
-            "tp": 32600,
-            "fp": 655,
-            "fn": 4217,
-            "tn": 1832,
-            "evaluated": 39304,
-            "dropped": 58,
-            "total": 39362,
-            "coverage": 0.998526,
-            "accuracy": 0.876043,
-            "precision": 0.980304,
-            "precision_ci": [
-              0.978754,
-              0.981743
-            ],
-            "recall": 0.885461,
-            "recall_ci": [
-              0.882167,
-              0.888673
-            ],
-            "f1": 0.930472,
-            "conservative": {
-              "precision": 0.978597,
-              "recall": 0.884068,
-              "f1": 0.928934
-            }
-          },
-          "augment_n": 2887
-        },
-        "r3_w3_w4": {
-          "SuphasaetSonYing": {
-            "tp": 0,
-            "fp": 0,
-            "fn": 0,
-            "tn": 0,
-            "evaluated": 0,
-            "dropped": 200,
-            "total": 200,
-            "coverage": 0.0,
-            "accuracy": null,
-            "precision": null,
-            "precision_ci": null,
-            "recall": null,
-            "recall_ci": null,
-            "f1": null,
-            "conservative": {
-              "precision": 0.0,
-              "recall": 0.0,
-              "f1": null
-            }
-          },
-          "khobut": {
-            "tp": 0,
-            "fp": 0,
-            "fn": 0,
-            "tn": 0,
-            "evaluated": 0,
-            "dropped": 1303,
-            "total": 1303,
-            "coverage": 0.0,
-            "accuracy": null,
-            "precision": null,
-            "precision_ci": null,
-            "recall": null,
-            "recall_ci": null,
-            "f1": null,
-            "conservative": {
-              "precision": 0.0,
-              "recall": 0.0,
-              "f1": null
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 0,
-            "fp": 0,
-            "fn": 0,
-            "tn": 0,
-            "evaluated": 0,
-            "dropped": 10543,
-            "total": 10543,
-            "coverage": 0.0,
-            "accuracy": null,
-            "precision": null,
-            "precision_ci": null,
-            "recall": null,
-            "recall_ci": null,
-            "f1": null,
-            "conservative": {
-              "precision": 0.0,
-              "recall": 0.0,
-              "f1": null
-            }
-          },
-          "phraAphai": {
-            "tp": 0,
-            "fp": 0,
-            "fn": 0,
-            "tn": 0,
-            "evaluated": 0,
-            "dropped": 24342,
-            "total": 24342,
-            "coverage": 0.0,
-            "accuracy": null,
-            "precision": null,
-            "precision_ci": null,
-            "recall": null,
-            "recall_ci": null,
-            "f1": null,
-            "conservative": {
-              "precision": 0.0,
-              "recall": 0.0,
-              "f1": null
-            }
-          },
-          "phukaoTong": {
-            "tp": 0,
-            "fp": 0,
-            "fn": 0,
-            "tn": 0,
-            "evaluated": 0,
-            "dropped": 87,
-            "total": 87,
-            "coverage": 0.0,
-            "accuracy": null,
-            "precision": null,
-            "precision_ci": null,
-            "recall": null,
-            "recall_ci": null,
-            "f1": null,
-            "conservative": {
-              "precision": 0.0,
-              "recall": 0.0,
-              "f1": null
-            }
-          },
-          "TOTAL": {
-            "tp": 0,
-            "fp": 0,
-            "fn": 0,
-            "tn": 0,
-            "evaluated": 0,
-            "dropped": 39355,
-            "total": 39355,
-            "coverage": 0.0,
-            "accuracy": null,
-            "precision": null,
-            "precision_ci": null,
-            "recall": null,
-            "recall_ci": null,
-            "f1": null,
-            "conservative": {
-              "precision": 0.0,
-              "recall": 0.0,
-              "f1": null
-            }
-          },
-          "augment_n": 2880
-        },
-        "rX_inter": {
-          "SuphasaetSonYing": {
-            "tp": 177,
-            "fp": 0,
-            "fn": 21,
-            "tn": 0,
-            "evaluated": 198,
-            "dropped": 1,
-            "total": 199,
-            "coverage": 0.994975,
-            "accuracy": 0.893939,
-            "precision": 1.0,
-            "precision_ci": [
-              0.978757,
-              1.0
-            ],
-            "recall": 0.893939,
-            "recall_ci": [
-              0.843305,
-              0.929578
-            ],
-            "f1": 0.944,
-            "conservative": {
-              "precision": 0.994382,
-              "recall": 0.889447,
-              "f1": 0.938992
-            }
-          },
-          "khobut": {
-            "tp": 1129,
-            "fp": 0,
-            "fn": 158,
-            "tn": 0,
-            "evaluated": 1287,
-            "dropped": 2,
-            "total": 1289,
-            "coverage": 0.998448,
-            "accuracy": 0.877234,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996609,
-              1.0
-            ],
-            "recall": 0.877234,
-            "recall_ci": [
-              0.858173,
-              0.894049
-            ],
-            "f1": 0.934603,
-            "conservative": {
-              "precision": 0.998232,
-              "recall": 0.875873,
-              "f1": 0.933058
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 9692,
-            "fp": 0,
-            "fn": 799,
-            "tn": 0,
-            "evaluated": 10491,
-            "dropped": 9,
-            "total": 10500,
-            "coverage": 0.999143,
-            "accuracy": 0.923839,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999604,
-              1.0
-            ],
-            "recall": 0.923839,
-            "recall_ci": [
-              0.918607,
-              0.928762
-            ],
-            "f1": 0.960412,
-            "conservative": {
-              "precision": 0.999072,
-              "recall": 0.923048,
-              "f1": 0.959557
-            }
-          },
-          "phraAphai": {
-            "tp": 21082,
-            "fp": 0,
-            "fn": 3095,
-            "tn": 0,
-            "evaluated": 24177,
-            "dropped": 33,
-            "total": 24210,
-            "coverage": 0.998637,
-            "accuracy": 0.871986,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999818,
-              1.0
-            ],
-            "recall": 0.871986,
-            "recall_ci": [
-              0.867715,
-              0.876138
-            ],
-            "f1": 0.931616,
-            "conservative": {
-              "precision": 0.998437,
-              "recall": 0.870797,
-              "f1": 0.930259
-            }
-          },
-          "phukaoTong": {
-            "tp": 71,
-            "fp": 0,
-            "fn": 15,
-            "tn": 0,
-            "evaluated": 86,
-            "dropped": 0,
-            "total": 86,
-            "coverage": 1.0,
-            "accuracy": 0.825581,
-            "precision": 1.0,
-            "precision_ci": [
-              0.94867,
-              1.0
-            ],
-            "recall": 0.825581,
-            "recall_ci": [
-              0.731966,
-              0.891353
-            ],
-            "f1": 0.904458,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.825581,
-              "f1": 0.904458
-            }
-          },
-          "TOTAL": {
-            "tp": 32390,
-            "fp": 654,
-            "fn": 4150,
-            "tn": 1822,
-            "evaluated": 39016,
-            "dropped": 74,
-            "total": 39090,
-            "coverage": 0.998107,
-            "accuracy": 0.876871,
-            "precision": 0.980208,
-            "precision_ci": [
-              0.97865,
-              0.981655
-            ],
-            "recall": 0.886426,
-            "recall_ci": [
-              0.883132,
-              0.889639
-            ],
-            "f1": 0.930961,
-            "conservative": {
-              "precision": 0.978018,
-              "recall": 0.884634,
-              "f1": 0.928985
-            }
-          },
-          "augment_n": 2806
-        }
-      }
+  "B_pythainlp_5.3.5": {
+   "stanza": {
+    "SuphasaetSonYing": {
+     "tp": 182,
+     "fp": 0,
+     "fn": 18,
+     "tn": 0,
+     "evaluated": 200,
+     "dropped": 0,
+     "total": 200,
+     "coverage": 1.0,
+     "accuracy": 0.91,
+     "precision": 1.0,
+     "precision_ci": [
+      0.979329,
+      1.0
+     ],
+     "recall": 0.91,
+     "recall_ci": [
+      0.862233,
+      0.942313
+     ],
+     "f1": 0.95288,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.91,
+      "f1": 0.95288
+     }
     },
-    "B_pythainlp_5.3.5": {
-      "stanza": {
-        "SuphasaetSonYing": {
-          "tp": 182,
-          "fp": 0,
-          "fn": 18,
-          "tn": 0,
-          "evaluated": 200,
-          "dropped": 0,
-          "total": 200,
-          "coverage": 1.0,
-          "accuracy": 0.91,
-          "precision": 1.0,
-          "precision_ci": [
-            0.979329,
-            1.0
-          ],
-          "recall": 0.91,
-          "recall_ci": [
-            0.862233,
-            0.942313
-          ],
-          "f1": 0.95288,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.91,
-            "f1": 0.95288
-          }
-        },
-        "khobut": {
-          "tp": 1129,
-          "fp": 0,
-          "fn": 174,
-          "tn": 0,
-          "evaluated": 1303,
-          "dropped": 0,
-          "total": 1303,
-          "coverage": 1.0,
-          "accuracy": 0.866462,
-          "precision": 1.0,
-          "precision_ci": [
-            0.996609,
-            1.0
-          ],
-          "recall": 0.866462,
-          "recall_ci": [
-            0.846911,
-            0.883859
-          ],
-          "f1": 0.928454,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.866462,
-            "f1": 0.928454
-          }
-        },
-        "khunChangKhunPhaen": {
-          "tp": 9206,
-          "fp": 0,
-          "fn": 1337,
-          "tn": 0,
-          "evaluated": 10543,
-          "dropped": 0,
-          "total": 10543,
-          "coverage": 1.0,
-          "accuracy": 0.873186,
-          "precision": 1.0,
-          "precision_ci": [
-            0.999583,
-            1.0
-          ],
-          "recall": 0.873186,
-          "recall_ci": [
-            0.866698,
-            0.879402
-          ],
-          "f1": 0.9323,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.873186,
-            "f1": 0.9323
-          }
-        },
-        "phraAphai": {
-          "tp": 21312,
-          "fp": 0,
-          "fn": 3030,
-          "tn": 0,
-          "evaluated": 24342,
-          "dropped": 0,
-          "total": 24342,
-          "coverage": 1.0,
-          "accuracy": 0.875524,
-          "precision": 1.0,
-          "precision_ci": [
-            0.99982,
-            1.0
-          ],
-          "recall": 0.875524,
-          "recall_ci": [
-            0.871317,
-            0.879612
-          ],
-          "f1": 0.933631,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.875524,
-            "f1": 0.933631
-          }
-        },
-        "phukaoTong": {
-          "tp": 71,
-          "fp": 0,
-          "fn": 16,
-          "tn": 0,
-          "evaluated": 87,
-          "dropped": 0,
-          "total": 87,
-          "coverage": 1.0,
-          "accuracy": 0.816092,
-          "precision": 1.0,
-          "precision_ci": [
-            0.94867,
-            1.0
-          ],
-          "recall": 0.816092,
-          "recall_ci": [
-            0.721943,
-            0.883506
-          ],
-          "f1": 0.898734,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.816092,
-            "f1": 0.898734
-          }
-        },
-        "TOTAL": {
-          "tp": 32973,
-          "fp": 0,
-          "fn": 5125,
-          "tn": 10000,
-          "evaluated": 48098,
-          "dropped": 0,
-          "total": 48098,
-          "coverage": 1.0,
-          "accuracy": 0.893447,
-          "precision": 1.0,
-          "precision_ci": [
-            0.999884,
-            1.0
-          ],
-          "recall": 0.865479,
-          "recall_ci": [
-            0.862015,
-            0.868868
-          ],
-          "f1": 0.927889,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.865479,
-            "f1": 0.927889
-          }
-        },
-        "augment_n": 11623
-      },
-      "rules": {
-        "r1_w1_w2": {
-          "SuphasaetSonYing": {
-            "tp": 196,
-            "fp": 0,
-            "fn": 4,
-            "tn": 0,
-            "evaluated": 200,
-            "dropped": 0,
-            "total": 200,
-            "coverage": 1.0,
-            "accuracy": 0.98,
-            "precision": 1.0,
-            "precision_ci": [
-              0.980777,
-              1.0
-            ],
-            "recall": 0.98,
-            "recall_ci": [
-              0.949712,
-              0.992196
-            ],
-            "f1": 0.989899,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.98,
-              "f1": 0.989899
-            }
-          },
-          "khobut": {
-            "tp": 1229,
-            "fp": 0,
-            "fn": 74,
-            "tn": 0,
-            "evaluated": 1303,
-            "dropped": 0,
-            "total": 1303,
-            "coverage": 1.0,
-            "accuracy": 0.943208,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996884,
-              1.0
-            ],
-            "recall": 0.943208,
-            "recall_ci": [
-              0.929289,
-              0.954521
-            ],
-            "f1": 0.970774,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.943208,
-              "f1": 0.970774
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 9936,
-            "fp": 0,
-            "fn": 607,
-            "tn": 0,
-            "evaluated": 10543,
-            "dropped": 0,
-            "total": 10543,
-            "coverage": 1.0,
-            "accuracy": 0.942426,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999614,
-              1.0
-            ],
-            "recall": 0.942426,
-            "recall_ci": [
-              0.937817,
-              0.946714
-            ],
-            "f1": 0.97036,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.942426,
-              "f1": 0.97036
-            }
-          },
-          "phraAphai": {
-            "tp": 23092,
-            "fp": 0,
-            "fn": 1250,
-            "tn": 0,
-            "evaluated": 24342,
-            "dropped": 0,
-            "total": 24342,
-            "coverage": 1.0,
-            "accuracy": 0.948648,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999834,
-              1.0
-            ],
-            "recall": 0.948648,
-            "recall_ci": [
-              0.945804,
-              0.951351
-            ],
-            "f1": 0.973647,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.948648,
-              "f1": 0.973647
-            }
-          },
-          "phukaoTong": {
-            "tp": 79,
-            "fp": 0,
-            "fn": 8,
-            "tn": 0,
-            "evaluated": 87,
-            "dropped": 0,
-            "total": 87,
-            "coverage": 1.0,
-            "accuracy": 0.908046,
-            "precision": 1.0,
-            "precision_ci": [
-              0.953627,
-              1.0
-            ],
-            "recall": 0.908046,
-            "recall_ci": [
-              0.828913,
-              0.952668
-            ],
-            "f1": 0.951807,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.908046,
-              "f1": 0.951807
-            }
-          },
-          "TOTAL": {
-            "tp": 34832,
-            "fp": 0,
-            "fn": 2193,
-            "tn": 2500,
-            "evaluated": 39525,
-            "dropped": 0,
-            "total": 39525,
-            "coverage": 1.0,
-            "accuracy": 0.944516,
-            "precision": 1.0,
-            "precision_ci": [
-              0.99989,
-              1.0
-            ],
-            "recall": 0.94077,
-            "recall_ci": [
-              0.938319,
-              0.943129
-            ],
-            "f1": 0.969481,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.94077,
-              "f1": 0.969481
-            }
-          },
-          "augment_n": 3050
-        },
-        "r2_w2_w3": {
-          "SuphasaetSonYing": {
-            "tp": 194,
-            "fp": 0,
-            "fn": 6,
-            "tn": 0,
-            "evaluated": 200,
-            "dropped": 0,
-            "total": 200,
-            "coverage": 1.0,
-            "accuracy": 0.97,
-            "precision": 1.0,
-            "precision_ci": [
-              0.980582,
-              1.0
-            ],
-            "recall": 0.97,
-            "recall_ci": [
-              0.936105,
-              0.98618
-            ],
-            "f1": 0.984772,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.97,
-              "f1": 0.984772
-            }
-          },
-          "khobut": {
-            "tp": 1262,
-            "fp": 0,
-            "fn": 41,
-            "tn": 0,
-            "evaluated": 1303,
-            "dropped": 0,
-            "total": 1303,
-            "coverage": 1.0,
-            "accuracy": 0.968534,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996965,
-              1.0
-            ],
-            "recall": 0.968534,
-            "recall_ci": [
-              0.957592,
-              0.976722
-            ],
-            "f1": 0.984016,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.968534,
-              "f1": 0.984016
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 10292,
-            "fp": 0,
-            "fn": 251,
-            "tn": 0,
-            "evaluated": 10543,
-            "dropped": 0,
-            "total": 10543,
-            "coverage": 1.0,
-            "accuracy": 0.976193,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999627,
-              1.0
-            ],
-            "recall": 0.976193,
-            "recall_ci": [
-              0.973105,
-              0.978934
-            ],
-            "f1": 0.987953,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.976193,
-              "f1": 0.987953
-            }
-          },
-          "phraAphai": {
-            "tp": 23364,
-            "fp": 0,
-            "fn": 978,
-            "tn": 0,
-            "evaluated": 24342,
-            "dropped": 0,
-            "total": 24342,
-            "coverage": 1.0,
-            "accuracy": 0.959823,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999836,
-              1.0
-            ],
-            "recall": 0.959823,
-            "recall_ci": [
-              0.957282,
-              0.962218
-            ],
-            "f1": 0.9795,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.959823,
-              "f1": 0.9795
-            }
-          },
-          "phukaoTong": {
-            "tp": 82,
-            "fp": 0,
-            "fn": 5,
-            "tn": 0,
-            "evaluated": 87,
-            "dropped": 0,
-            "total": 87,
-            "coverage": 1.0,
-            "accuracy": 0.942529,
-            "precision": 1.0,
-            "precision_ci": [
-              0.955248,
-              1.0
-            ],
-            "recall": 0.942529,
-            "recall_ci": [
-              0.872425,
-              0.975205
-            ],
-            "f1": 0.970414,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.942529,
-              "f1": 0.970414
-            }
-          },
-          "TOTAL": {
-            "tp": 35494,
-            "fp": 0,
-            "fn": 1368,
-            "tn": 2500,
-            "evaluated": 39362,
-            "dropped": 0,
-            "total": 39362,
-            "coverage": 1.0,
-            "accuracy": 0.965246,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999892,
-              1.0
-            ],
-            "recall": 0.962889,
-            "recall_ci": [
-              0.96091,
-              0.964771
-            ],
-            "f1": 0.981094,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.962889,
-              "f1": 0.981094
-            }
-          },
-          "augment_n": 2887
-        },
-        "r3_w3_w4": {
-          "SuphasaetSonYing": {
-            "tp": 192,
-            "fp": 0,
-            "fn": 8,
-            "tn": 0,
-            "evaluated": 200,
-            "dropped": 0,
-            "total": 200,
-            "coverage": 1.0,
-            "accuracy": 0.96,
-            "precision": 1.0,
-            "precision_ci": [
-              0.980384,
-              1.0
-            ],
-            "recall": 0.96,
-            "recall_ci": [
-              0.923067,
-              0.979595
-            ],
-            "f1": 0.979592,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.96,
-              "f1": 0.979592
-            }
-          },
-          "khobut": {
-            "tp": 1231,
-            "fp": 0,
-            "fn": 72,
-            "tn": 0,
-            "evaluated": 1303,
-            "dropped": 0,
-            "total": 1303,
-            "coverage": 1.0,
-            "accuracy": 0.944743,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996889,
-              1.0
-            ],
-            "recall": 0.944743,
-            "recall_ci": [
-              0.930979,
-              0.955892
-            ],
-            "f1": 0.971586,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.944743,
-              "f1": 0.971586
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 9979,
-            "fp": 0,
-            "fn": 564,
-            "tn": 0,
-            "evaluated": 10543,
-            "dropped": 0,
-            "total": 10543,
-            "coverage": 1.0,
-            "accuracy": 0.946505,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999615,
-              1.0
-            ],
-            "recall": 0.946505,
-            "recall_ci": [
-              0.942045,
-              0.95064
-            ],
-            "f1": 0.972517,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.946505,
-              "f1": 0.972517
-            }
-          },
-          "phraAphai": {
-            "tp": 23340,
-            "fp": 0,
-            "fn": 1002,
-            "tn": 0,
-            "evaluated": 24342,
-            "dropped": 0,
-            "total": 24342,
-            "coverage": 1.0,
-            "accuracy": 0.958837,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999835,
-              1.0
-            ],
-            "recall": 0.958837,
-            "recall_ci": [
-              0.956268,
-              0.961261
-            ],
-            "f1": 0.978986,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.958837,
-              "f1": 0.978986
-            }
-          },
-          "phukaoTong": {
-            "tp": 83,
-            "fp": 0,
-            "fn": 4,
-            "tn": 0,
-            "evaluated": 87,
-            "dropped": 0,
-            "total": 87,
-            "coverage": 1.0,
-            "accuracy": 0.954023,
-            "precision": 1.0,
-            "precision_ci": [
-              0.955763,
-              1.0
-            ],
-            "recall": 0.954023,
-            "recall_ci": [
-              0.887668,
-              0.981978
-            ],
-            "f1": 0.976471,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.954023,
-              "f1": 0.976471
-            }
-          },
-          "TOTAL": {
-            "tp": 35125,
-            "fp": 0,
-            "fn": 1730,
-            "tn": 2500,
-            "evaluated": 39355,
-            "dropped": 0,
-            "total": 39355,
-            "coverage": 1.0,
-            "accuracy": 0.956041,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999891,
-              1.0
-            ],
-            "recall": 0.953059,
-            "recall_ci": [
-              0.950852,
-              0.955172
-            ],
-            "f1": 0.975965,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.953059,
-              "f1": 0.975965
-            }
-          },
-          "augment_n": 2880
-        },
-        "rX_inter": {
-          "SuphasaetSonYing": {
-            "tp": 194,
-            "fp": 0,
-            "fn": 5,
-            "tn": 0,
-            "evaluated": 199,
-            "dropped": 0,
-            "total": 199,
-            "coverage": 1.0,
-            "accuracy": 0.974874,
-            "precision": 1.0,
-            "precision_ci": [
-              0.980582,
-              1.0
-            ],
-            "recall": 0.974874,
-            "recall_ci": [
-              0.94254,
-              0.989221
-            ],
-            "f1": 0.987277,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.974874,
-              "f1": 0.987277
-            }
-          },
-          "khobut": {
-            "tp": 1252,
-            "fp": 0,
-            "fn": 37,
-            "tn": 0,
-            "evaluated": 1289,
-            "dropped": 0,
-            "total": 1289,
-            "coverage": 1.0,
-            "accuracy": 0.971296,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996941,
-              1.0
-            ],
-            "recall": 0.971296,
-            "recall_ci": [
-              0.960686,
-              0.979104
-            ],
-            "f1": 0.985439,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.971296,
-              "f1": 0.985439
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 10273,
-            "fp": 0,
-            "fn": 227,
-            "tn": 0,
-            "evaluated": 10500,
-            "dropped": 0,
-            "total": 10500,
-            "coverage": 1.0,
-            "accuracy": 0.978381,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999626,
-              1.0
-            ],
-            "recall": 0.978381,
-            "recall_ci": [
-              0.975419,
-              0.980993
-            ],
-            "f1": 0.989072,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.978381,
-              "f1": 0.989072
-            }
-          },
-          "phraAphai": {
-            "tp": 23275,
-            "fp": 0,
-            "fn": 935,
-            "tn": 0,
-            "evaluated": 24210,
-            "dropped": 0,
-            "total": 24210,
-            "coverage": 1.0,
-            "accuracy": 0.96138,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999835,
-              1.0
-            ],
-            "recall": 0.96138,
-            "recall_ci": [
-              0.958878,
-              0.963735
-            ],
-            "f1": 0.98031,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.96138,
-              "f1": 0.98031
-            }
-          },
-          "phukaoTong": {
-            "tp": 81,
-            "fp": 0,
-            "fn": 5,
-            "tn": 0,
-            "evaluated": 86,
-            "dropped": 0,
-            "total": 86,
-            "coverage": 1.0,
-            "accuracy": 0.94186,
-            "precision": 1.0,
-            "precision_ci": [
-              0.95472,
-              1.0
-            ],
-            "recall": 0.94186,
-            "recall_ci": [
-              0.87102,
-              0.974913
-            ],
-            "f1": 0.97006,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.94186,
-              "f1": 0.97006
-            }
-          },
-          "TOTAL": {
-            "tp": 35375,
-            "fp": 0,
-            "fn": 1215,
-            "tn": 2500,
-            "evaluated": 39090,
-            "dropped": 0,
-            "total": 39090,
-            "coverage": 1.0,
-            "accuracy": 0.968918,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999891,
-              1.0
-            ],
-            "recall": 0.966794,
-            "recall_ci": [
-              0.964909,
-              0.968582
-            ],
-            "f1": 0.983117,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.966794,
-              "f1": 0.983117
-            }
-          },
-          "augment_n": 2806
-        }
-      }
+    "khobut": {
+     "tp": 1129,
+     "fp": 0,
+     "fn": 174,
+     "tn": 0,
+     "evaluated": 1303,
+     "dropped": 0,
+     "total": 1303,
+     "coverage": 1.0,
+     "accuracy": 0.866462,
+     "precision": 1.0,
+     "precision_ci": [
+      0.996609,
+      1.0
+     ],
+     "recall": 0.866462,
+     "recall_ci": [
+      0.846911,
+      0.883859
+     ],
+     "f1": 0.928454,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.866462,
+      "f1": 0.928454
+     }
     },
-    "D_klonpad_w2p": {
-      "stanza": {
-        "SuphasaetSonYing": {
-          "tp": 179,
-          "fp": 0,
-          "fn": 21,
-          "tn": 0,
-          "evaluated": 200,
-          "dropped": 0,
-          "total": 200,
-          "coverage": 1.0,
-          "accuracy": 0.895,
-          "precision": 1.0,
-          "precision_ci": [
-            0.978989,
-            1.0
-          ],
-          "recall": 0.895,
-          "recall_ci": [
-            0.844819,
-            0.930293
-          ],
-          "f1": 0.944591,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.895,
-            "f1": 0.944591
-          }
-        },
-        "khobut": {
-          "tp": 1116,
-          "fp": 0,
-          "fn": 187,
-          "tn": 0,
-          "evaluated": 1303,
-          "dropped": 0,
-          "total": 1303,
-          "coverage": 1.0,
-          "accuracy": 0.856485,
-          "precision": 1.0,
-          "precision_ci": [
-            0.99657,
-            1.0
-          ],
-          "recall": 0.856485,
-          "recall_ci": [
-            0.8364,
-            0.874475
-          ],
-          "f1": 0.922695,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.856485,
-            "f1": 0.922695
-          }
-        },
-        "khunChangKhunPhaen": {
-          "tp": 8803,
-          "fp": 0,
-          "fn": 1740,
-          "tn": 0,
-          "evaluated": 10543,
-          "dropped": 0,
-          "total": 10543,
-          "coverage": 1.0,
-          "accuracy": 0.834962,
-          "precision": 1.0,
-          "precision_ci": [
-            0.999564,
-            1.0
-          ],
-          "recall": 0.834962,
-          "recall_ci": [
-            0.827754,
-            0.841925
-          ],
-          "f1": 0.910059,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.834962,
-            "f1": 0.910059
-          }
-        },
-        "phraAphai": {
-          "tp": 21729,
-          "fp": 0,
-          "fn": 2613,
-          "tn": 0,
-          "evaluated": 24342,
-          "dropped": 0,
-          "total": 24342,
-          "coverage": 1.0,
-          "accuracy": 0.892655,
-          "precision": 1.0,
-          "precision_ci": [
-            0.999823,
-            1.0
-          ],
-          "recall": 0.892655,
-          "recall_ci": [
-            0.888704,
-            0.896482
-          ],
-          "f1": 0.943283,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.892655,
-            "f1": 0.943283
-          }
-        },
-        "phukaoTong": {
-          "tp": 67,
-          "fp": 0,
-          "fn": 20,
-          "tn": 0,
-          "evaluated": 87,
-          "dropped": 0,
-          "total": 87,
-          "coverage": 1.0,
-          "accuracy": 0.770115,
-          "precision": 1.0,
-          "precision_ci": [
-            0.945772,
-            1.0
-          ],
-          "recall": 0.770115,
-          "recall_ci": [
-            0.671415,
-            0.845969
-          ],
-          "f1": 0.87013,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.770115,
-            "f1": 0.87013
-          }
-        },
-        "TOTAL": {
-          "tp": 33160,
-          "fp": 129,
-          "fn": 4938,
-          "tn": 9871,
-          "evaluated": 48098,
-          "dropped": 0,
-          "total": 48098,
-          "coverage": 1.0,
-          "accuracy": 0.894653,
-          "precision": 0.996125,
-          "precision_ci": [
-            0.995398,
-            0.996737
-          ],
-          "recall": 0.870387,
-          "recall_ci": [
-            0.866977,
-            0.873722
-          ],
-          "f1": 0.929021,
-          "conservative": {
-            "precision": 0.996125,
-            "recall": 0.870387,
-            "f1": 0.929021
-          }
-        },
-        "augment_n": 11623
-      },
-      "rules": {
-        "r1_w1_w2": {
-          "SuphasaetSonYing": {
-            "tp": 195,
-            "fp": 0,
-            "fn": 5,
-            "tn": 0,
-            "evaluated": 200,
-            "dropped": 0,
-            "total": 200,
-            "coverage": 1.0,
-            "accuracy": 0.975,
-            "precision": 1.0,
-            "precision_ci": [
-              0.98068,
-              1.0
-            ],
-            "recall": 0.975,
-            "recall_ci": [
-              0.942821,
-              0.989275
-            ],
-            "f1": 0.987342,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.975,
-              "f1": 0.987342
-            }
-          },
-          "khobut": {
-            "tp": 1230,
-            "fp": 0,
-            "fn": 73,
-            "tn": 0,
-            "evaluated": 1303,
-            "dropped": 0,
-            "total": 1303,
-            "coverage": 1.0,
-            "accuracy": 0.943975,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996886,
-              1.0
-            ],
-            "recall": 0.943975,
-            "recall_ci": [
-              0.930134,
-              0.955207
-            ],
-            "f1": 0.97118,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.943975,
-              "f1": 0.97118
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 9791,
-            "fp": 0,
-            "fn": 752,
-            "tn": 0,
-            "evaluated": 10543,
-            "dropped": 0,
-            "total": 10543,
-            "coverage": 1.0,
-            "accuracy": 0.928673,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999608,
-              1.0
-            ],
-            "recall": 0.928673,
-            "recall_ci": [
-              0.923602,
-              0.933431
-            ],
-            "f1": 0.963018,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.928673,
-              "f1": 0.963018
-            }
-          },
-          "phraAphai": {
-            "tp": 23514,
-            "fp": 0,
-            "fn": 828,
-            "tn": 0,
-            "evaluated": 24342,
-            "dropped": 0,
-            "total": 24342,
-            "coverage": 1.0,
-            "accuracy": 0.965985,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999837,
-              1.0
-            ],
-            "recall": 0.965985,
-            "recall_ci": [
-              0.963633,
-              0.968189
-            ],
-            "f1": 0.982698,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.965985,
-              "f1": 0.982698
-            }
-          },
-          "phukaoTong": {
-            "tp": 78,
-            "fp": 0,
-            "fn": 9,
-            "tn": 0,
-            "evaluated": 87,
-            "dropped": 0,
-            "total": 87,
-            "coverage": 1.0,
-            "accuracy": 0.896552,
-            "precision": 1.0,
-            "precision_ci": [
-              0.953061,
-              1.0
-            ],
-            "recall": 0.896552,
-            "recall_ci": [
-              0.814948,
-              0.944616
-            ],
-            "f1": 0.945455,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.896552,
-              "f1": 0.945455
-            }
-          },
-          "TOTAL": {
-            "tp": 35315,
-            "fp": 107,
-            "fn": 1710,
-            "tn": 2393,
-            "evaluated": 39525,
-            "dropped": 0,
-            "total": 39525,
-            "coverage": 1.0,
-            "accuracy": 0.954029,
-            "precision": 0.996979,
-            "precision_ci": [
-              0.996351,
-              0.997499
-            ],
-            "recall": 0.953815,
-            "recall_ci": [
-              0.95163,
-              0.955906
-            ],
-            "f1": 0.974919,
-            "conservative": {
-              "precision": 0.996979,
-              "recall": 0.953815,
-              "f1": 0.974919
-            }
-          },
-          "augment_n": 3050
-        },
-        "r2_w2_w3": {
-          "SuphasaetSonYing": {
-            "tp": 191,
-            "fp": 0,
-            "fn": 9,
-            "tn": 0,
-            "evaluated": 200,
-            "dropped": 0,
-            "total": 200,
-            "coverage": 1.0,
-            "accuracy": 0.955,
-            "precision": 1.0,
-            "precision_ci": [
-              0.980283,
-              1.0
-            ],
-            "recall": 0.955,
-            "recall_ci": [
-              0.916702,
-              0.976148
-            ],
-            "f1": 0.976982,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.955,
-              "f1": 0.976982
-            }
-          },
-          "khobut": {
-            "tp": 1264,
-            "fp": 0,
-            "fn": 39,
-            "tn": 0,
-            "evaluated": 1303,
-            "dropped": 0,
-            "total": 1303,
-            "coverage": 1.0,
-            "accuracy": 0.970069,
-            "precision": 1.0,
-            "precision_ci": [
-              0.99697,
-              1.0
-            ],
-            "recall": 0.970069,
-            "recall_ci": [
-              0.959346,
-              0.978029
-            ],
-            "f1": 0.984807,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.970069,
-              "f1": 0.984807
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 10206,
-            "fp": 0,
-            "fn": 337,
-            "tn": 0,
-            "evaluated": 10543,
-            "dropped": 0,
-            "total": 10543,
-            "coverage": 1.0,
-            "accuracy": 0.968036,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999624,
-              1.0
-            ],
-            "recall": 0.968036,
-            "recall_ci": [
-              0.964504,
-              0.971227
-            ],
-            "f1": 0.983758,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.968036,
-              "f1": 0.983758
-            }
-          },
-          "phraAphai": {
-            "tp": 23369,
-            "fp": 0,
-            "fn": 973,
-            "tn": 0,
-            "evaluated": 24342,
-            "dropped": 0,
-            "total": 24342,
-            "coverage": 1.0,
-            "accuracy": 0.960028,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999836,
-              1.0
-            ],
-            "recall": 0.960028,
-            "recall_ci": [
-              0.957494,
-              0.962417
-            ],
-            "f1": 0.979606,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.960028,
-              "f1": 0.979606
-            }
-          },
-          "phukaoTong": {
-            "tp": 80,
-            "fp": 0,
-            "fn": 7,
-            "tn": 0,
-            "evaluated": 87,
-            "dropped": 0,
-            "total": 87,
-            "coverage": 1.0,
-            "accuracy": 0.91954,
-            "precision": 1.0,
-            "precision_ci": [
-              0.95418,
-              1.0
-            ],
-            "recall": 0.91954,
-            "recall_ci": [
-              0.843116,
-              0.96048
-            ],
-            "f1": 0.958084,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.91954,
-              "f1": 0.958084
-            }
-          },
-          "TOTAL": {
-            "tp": 35471,
-            "fp": 20,
-            "fn": 1391,
-            "tn": 2480,
-            "evaluated": 39362,
-            "dropped": 0,
-            "total": 39362,
-            "coverage": 1.0,
-            "accuracy": 0.964153,
-            "precision": 0.999436,
-            "precision_ci": [
-              0.99913,
-              0.999635
-            ],
-            "recall": 0.962265,
-            "recall_ci": [
-              0.960271,
-              0.964162
-            ],
-            "f1": 0.980498,
-            "conservative": {
-              "precision": 0.999436,
-              "recall": 0.962265,
-              "f1": 0.980498
-            }
-          },
-          "augment_n": 2887
-        },
-        "r3_w3_w4": {
-          "SuphasaetSonYing": {
-            "tp": 193,
-            "fp": 0,
-            "fn": 7,
-            "tn": 0,
-            "evaluated": 200,
-            "dropped": 0,
-            "total": 200,
-            "coverage": 1.0,
-            "accuracy": 0.965,
-            "precision": 1.0,
-            "precision_ci": [
-              0.980484,
-              1.0
-            ],
-            "recall": 0.965,
-            "recall_ci": [
-              0.929529,
-              0.982945
-            ],
-            "f1": 0.982188,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.965,
-              "f1": 0.982188
-            }
-          },
-          "khobut": {
-            "tp": 1206,
-            "fp": 0,
-            "fn": 97,
-            "tn": 0,
-            "evaluated": 1303,
-            "dropped": 0,
-            "total": 1303,
-            "coverage": 1.0,
-            "accuracy": 0.925556,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996825,
-              1.0
-            ],
-            "recall": 0.925556,
-            "recall_ci": [
-              0.910019,
-              0.938592
-            ],
-            "f1": 0.961339,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.925556,
-              "f1": 0.961339
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 9785,
-            "fp": 0,
-            "fn": 758,
-            "tn": 0,
-            "evaluated": 10543,
-            "dropped": 0,
-            "total": 10543,
-            "coverage": 1.0,
-            "accuracy": 0.928104,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999608,
-              1.0
-            ],
-            "recall": 0.928104,
-            "recall_ci": [
-              0.923016,
-              0.93288
-            ],
-            "f1": 0.962712,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.928104,
-              "f1": 0.962712
-            }
-          },
-          "phraAphai": {
-            "tp": 23353,
-            "fp": 0,
-            "fn": 989,
-            "tn": 0,
-            "evaluated": 24342,
-            "dropped": 0,
-            "total": 24342,
-            "coverage": 1.0,
-            "accuracy": 0.959371,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999836,
-              1.0
-            ],
-            "recall": 0.959371,
-            "recall_ci": [
-              0.956817,
-              0.961779
-            ],
-            "f1": 0.979264,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.959371,
-              "f1": 0.979264
-            }
-          },
-          "phukaoTong": {
-            "tp": 81,
-            "fp": 0,
-            "fn": 6,
-            "tn": 0,
-            "evaluated": 87,
-            "dropped": 0,
-            "total": 87,
-            "coverage": 1.0,
-            "accuracy": 0.931034,
-            "precision": 1.0,
-            "precision_ci": [
-              0.95472,
-              1.0
-            ],
-            "recall": 0.931034,
-            "recall_ci": [
-              0.857601,
-              0.968012
-            ],
-            "f1": 0.964285,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.931034,
-              "f1": 0.964285
-            }
-          },
-          "TOTAL": {
-            "tp": 34968,
-            "fp": 134,
-            "fn": 1887,
-            "tn": 2366,
-            "evaluated": 39355,
-            "dropped": 0,
-            "total": 39355,
-            "coverage": 1.0,
-            "accuracy": 0.948647,
-            "precision": 0.996183,
-            "precision_ci": [
-              0.995481,
-              0.996776
-            ],
-            "recall": 0.948799,
-            "recall_ci": [
-              0.946502,
-              0.951003
-            ],
-            "f1": 0.971914,
-            "conservative": {
-              "precision": 0.996183,
-              "recall": 0.948799,
-              "f1": 0.971914
-            }
-          },
-          "augment_n": 2880
-        },
-        "rX_inter": {
-          "SuphasaetSonYing": {
-            "tp": 191,
-            "fp": 0,
-            "fn": 8,
-            "tn": 0,
-            "evaluated": 199,
-            "dropped": 0,
-            "total": 199,
-            "coverage": 1.0,
-            "accuracy": 0.959799,
-            "precision": 1.0,
-            "precision_ci": [
-              0.980283,
-              1.0
-            ],
-            "recall": 0.959799,
-            "recall_ci": [
-              0.92269,
-              0.979491
-            ],
-            "f1": 0.979487,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.959799,
-              "f1": 0.979487
-            }
-          },
-          "khobut": {
-            "tp": 1256,
-            "fp": 0,
-            "fn": 33,
-            "tn": 0,
-            "evaluated": 1289,
-            "dropped": 0,
-            "total": 1289,
-            "coverage": 1.0,
-            "accuracy": 0.974399,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996951,
-              1.0
-            ],
-            "recall": 0.974399,
-            "recall_ci": [
-              0.964265,
-              0.981713
-            ],
-            "f1": 0.987034,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.974399,
-              "f1": 0.987034
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 10194,
-            "fp": 0,
-            "fn": 306,
-            "tn": 0,
-            "evaluated": 10500,
-            "dropped": 0,
-            "total": 10500,
-            "coverage": 1.0,
-            "accuracy": 0.970857,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999623,
-              1.0
-            ],
-            "recall": 0.970857,
-            "recall_ci": [
-              0.967464,
-              0.973906
-            ],
-            "f1": 0.985213,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.970857,
-              "f1": 0.985213
-            }
-          },
-          "phraAphai": {
-            "tp": 23309,
-            "fp": 0,
-            "fn": 901,
-            "tn": 0,
-            "evaluated": 24210,
-            "dropped": 0,
-            "total": 24210,
-            "coverage": 1.0,
-            "accuracy": 0.962784,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999835,
-              1.0
-            ],
-            "recall": 0.962784,
-            "recall_ci": [
-              0.960325,
-              0.965096
-            ],
-            "f1": 0.981039,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.962784,
-              "f1": 0.981039
-            }
-          },
-          "phukaoTong": {
-            "tp": 80,
-            "fp": 0,
-            "fn": 6,
-            "tn": 0,
-            "evaluated": 86,
-            "dropped": 0,
-            "total": 86,
-            "coverage": 1.0,
-            "accuracy": 0.930233,
-            "precision": 1.0,
-            "precision_ci": [
-              0.95418,
-              1.0
-            ],
-            "recall": 0.930233,
-            "recall_ci": [
-              0.856037,
-              0.967635
-            ],
-            "f1": 0.963856,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.930233,
-              "f1": 0.963856
-            }
-          },
-          "TOTAL": {
-            "tp": 35310,
-            "fp": 15,
-            "fn": 1280,
-            "tn": 2485,
-            "evaluated": 39090,
-            "dropped": 0,
-            "total": 39090,
-            "coverage": 1.0,
-            "accuracy": 0.966871,
-            "precision": 0.999575,
-            "precision_ci": [
-              0.999299,
-              0.999743
-            ],
-            "recall": 0.965018,
-            "recall_ci": [
-              0.963086,
-              0.966852
-            ],
-            "f1": 0.981993,
-            "conservative": {
-              "precision": 0.999575,
-              "recall": 0.965018,
-              "f1": 0.981993
-            }
-          },
-          "augment_n": 2806
-        }
-      }
+    "khunChangKhunPhaen": {
+     "tp": 9206,
+     "fp": 0,
+     "fn": 1337,
+     "tn": 0,
+     "evaluated": 10543,
+     "dropped": 0,
+     "total": 10543,
+     "coverage": 1.0,
+     "accuracy": 0.873186,
+     "precision": 1.0,
+     "precision_ci": [
+      0.999583,
+      1.0
+     ],
+     "recall": 0.873186,
+     "recall_ci": [
+      0.866698,
+      0.879402
+     ],
+     "f1": 0.9323,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.873186,
+      "f1": 0.9323
+     }
     },
-    "D_klonpad_ssg_fallback": {
-      "stanza": {
-        "SuphasaetSonYing": {
-          "tp": 179,
-          "fp": 0,
-          "fn": 21,
-          "tn": 0,
-          "evaluated": 200,
-          "dropped": 0,
-          "total": 200,
-          "coverage": 1.0,
-          "accuracy": 0.895,
-          "precision": 1.0,
-          "precision_ci": [
-            0.978989,
-            1.0
-          ],
-          "recall": 0.895,
-          "recall_ci": [
-            0.844819,
-            0.930293
-          ],
-          "f1": 0.944591,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.895,
-            "f1": 0.944591
-          }
-        },
-        "khobut": {
-          "tp": 1122,
-          "fp": 0,
-          "fn": 181,
-          "tn": 0,
-          "evaluated": 1303,
-          "dropped": 0,
-          "total": 1303,
-          "coverage": 1.0,
-          "accuracy": 0.86109,
-          "precision": 1.0,
-          "precision_ci": [
-            0.996588,
-            1.0
-          ],
-          "recall": 0.86109,
-          "recall_ci": [
-            0.841247,
-            0.87881
-          ],
-          "f1": 0.925361,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.86109,
-            "f1": 0.925361
-          }
-        },
-        "khunChangKhunPhaen": {
-          "tp": 8945,
-          "fp": 0,
-          "fn": 1598,
-          "tn": 0,
-          "evaluated": 10543,
-          "dropped": 0,
-          "total": 10543,
-          "coverage": 1.0,
-          "accuracy": 0.84843,
-          "precision": 1.0,
-          "precision_ci": [
-            0.999571,
-            1.0
-          ],
-          "recall": 0.84843,
-          "recall_ci": [
-            0.841458,
-            0.855148
-          ],
-          "f1": 0.918001,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.84843,
-            "f1": 0.918001
-          }
-        },
-        "phraAphai": {
-          "tp": 21963,
-          "fp": 0,
-          "fn": 2379,
-          "tn": 0,
-          "evaluated": 24342,
-          "dropped": 0,
-          "total": 24342,
-          "coverage": 1.0,
-          "accuracy": 0.902268,
-          "precision": 1.0,
-          "precision_ci": [
-            0.999825,
-            1.0
-          ],
-          "recall": 0.902268,
-          "recall_ci": [
-            0.898473,
-            0.905935
-          ],
-          "f1": 0.948623,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.902268,
-            "f1": 0.948623
-          }
-        },
-        "phukaoTong": {
-          "tp": 69,
-          "fp": 0,
-          "fn": 18,
-          "tn": 0,
-          "evaluated": 87,
-          "dropped": 0,
-          "total": 87,
-          "coverage": 1.0,
-          "accuracy": 0.793103,
-          "precision": 1.0,
-          "precision_ci": [
-            0.947261,
-            1.0
-          ],
-          "recall": 0.793103,
-          "recall_ci": [
-            0.696489,
-            0.864927
-          ],
-          "f1": 0.884615,
-          "conservative": {
-            "precision": 1.0,
-            "recall": 0.793103,
-            "f1": 0.884615
-          }
-        },
-        "TOTAL": {
-          "tp": 33482,
-          "fp": 88,
-          "fn": 4616,
-          "tn": 9912,
-          "evaluated": 48098,
-          "dropped": 0,
-          "total": 48098,
-          "coverage": 1.0,
-          "accuracy": 0.9022,
-          "precision": 0.997379,
-          "precision_ci": [
-            0.996772,
-            0.997872
-          ],
-          "recall": 0.878839,
-          "recall_ci": [
-            0.875524,
-            0.882077
-          ],
-          "f1": 0.934364,
-          "conservative": {
-            "precision": 0.997379,
-            "recall": 0.878839,
-            "f1": 0.934364
-          }
-        },
-        "augment_n": 11623
-      },
-      "rules": {
-        "r1_w1_w2": {
-          "SuphasaetSonYing": {
-            "tp": 195,
-            "fp": 0,
-            "fn": 5,
-            "tn": 0,
-            "evaluated": 200,
-            "dropped": 0,
-            "total": 200,
-            "coverage": 1.0,
-            "accuracy": 0.975,
-            "precision": 1.0,
-            "precision_ci": [
-              0.98068,
-              1.0
-            ],
-            "recall": 0.975,
-            "recall_ci": [
-              0.942821,
-              0.989275
-            ],
-            "f1": 0.987342,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.975,
-              "f1": 0.987342
-            }
-          },
-          "khobut": {
-            "tp": 1235,
-            "fp": 0,
-            "fn": 68,
-            "tn": 0,
-            "evaluated": 1303,
-            "dropped": 0,
-            "total": 1303,
-            "coverage": 1.0,
-            "accuracy": 0.947813,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996899,
-              1.0
-            ],
-            "recall": 0.947813,
-            "recall_ci": [
-              0.934366,
-              0.958626
-            ],
-            "f1": 0.973207,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.947813,
-              "f1": 0.973207
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 9853,
-            "fp": 0,
-            "fn": 690,
-            "tn": 0,
-            "evaluated": 10543,
-            "dropped": 0,
-            "total": 10543,
-            "coverage": 1.0,
-            "accuracy": 0.934554,
-            "precision": 1.0,
-            "precision_ci": [
-              0.99961,
-              1.0
-            ],
-            "recall": 0.934554,
-            "recall_ci": [
-              0.929673,
-              0.939118
-            ],
-            "f1": 0.96617,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.934554,
-              "f1": 0.96617
-            }
-          },
-          "phraAphai": {
-            "tp": 23608,
-            "fp": 0,
-            "fn": 734,
-            "tn": 0,
-            "evaluated": 24342,
-            "dropped": 0,
-            "total": 24342,
-            "coverage": 1.0,
-            "accuracy": 0.969846,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999837,
-              1.0
-            ],
-            "recall": 0.969846,
-            "recall_ci": [
-              0.967623,
-              0.971922
-            ],
-            "f1": 0.984692,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.969846,
-              "f1": 0.984692
-            }
-          },
-          "phukaoTong": {
-            "tp": 79,
-            "fp": 0,
-            "fn": 8,
-            "tn": 0,
-            "evaluated": 87,
-            "dropped": 0,
-            "total": 87,
-            "coverage": 1.0,
-            "accuracy": 0.908046,
-            "precision": 1.0,
-            "precision_ci": [
-              0.953627,
-              1.0
-            ],
-            "recall": 0.908046,
-            "recall_ci": [
-              0.828913,
-              0.952668
-            ],
-            "f1": 0.951807,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.908046,
-              "f1": 0.951807
-            }
-          },
-          "TOTAL": {
-            "tp": 35423,
-            "fp": 85,
-            "fn": 1602,
-            "tn": 2415,
-            "evaluated": 39525,
-            "dropped": 0,
-            "total": 39525,
-            "coverage": 1.0,
-            "accuracy": 0.957318,
-            "precision": 0.997606,
-            "precision_ci": [
-              0.997041,
-              0.998063
-            ],
-            "recall": 0.956732,
-            "recall_ci": [
-              0.954612,
-              0.958757
-            ],
-            "f1": 0.976742,
-            "conservative": {
-              "precision": 0.997606,
-              "recall": 0.956732,
-              "f1": 0.976742
-            }
-          },
-          "augment_n": 3050
-        },
-        "r2_w2_w3": {
-          "SuphasaetSonYing": {
-            "tp": 191,
-            "fp": 0,
-            "fn": 9,
-            "tn": 0,
-            "evaluated": 200,
-            "dropped": 0,
-            "total": 200,
-            "coverage": 1.0,
-            "accuracy": 0.955,
-            "precision": 1.0,
-            "precision_ci": [
-              0.980283,
-              1.0
-            ],
-            "recall": 0.955,
-            "recall_ci": [
-              0.916702,
-              0.976148
-            ],
-            "f1": 0.976982,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.955,
-              "f1": 0.976982
-            }
-          },
-          "khobut": {
-            "tp": 1267,
-            "fp": 0,
-            "fn": 36,
-            "tn": 0,
-            "evaluated": 1303,
-            "dropped": 0,
-            "total": 1303,
-            "coverage": 1.0,
-            "accuracy": 0.972371,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996977,
-              1.0
-            ],
-            "recall": 0.972371,
-            "recall_ci": [
-              0.961988,
-              0.979977
-            ],
-            "f1": 0.985992,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.972371,
-              "f1": 0.985992
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 10245,
-            "fp": 0,
-            "fn": 298,
-            "tn": 0,
-            "evaluated": 10543,
-            "dropped": 0,
-            "total": 10543,
-            "coverage": 1.0,
-            "accuracy": 0.971735,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999625,
-              1.0
-            ],
-            "recall": 0.971735,
-            "recall_ci": [
-              0.968395,
-              0.974731
-            ],
-            "f1": 0.985665,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.971735,
-              "f1": 0.985665
-            }
-          },
-          "phraAphai": {
-            "tp": 23490,
-            "fp": 0,
-            "fn": 852,
-            "tn": 0,
-            "evaluated": 24342,
-            "dropped": 0,
-            "total": 24342,
-            "coverage": 1.0,
-            "accuracy": 0.964999,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999836,
-              1.0
-            ],
-            "recall": 0.964999,
-            "recall_ci": [
-              0.962616,
-              0.967235
-            ],
-            "f1": 0.982188,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.964999,
-              "f1": 0.982188
-            }
-          },
-          "phukaoTong": {
-            "tp": 80,
-            "fp": 0,
-            "fn": 7,
-            "tn": 0,
-            "evaluated": 87,
-            "dropped": 0,
-            "total": 87,
-            "coverage": 1.0,
-            "accuracy": 0.91954,
-            "precision": 1.0,
-            "precision_ci": [
-              0.95418,
-              1.0
-            ],
-            "recall": 0.91954,
-            "recall_ci": [
-              0.843116,
-              0.96048
-            ],
-            "f1": 0.958084,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.91954,
-              "f1": 0.958084
-            }
-          },
-          "TOTAL": {
-            "tp": 35609,
-            "fp": 6,
-            "fn": 1253,
-            "tn": 2494,
-            "evaluated": 39362,
-            "dropped": 0,
-            "total": 39362,
-            "coverage": 1.0,
-            "accuracy": 0.968015,
-            "precision": 0.999832,
-            "precision_ci": [
-              0.999632,
-              0.999923
-            ],
-            "recall": 0.966008,
-            "recall_ci": [
-              0.964109,
-              0.96781
-            ],
-            "f1": 0.982629,
-            "conservative": {
-              "precision": 0.999832,
-              "recall": 0.966008,
-              "f1": 0.982629
-            }
-          },
-          "augment_n": 2887
-        },
-        "r3_w3_w4": {
-          "SuphasaetSonYing": {
-            "tp": 193,
-            "fp": 0,
-            "fn": 7,
-            "tn": 0,
-            "evaluated": 200,
-            "dropped": 0,
-            "total": 200,
-            "coverage": 1.0,
-            "accuracy": 0.965,
-            "precision": 1.0,
-            "precision_ci": [
-              0.980484,
-              1.0
-            ],
-            "recall": 0.965,
-            "recall_ci": [
-              0.929529,
-              0.982945
-            ],
-            "f1": 0.982188,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.965,
-              "f1": 0.982188
-            }
-          },
-          "khobut": {
-            "tp": 1204,
-            "fp": 0,
-            "fn": 99,
-            "tn": 0,
-            "evaluated": 1303,
-            "dropped": 0,
-            "total": 1303,
-            "coverage": 1.0,
-            "accuracy": 0.924021,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996819,
-              1.0
-            ],
-            "recall": 0.924021,
-            "recall_ci": [
-              0.908355,
-              0.937195
-            ],
-            "f1": 0.96051,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.924021,
-              "f1": 0.96051
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 9832,
-            "fp": 0,
-            "fn": 711,
-            "tn": 0,
-            "evaluated": 10543,
-            "dropped": 0,
-            "total": 10543,
-            "coverage": 1.0,
-            "accuracy": 0.932562,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999609,
-              1.0
-            ],
-            "recall": 0.932562,
-            "recall_ci": [
-              0.927616,
-              0.937193
-            ],
-            "f1": 0.965104,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.932562,
-              "f1": 0.965104
-            }
-          },
-          "phraAphai": {
-            "tp": 23401,
-            "fp": 0,
-            "fn": 941,
-            "tn": 0,
-            "evaluated": 24342,
-            "dropped": 0,
-            "total": 24342,
-            "coverage": 1.0,
-            "accuracy": 0.961343,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999836,
-              1.0
-            ],
-            "recall": 0.961343,
-            "recall_ci": [
-              0.958847,
-              0.963692
-            ],
-            "f1": 0.980291,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.961343,
-              "f1": 0.980291
-            }
-          },
-          "phukaoTong": {
-            "tp": 82,
-            "fp": 0,
-            "fn": 5,
-            "tn": 0,
-            "evaluated": 87,
-            "dropped": 0,
-            "total": 87,
-            "coverage": 1.0,
-            "accuracy": 0.942529,
-            "precision": 1.0,
-            "precision_ci": [
-              0.955248,
-              1.0
-            ],
-            "recall": 0.942529,
-            "recall_ci": [
-              0.872425,
-              0.975205
-            ],
-            "f1": 0.970414,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.942529,
-              "f1": 0.970414
-            }
-          },
-          "TOTAL": {
-            "tp": 35044,
-            "fp": 113,
-            "fn": 1811,
-            "tn": 2387,
-            "evaluated": 39355,
-            "dropped": 0,
-            "total": 39355,
-            "coverage": 1.0,
-            "accuracy": 0.951112,
-            "precision": 0.996786,
-            "precision_ci": [
-              0.996137,
-              0.997326
-            ],
-            "recall": 0.950861,
-            "recall_ci": [
-              0.948607,
-              0.953022
-            ],
-            "f1": 0.973282,
-            "conservative": {
-              "precision": 0.996786,
-              "recall": 0.950861,
-              "f1": 0.973282
-            }
-          },
-          "augment_n": 2880
-        },
-        "rX_inter": {
-          "SuphasaetSonYing": {
-            "tp": 192,
-            "fp": 0,
-            "fn": 7,
-            "tn": 0,
-            "evaluated": 199,
-            "dropped": 0,
-            "total": 199,
-            "coverage": 1.0,
-            "accuracy": 0.964824,
-            "precision": 1.0,
-            "precision_ci": [
-              0.980384,
-              1.0
-            ],
-            "recall": 0.964824,
-            "recall_ci": [
-              0.929183,
-              0.982858
-            ],
-            "f1": 0.982097,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.964824,
-              "f1": 0.982097
-            }
-          },
-          "khobut": {
-            "tp": 1261,
-            "fp": 0,
-            "fn": 28,
-            "tn": 0,
-            "evaluated": 1289,
-            "dropped": 0,
-            "total": 1289,
-            "coverage": 1.0,
-            "accuracy": 0.978278,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996963,
-              1.0
-            ],
-            "recall": 0.978278,
-            "recall_ci": [
-              0.968784,
-              0.984929
-            ],
-            "f1": 0.98902,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.978278,
-              "f1": 0.98902
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 10245,
-            "fp": 0,
-            "fn": 255,
-            "tn": 0,
-            "evaluated": 10500,
-            "dropped": 0,
-            "total": 10500,
-            "coverage": 1.0,
-            "accuracy": 0.975714,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999625,
-              1.0
-            ],
-            "recall": 0.975714,
-            "recall_ci": [
-              0.972591,
-              0.978489
-            ],
-            "f1": 0.987708,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.975714,
-              "f1": 0.987708
-            }
-          },
-          "phraAphai": {
-            "tp": 23424,
-            "fp": 0,
-            "fn": 786,
-            "tn": 0,
-            "evaluated": 24210,
-            "dropped": 0,
-            "total": 24210,
-            "coverage": 1.0,
-            "accuracy": 0.967534,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999836,
-              1.0
-            ],
-            "recall": 0.967534,
-            "recall_ci": [
-              0.965226,
-              0.969694
-            ],
-            "f1": 0.983499,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.967534,
-              "f1": 0.983499
-            }
-          },
-          "phukaoTong": {
-            "tp": 81,
-            "fp": 0,
-            "fn": 5,
-            "tn": 0,
-            "evaluated": 86,
-            "dropped": 0,
-            "total": 86,
-            "coverage": 1.0,
-            "accuracy": 0.94186,
-            "precision": 1.0,
-            "precision_ci": [
-              0.95472,
-              1.0
-            ],
-            "recall": 0.94186,
-            "recall_ci": [
-              0.87102,
-              0.974913
-            ],
-            "f1": 0.97006,
-            "conservative": {
-              "precision": 1.0,
-              "recall": 0.94186,
-              "f1": 0.97006
-            }
-          },
-          "TOTAL": {
-            "tp": 35484,
-            "fp": 4,
-            "fn": 1106,
-            "tn": 2496,
-            "evaluated": 39090,
-            "dropped": 0,
-            "total": 39090,
-            "coverage": 1.0,
-            "accuracy": 0.971604,
-            "precision": 0.999887,
-            "precision_ci": [
-              0.99971,
-              0.999956
-            ],
-            "recall": 0.969773,
-            "recall_ci": [
-              0.967969,
-              0.971479
-            ],
-            "f1": 0.9846,
-            "conservative": {
-              "precision": 0.999887,
-              "recall": 0.969773,
-              "f1": 0.9846
-            }
-          },
-          "augment_n": 2806
-        }
-      }
+    "phraAphai": {
+     "tp": 21312,
+     "fp": 0,
+     "fn": 3030,
+     "tn": 0,
+     "evaluated": 24342,
+     "dropped": 0,
+     "total": 24342,
+     "coverage": 1.0,
+     "accuracy": 0.875524,
+     "precision": 1.0,
+     "precision_ci": [
+      0.99982,
+      1.0
+     ],
+     "recall": 0.875524,
+     "recall_ci": [
+      0.871317,
+      0.879612
+     ],
+     "f1": 0.933631,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.875524,
+      "f1": 0.933631
+     }
     },
-    "C_kongfha_word_check": {
-      "stanza": {
-        "SuphasaetSonYing": {
-          "tp": 170,
-          "fp": 0,
-          "fn": 28,
-          "tn": 0,
-          "evaluated": 198,
-          "dropped": 2,
-          "total": 200,
-          "coverage": 0.99,
-          "accuracy": 0.858586,
-          "precision": 1.0,
-          "precision_ci": [
-            0.977902,
-            1.0
-          ],
-          "recall": 0.858586,
-          "recall_ci": [
-            0.803207,
-            0.900315
-          ],
-          "f1": 0.923913,
-          "conservative": {
-            "precision": 0.988372,
-            "recall": 0.85,
-            "f1": 0.913978
-          }
-        },
-        "khobut": {
-          "tp": 1060,
-          "fp": 0,
-          "fn": 226,
-          "tn": 0,
-          "evaluated": 1286,
-          "dropped": 17,
-          "total": 1303,
-          "coverage": 0.986953,
-          "accuracy": 0.824261,
-          "precision": 1.0,
-          "precision_ci": [
-            0.996389,
-            1.0
-          ],
-          "recall": 0.824261,
-          "recall_ci": [
-            0.802502,
-            0.844089
-          ],
-          "f1": 0.903666,
-          "conservative": {
-            "precision": 0.984215,
-            "recall": 0.813507,
-            "f1": 0.890756
-          }
-        },
-        "khunChangKhunPhaen": {
-          "tp": 7732,
-          "fp": 0,
-          "fn": 1929,
-          "tn": 0,
-          "evaluated": 9661,
-          "dropped": 882,
-          "total": 10543,
-          "coverage": 0.916343,
-          "accuracy": 0.800331,
-          "precision": 1.0,
-          "precision_ci": [
-            0.999503,
-            1.0
-          ],
-          "recall": 0.800331,
-          "recall_ci": [
-            0.792241,
-            0.808183
-          ],
-          "f1": 0.889093,
-          "conservative": {
-            "precision": 0.897609,
-            "recall": 0.733378,
-            "f1": 0.807225
-          }
-        },
-        "phraAphai": {
-          "tp": 20579,
-          "fp": 0,
-          "fn": 3117,
-          "tn": 0,
-          "evaluated": 23696,
-          "dropped": 646,
-          "total": 24342,
-          "coverage": 0.973462,
-          "accuracy": 0.868459,
-          "precision": 1.0,
-          "precision_ci": [
-            0.999813,
-            1.0
-          ],
-          "recall": 0.868459,
-          "recall_ci": [
-            0.864095,
-            0.872703
-          ],
-          "f1": 0.929599,
-          "conservative": {
-            "precision": 0.969564,
-            "recall": 0.845411,
-            "f1": 0.903241
-          }
-        },
-        "phukaoTong": {
-          "tp": 63,
-          "fp": 0,
-          "fn": 18,
-          "tn": 0,
-          "evaluated": 81,
-          "dropped": 6,
-          "total": 87,
-          "coverage": 0.931034,
-          "accuracy": 0.777778,
-          "precision": 1.0,
-          "precision_ci": [
-            0.942527,
-            1.0
-          ],
-          "recall": 0.777778,
-          "recall_ci": [
-            0.675845,
-            0.854555
-          ],
-          "f1": 0.875,
-          "conservative": {
-            "precision": 0.913043,
-            "recall": 0.724138,
-            "f1": 0.807692
-          }
-        },
-        "TOTAL": {
-          "tp": 30760,
-          "fp": 2655,
-          "fn": 5723,
-          "tn": 7142,
-          "evaluated": 46280,
-          "dropped": 1818,
-          "total": 48098,
-          "coverage": 0.962202,
-          "accuracy": 0.818971,
-          "precision": 0.920545,
-          "precision_ci": [
-            0.917596,
-            0.923396
-          ],
-          "recall": 0.843132,
-          "recall_ci": [
-            0.839364,
-            0.846828
-          ],
-          "f1": 0.88014,
-          "conservative": {
-            "precision": 0.873045,
-            "recall": 0.803112,
-            "f1": 0.83662
-          }
-        },
-        "augment_n": 11623
-      },
-      "rules": {
-        "r1_w1_w2": {
-          "SuphasaetSonYing": {
-            "tp": 188,
-            "fp": 0,
-            "fn": 10,
-            "tn": 0,
-            "evaluated": 198,
-            "dropped": 2,
-            "total": 200,
-            "coverage": 0.99,
-            "accuracy": 0.949495,
-            "precision": 1.0,
-            "precision_ci": [
-              0.979975,
-              1.0
-            ],
-            "recall": 0.949495,
-            "recall_ci": [
-              0.909541,
-              0.972339
-            ],
-            "f1": 0.974093,
-            "conservative": {
-              "precision": 0.989474,
-              "recall": 0.94,
-              "f1": 0.964103
-            }
-          },
-          "khobut": {
-            "tp": 1183,
-            "fp": 0,
-            "fn": 103,
-            "tn": 0,
-            "evaluated": 1286,
-            "dropped": 17,
-            "total": 1303,
-            "coverage": 0.986953,
-            "accuracy": 0.919907,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996763,
-              1.0
-            ],
-            "recall": 0.919907,
-            "recall_ci": [
-              0.90379,
-              0.933522
-            ],
-            "f1": 0.958283,
-            "conservative": {
-              "precision": 0.985833,
-              "recall": 0.907905,
-              "f1": 0.945266
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 8794,
-            "fp": 0,
-            "fn": 867,
-            "tn": 0,
-            "evaluated": 9661,
-            "dropped": 882,
-            "total": 10543,
-            "coverage": 0.916343,
-            "accuracy": 0.910258,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999563,
-              1.0
-            ],
-            "recall": 0.910258,
-            "recall_ci": [
-              0.904394,
-              0.915795
-            ],
-            "f1": 0.953021,
-            "conservative": {
-              "precision": 0.908847,
-              "recall": 0.834108,
-              "f1": 0.869875
-            }
-          },
-          "phraAphai": {
-            "tp": 22290,
-            "fp": 0,
-            "fn": 1406,
-            "tn": 0,
-            "evaluated": 23696,
-            "dropped": 646,
-            "total": 24342,
-            "coverage": 0.973462,
-            "accuracy": 0.940665,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999828,
-              1.0
-            ],
-            "recall": 0.940665,
-            "recall_ci": [
-              0.937585,
-              0.943602
-            ],
-            "f1": 0.969425,
-            "conservative": {
-              "precision": 0.971835,
-              "recall": 0.915701,
-              "f1": 0.942933
-            }
-          },
-          "phukaoTong": {
-            "tp": 75,
-            "fp": 0,
-            "fn": 6,
-            "tn": 0,
-            "evaluated": 81,
-            "dropped": 6,
-            "total": 87,
-            "coverage": 0.931034,
-            "accuracy": 0.925926,
-            "precision": 1.0,
-            "precision_ci": [
-              0.951274,
-              1.0
-            ],
-            "recall": 0.925926,
-            "recall_ci": [
-              0.847669,
-              0.965611
-            ],
-            "f1": 0.961539,
-            "conservative": {
-              "precision": 0.925926,
-              "recall": 0.862069,
-              "f1": 0.892857
-            }
-          },
-          "TOTAL": {
-            "tp": 32990,
-            "fp": 850,
-            "fn": 2477,
-            "tn": 1618,
-            "evaluated": 37935,
-            "dropped": 1590,
-            "total": 39525,
-            "coverage": 0.959772,
-            "accuracy": 0.912297,
-            "precision": 0.974882,
-            "precision_ci": [
-              0.97316,
-              0.976496
-            ],
-            "recall": 0.93016,
-            "recall_ci": [
-              0.927461,
-              0.932767
-            ],
-            "f1": 0.951996,
-            "conservative": {
-              "precision": 0.931132,
-              "recall": 0.89025,
-              "f1": 0.910232
-            }
-          },
-          "augment_n": 3050
-        },
-        "r2_w2_w3": {
-          "SuphasaetSonYing": {
-            "tp": 196,
-            "fp": 0,
-            "fn": 2,
-            "tn": 0,
-            "evaluated": 198,
-            "dropped": 2,
-            "total": 200,
-            "coverage": 0.99,
-            "accuracy": 0.989899,
-            "precision": 1.0,
-            "precision_ci": [
-              0.980777,
-              1.0
-            ],
-            "recall": 0.989899,
-            "recall_ci": [
-              0.963924,
-              0.997226
-            ],
-            "f1": 0.994924,
-            "conservative": {
-              "precision": 0.989899,
-              "recall": 0.98,
-              "f1": 0.984925
-            }
-          },
-          "khobut": {
-            "tp": 1239,
-            "fp": 0,
-            "fn": 47,
-            "tn": 0,
-            "evaluated": 1286,
-            "dropped": 17,
-            "total": 1303,
-            "coverage": 0.986953,
-            "accuracy": 0.963453,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996909,
-              1.0
-            ],
-            "recall": 0.963453,
-            "recall_ci": [
-              0.951739,
-              0.972406
-            ],
-            "f1": 0.981386,
-            "conservative": {
-              "precision": 0.986465,
-              "recall": 0.950883,
-              "f1": 0.968347
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 9414,
-            "fp": 0,
-            "fn": 247,
-            "tn": 0,
-            "evaluated": 9661,
-            "dropped": 882,
-            "total": 10543,
-            "coverage": 0.916343,
-            "accuracy": 0.974433,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999592,
-              1.0
-            ],
-            "recall": 0.974433,
-            "recall_ci": [
-              0.971092,
-              0.977397
-            ],
-            "f1": 0.987051,
-            "conservative": {
-              "precision": 0.914336,
-              "recall": 0.892915,
-              "f1": 0.903499
-            }
-          },
-          "phraAphai": {
-            "tp": 22789,
-            "fp": 0,
-            "fn": 907,
-            "tn": 0,
-            "evaluated": 23696,
-            "dropped": 646,
-            "total": 24342,
-            "coverage": 0.973462,
-            "accuracy": 0.961723,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999831,
-              1.0
-            ],
-            "recall": 0.961723,
-            "recall_ci": [
-              0.959205,
-              0.964093
-            ],
-            "f1": 0.980488,
-            "conservative": {
-              "precision": 0.972434,
-              "recall": 0.936201,
-              "f1": 0.953974
-            }
-          },
-          "phukaoTong": {
-            "tp": 76,
-            "fp": 0,
-            "fn": 5,
-            "tn": 0,
-            "evaluated": 81,
-            "dropped": 6,
-            "total": 87,
-            "coverage": 0.931034,
-            "accuracy": 0.938272,
-            "precision": 1.0,
-            "precision_ci": [
-              0.951885,
-              1.0
-            ],
-            "recall": 0.938272,
-            "recall_ci": [
-              0.863506,
-              0.973348
-            ],
-            "f1": 0.968153,
-            "conservative": {
-              "precision": 0.926829,
-              "recall": 0.873563,
-              "f1": 0.899408
-            }
-          },
-          "TOTAL": {
-            "tp": 34068,
-            "fp": 711,
-            "fn": 1228,
-            "tn": 1717,
-            "evaluated": 37724,
-            "dropped": 1638,
-            "total": 39362,
-            "coverage": 0.958386,
-            "accuracy": 0.9486,
-            "precision": 0.979557,
-            "precision_ci": [
-              0.978016,
-              0.980992
-            ],
-            "recall": 0.965209,
-            "recall_ci": [
-              0.963246,
-              0.96707
-            ],
-            "f1": 0.97233,
-            "conservative": {
-              "precision": 0.935497,
-              "recall": 0.922402,
-              "f1": 0.928903
-            }
-          },
-          "augment_n": 2887
-        },
-        "r3_w3_w4": {
-          "SuphasaetSonYing": {
-            "tp": 183,
-            "fp": 0,
-            "fn": 15,
-            "tn": 0,
-            "evaluated": 198,
-            "dropped": 2,
-            "total": 200,
-            "coverage": 0.99,
-            "accuracy": 0.924242,
-            "precision": 1.0,
-            "precision_ci": [
-              0.979439,
-              1.0
-            ],
-            "recall": 0.924242,
-            "recall_ci": [
-              0.87878,
-              0.953556
-            ],
-            "f1": 0.96063,
-            "conservative": {
-              "precision": 0.989189,
-              "recall": 0.915,
-              "f1": 0.950649
-            }
-          },
-          "khobut": {
-            "tp": 1202,
-            "fp": 0,
-            "fn": 84,
-            "tn": 0,
-            "evaluated": 1286,
-            "dropped": 17,
-            "total": 1303,
-            "coverage": 0.986953,
-            "accuracy": 0.934681,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996814,
-              1.0
-            ],
-            "recall": 0.934681,
-            "recall_ci": [
-              0.91984,
-              0.946933
-            ],
-            "f1": 0.966238,
-            "conservative": {
-              "precision": 0.986054,
-              "recall": 0.922487,
-              "f1": 0.953212
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 8713,
-            "fp": 0,
-            "fn": 948,
-            "tn": 0,
-            "evaluated": 9661,
-            "dropped": 882,
-            "total": 10543,
-            "coverage": 0.916343,
-            "accuracy": 0.901874,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999559,
-              1.0
-            ],
-            "recall": 0.901874,
-            "recall_ci": [
-              0.895781,
-              0.907647
-            ],
-            "f1": 0.948406,
-            "conservative": {
-              "precision": 0.908077,
-              "recall": 0.826425,
-              "f1": 0.865329
-            }
-          },
-          "phraAphai": {
-            "tp": 22703,
-            "fp": 0,
-            "fn": 993,
-            "tn": 0,
-            "evaluated": 23696,
-            "dropped": 646,
-            "total": 24342,
-            "coverage": 0.973462,
-            "accuracy": 0.958094,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999831,
-              1.0
-            ],
-            "recall": 0.958094,
-            "recall_ci": [
-              0.955468,
-              0.960572
-            ],
-            "f1": 0.978599,
-            "conservative": {
-              "precision": 0.972333,
-              "recall": 0.932668,
-              "f1": 0.952088
-            }
-          },
-          "phukaoTong": {
-            "tp": 75,
-            "fp": 0,
-            "fn": 6,
-            "tn": 0,
-            "evaluated": 81,
-            "dropped": 6,
-            "total": 87,
-            "coverage": 0.931034,
-            "accuracy": 0.925926,
-            "precision": 1.0,
-            "precision_ci": [
-              0.951274,
-              1.0
-            ],
-            "recall": 0.925926,
-            "recall_ci": [
-              0.847669,
-              0.965611
-            ],
-            "f1": 0.961539,
-            "conservative": {
-              "precision": 0.925926,
-              "recall": 0.862069,
-              "f1": 0.892857
-            }
-          },
-          "TOTAL": {
-            "tp": 33157,
-            "fp": 825,
-            "fn": 2113,
-            "tn": 1643,
-            "evaluated": 37738,
-            "dropped": 1617,
-            "total": 39355,
-            "coverage": 0.958912,
-            "accuracy": 0.922147,
-            "precision": 0.975722,
-            "precision_ci": [
-              0.974031,
-              0.977306
-            ],
-            "recall": 0.940091,
-            "recall_ci": [
-              0.937566,
-              0.94252
-            ],
-            "f1": 0.957575,
-            "conservative": {
-              "precision": 0.931403,
-              "recall": 0.89888,
-              "f1": 0.914853
-            }
-          },
-          "augment_n": 2880
-        },
-        "rX_inter": {
-          "SuphasaetSonYing": {
-            "tp": 192,
-            "fp": 0,
-            "fn": 4,
-            "tn": 0,
-            "evaluated": 196,
-            "dropped": 3,
-            "total": 199,
-            "coverage": 0.984925,
-            "accuracy": 0.979592,
-            "precision": 1.0,
-            "precision_ci": [
-              0.980384,
-              1.0
-            ],
-            "recall": 0.979592,
-            "recall_ci": [
-              0.948709,
-              0.992036
-            ],
-            "f1": 0.989691,
-            "conservative": {
-              "precision": 0.984615,
-              "recall": 0.964824,
-              "f1": 0.974619
-            }
-          },
-          "khobut": {
-            "tp": 1209,
-            "fp": 0,
-            "fn": 55,
-            "tn": 0,
-            "evaluated": 1264,
-            "dropped": 25,
-            "total": 1289,
-            "coverage": 0.980605,
-            "accuracy": 0.956487,
-            "precision": 1.0,
-            "precision_ci": [
-              0.996833,
-              1.0
-            ],
-            "recall": 0.956487,
-            "recall_ci": [
-              0.94379,
-              0.966419
-            ],
-            "f1": 0.97776,
-            "conservative": {
-              "precision": 0.979741,
-              "recall": 0.937936,
-              "f1": 0.958383
-            }
-          },
-          "khunChangKhunPhaen": {
-            "tp": 9025,
-            "fp": 0,
-            "fn": 230,
-            "tn": 0,
-            "evaluated": 9255,
-            "dropped": 1245,
-            "total": 10500,
-            "coverage": 0.881429,
-            "accuracy": 0.975149,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999575,
-              1.0
-            ],
-            "recall": 0.975149,
-            "recall_ci": [
-              0.971774,
-              0.978128
-            ],
-            "f1": 0.987418,
-            "conservative": {
-              "precision": 0.878773,
-              "recall": 0.859524,
-              "f1": 0.869042
-            }
-          },
-          "phraAphai": {
-            "tp": 22412,
-            "fp": 0,
-            "fn": 848,
-            "tn": 0,
-            "evaluated": 23260,
-            "dropped": 950,
-            "total": 24210,
-            "coverage": 0.96076,
-            "accuracy": 0.963543,
-            "precision": 1.0,
-            "precision_ci": [
-              0.999829,
-              1.0
-            ],
-            "recall": 0.963543,
-            "recall_ci": [
-              0.961056,
-              0.965876
-            ],
-            "f1": 0.981433,
-            "conservative": {
-              "precision": 0.959336,
-              "recall": 0.925733,
-              "f1": 0.942235
-            }
-          },
-          "phukaoTong": {
-            "tp": 72,
-            "fp": 0,
-            "fn": 6,
-            "tn": 0,
-            "evaluated": 78,
-            "dropped": 8,
-            "total": 86,
-            "coverage": 0.906977,
-            "accuracy": 0.923077,
-            "precision": 1.0,
-            "precision_ci": [
-              0.949347,
-              1.0
-            ],
-            "recall": 0.923077,
-            "recall_ci": [
-              0.842166,
-              0.96427
-            ],
-            "f1": 0.96,
-            "conservative": {
-              "precision": 0.9,
-              "recall": 0.837209,
-              "f1": 0.86747
-            }
-          },
-          "TOTAL": {
-            "tp": 33194,
-            "fp": 743,
-            "fn": 1153,
-            "tn": 1690,
-            "evaluated": 36780,
-            "dropped": 2310,
-            "total": 39090,
-            "coverage": 0.940906,
-            "accuracy": 0.94845,
-            "precision": 0.978106,
-            "precision_ci": [
-              0.976495,
-              0.97961
-            ],
-            "recall": 0.966431,
-            "recall_ci": [
-              0.964473,
-              0.968284
-            ],
-            "f1": 0.972233,
-            "conservative": {
-              "precision": 0.915772,
-              "recall": 0.90553,
-              "f1": 0.910622
-            }
-          },
-          "augment_n": 2806
-        }
+    "phukaoTong": {
+     "tp": 71,
+     "fp": 0,
+     "fn": 16,
+     "tn": 0,
+     "evaluated": 87,
+     "dropped": 0,
+     "total": 87,
+     "coverage": 1.0,
+     "accuracy": 0.816092,
+     "precision": 1.0,
+     "precision_ci": [
+      0.94867,
+      1.0
+     ],
+     "recall": 0.816092,
+     "recall_ci": [
+      0.721943,
+      0.883506
+     ],
+     "f1": 0.898734,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.816092,
+      "f1": 0.898734
+     }
+    },
+    "TOTAL": {
+     "tp": 32978,
+     "fp": 0,
+     "fn": 5120,
+     "tn": 10000,
+     "evaluated": 48098,
+     "dropped": 0,
+     "total": 48098,
+     "coverage": 1.0,
+     "accuracy": 0.893551,
+     "precision": 1.0,
+     "precision_ci": [
+      0.999884,
+      1.0
+     ],
+     "recall": 0.86561,
+     "recall_ci": [
+      0.862148,
+      0.868998
+     ],
+     "f1": 0.927965,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.86561,
+      "f1": 0.927965
+     }
+    },
+    "augment_n": 11623
+   },
+   "rules": {
+    "r1_w1_w2": {
+     "SuphasaetSonYing": {
+      "tp": 196,
+      "fp": 0,
+      "fn": 4,
+      "tn": 0,
+      "evaluated": 200,
+      "dropped": 0,
+      "total": 200,
+      "coverage": 1.0,
+      "accuracy": 0.98,
+      "precision": 1.0,
+      "precision_ci": [
+       0.980777,
+       1.0
+      ],
+      "recall": 0.98,
+      "recall_ci": [
+       0.949712,
+       0.992196
+      ],
+      "f1": 0.989899,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.98,
+       "f1": 0.989899
       }
+     },
+     "khobut": {
+      "tp": 1229,
+      "fp": 0,
+      "fn": 74,
+      "tn": 0,
+      "evaluated": 1303,
+      "dropped": 0,
+      "total": 1303,
+      "coverage": 1.0,
+      "accuracy": 0.943208,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996884,
+       1.0
+      ],
+      "recall": 0.943208,
+      "recall_ci": [
+       0.929289,
+       0.954521
+      ],
+      "f1": 0.970774,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.943208,
+       "f1": 0.970774
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 9936,
+      "fp": 0,
+      "fn": 607,
+      "tn": 0,
+      "evaluated": 10543,
+      "dropped": 0,
+      "total": 10543,
+      "coverage": 1.0,
+      "accuracy": 0.942426,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999614,
+       1.0
+      ],
+      "recall": 0.942426,
+      "recall_ci": [
+       0.937817,
+       0.946714
+      ],
+      "f1": 0.97036,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.942426,
+       "f1": 0.97036
+      }
+     },
+     "phraAphai": {
+      "tp": 23092,
+      "fp": 0,
+      "fn": 1250,
+      "tn": 0,
+      "evaluated": 24342,
+      "dropped": 0,
+      "total": 24342,
+      "coverage": 1.0,
+      "accuracy": 0.948648,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999834,
+       1.0
+      ],
+      "recall": 0.948648,
+      "recall_ci": [
+       0.945804,
+       0.951351
+      ],
+      "f1": 0.973647,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.948648,
+       "f1": 0.973647
+      }
+     },
+     "phukaoTong": {
+      "tp": 79,
+      "fp": 0,
+      "fn": 8,
+      "tn": 0,
+      "evaluated": 87,
+      "dropped": 0,
+      "total": 87,
+      "coverage": 1.0,
+      "accuracy": 0.908046,
+      "precision": 1.0,
+      "precision_ci": [
+       0.953627,
+       1.0
+      ],
+      "recall": 0.908046,
+      "recall_ci": [
+       0.828913,
+       0.952668
+      ],
+      "f1": 0.951807,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.908046,
+       "f1": 0.951807
+      }
+     },
+     "TOTAL": {
+      "tp": 34832,
+      "fp": 0,
+      "fn": 2193,
+      "tn": 2500,
+      "evaluated": 39525,
+      "dropped": 0,
+      "total": 39525,
+      "coverage": 1.0,
+      "accuracy": 0.944516,
+      "precision": 1.0,
+      "precision_ci": [
+       0.99989,
+       1.0
+      ],
+      "recall": 0.94077,
+      "recall_ci": [
+       0.938319,
+       0.943129
+      ],
+      "f1": 0.969481,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.94077,
+       "f1": 0.969481
+      }
+     },
+     "augment_n": 3050
+    },
+    "r2_w2_w3": {
+     "SuphasaetSonYing": {
+      "tp": 194,
+      "fp": 0,
+      "fn": 6,
+      "tn": 0,
+      "evaluated": 200,
+      "dropped": 0,
+      "total": 200,
+      "coverage": 1.0,
+      "accuracy": 0.97,
+      "precision": 1.0,
+      "precision_ci": [
+       0.980582,
+       1.0
+      ],
+      "recall": 0.97,
+      "recall_ci": [
+       0.936105,
+       0.98618
+      ],
+      "f1": 0.984772,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.97,
+       "f1": 0.984772
+      }
+     },
+     "khobut": {
+      "tp": 1262,
+      "fp": 0,
+      "fn": 41,
+      "tn": 0,
+      "evaluated": 1303,
+      "dropped": 0,
+      "total": 1303,
+      "coverage": 1.0,
+      "accuracy": 0.968534,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996965,
+       1.0
+      ],
+      "recall": 0.968534,
+      "recall_ci": [
+       0.957592,
+       0.976722
+      ],
+      "f1": 0.984016,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.968534,
+       "f1": 0.984016
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 10292,
+      "fp": 0,
+      "fn": 251,
+      "tn": 0,
+      "evaluated": 10543,
+      "dropped": 0,
+      "total": 10543,
+      "coverage": 1.0,
+      "accuracy": 0.976193,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999627,
+       1.0
+      ],
+      "recall": 0.976193,
+      "recall_ci": [
+       0.973105,
+       0.978934
+      ],
+      "f1": 0.987953,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.976193,
+       "f1": 0.987953
+      }
+     },
+     "phraAphai": {
+      "tp": 23364,
+      "fp": 0,
+      "fn": 978,
+      "tn": 0,
+      "evaluated": 24342,
+      "dropped": 0,
+      "total": 24342,
+      "coverage": 1.0,
+      "accuracy": 0.959823,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999836,
+       1.0
+      ],
+      "recall": 0.959823,
+      "recall_ci": [
+       0.957282,
+       0.962218
+      ],
+      "f1": 0.9795,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.959823,
+       "f1": 0.9795
+      }
+     },
+     "phukaoTong": {
+      "tp": 82,
+      "fp": 0,
+      "fn": 5,
+      "tn": 0,
+      "evaluated": 87,
+      "dropped": 0,
+      "total": 87,
+      "coverage": 1.0,
+      "accuracy": 0.942529,
+      "precision": 1.0,
+      "precision_ci": [
+       0.955248,
+       1.0
+      ],
+      "recall": 0.942529,
+      "recall_ci": [
+       0.872425,
+       0.975205
+      ],
+      "f1": 0.970414,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.942529,
+       "f1": 0.970414
+      }
+     },
+     "TOTAL": {
+      "tp": 35494,
+      "fp": 0,
+      "fn": 1368,
+      "tn": 2500,
+      "evaluated": 39362,
+      "dropped": 0,
+      "total": 39362,
+      "coverage": 1.0,
+      "accuracy": 0.965246,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999892,
+       1.0
+      ],
+      "recall": 0.962889,
+      "recall_ci": [
+       0.96091,
+       0.964771
+      ],
+      "f1": 0.981094,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.962889,
+       "f1": 0.981094
+      }
+     },
+     "augment_n": 2887
+    },
+    "r3_w3_w4": {
+     "SuphasaetSonYing": {
+      "tp": 192,
+      "fp": 0,
+      "fn": 8,
+      "tn": 0,
+      "evaluated": 200,
+      "dropped": 0,
+      "total": 200,
+      "coverage": 1.0,
+      "accuracy": 0.96,
+      "precision": 1.0,
+      "precision_ci": [
+       0.980384,
+       1.0
+      ],
+      "recall": 0.96,
+      "recall_ci": [
+       0.923067,
+       0.979595
+      ],
+      "f1": 0.979592,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.96,
+       "f1": 0.979592
+      }
+     },
+     "khobut": {
+      "tp": 1231,
+      "fp": 0,
+      "fn": 72,
+      "tn": 0,
+      "evaluated": 1303,
+      "dropped": 0,
+      "total": 1303,
+      "coverage": 1.0,
+      "accuracy": 0.944743,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996889,
+       1.0
+      ],
+      "recall": 0.944743,
+      "recall_ci": [
+       0.930979,
+       0.955892
+      ],
+      "f1": 0.971586,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.944743,
+       "f1": 0.971586
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 9979,
+      "fp": 0,
+      "fn": 564,
+      "tn": 0,
+      "evaluated": 10543,
+      "dropped": 0,
+      "total": 10543,
+      "coverage": 1.0,
+      "accuracy": 0.946505,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999615,
+       1.0
+      ],
+      "recall": 0.946505,
+      "recall_ci": [
+       0.942045,
+       0.95064
+      ],
+      "f1": 0.972517,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.946505,
+       "f1": 0.972517
+      }
+     },
+     "phraAphai": {
+      "tp": 23340,
+      "fp": 0,
+      "fn": 1002,
+      "tn": 0,
+      "evaluated": 24342,
+      "dropped": 0,
+      "total": 24342,
+      "coverage": 1.0,
+      "accuracy": 0.958837,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999835,
+       1.0
+      ],
+      "recall": 0.958837,
+      "recall_ci": [
+       0.956268,
+       0.961261
+      ],
+      "f1": 0.978986,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.958837,
+       "f1": 0.978986
+      }
+     },
+     "phukaoTong": {
+      "tp": 83,
+      "fp": 0,
+      "fn": 4,
+      "tn": 0,
+      "evaluated": 87,
+      "dropped": 0,
+      "total": 87,
+      "coverage": 1.0,
+      "accuracy": 0.954023,
+      "precision": 1.0,
+      "precision_ci": [
+       0.955763,
+       1.0
+      ],
+      "recall": 0.954023,
+      "recall_ci": [
+       0.887668,
+       0.981978
+      ],
+      "f1": 0.976471,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.954023,
+       "f1": 0.976471
+      }
+     },
+     "TOTAL": {
+      "tp": 35125,
+      "fp": 0,
+      "fn": 1730,
+      "tn": 2500,
+      "evaluated": 39355,
+      "dropped": 0,
+      "total": 39355,
+      "coverage": 1.0,
+      "accuracy": 0.956041,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999891,
+       1.0
+      ],
+      "recall": 0.953059,
+      "recall_ci": [
+       0.950852,
+       0.955172
+      ],
+      "f1": 0.975965,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.953059,
+       "f1": 0.975965
+      }
+     },
+     "augment_n": 2880
+    },
+    "rX_inter": {
+     "SuphasaetSonYing": {
+      "tp": 194,
+      "fp": 0,
+      "fn": 5,
+      "tn": 0,
+      "evaluated": 199,
+      "dropped": 0,
+      "total": 199,
+      "coverage": 1.0,
+      "accuracy": 0.974874,
+      "precision": 1.0,
+      "precision_ci": [
+       0.980582,
+       1.0
+      ],
+      "recall": 0.974874,
+      "recall_ci": [
+       0.94254,
+       0.989221
+      ],
+      "f1": 0.987277,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.974874,
+       "f1": 0.987277
+      }
+     },
+     "khobut": {
+      "tp": 1252,
+      "fp": 0,
+      "fn": 37,
+      "tn": 0,
+      "evaluated": 1289,
+      "dropped": 0,
+      "total": 1289,
+      "coverage": 1.0,
+      "accuracy": 0.971296,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996941,
+       1.0
+      ],
+      "recall": 0.971296,
+      "recall_ci": [
+       0.960686,
+       0.979104
+      ],
+      "f1": 0.985439,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.971296,
+       "f1": 0.985439
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 10273,
+      "fp": 0,
+      "fn": 227,
+      "tn": 0,
+      "evaluated": 10500,
+      "dropped": 0,
+      "total": 10500,
+      "coverage": 1.0,
+      "accuracy": 0.978381,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999626,
+       1.0
+      ],
+      "recall": 0.978381,
+      "recall_ci": [
+       0.975419,
+       0.980993
+      ],
+      "f1": 0.989072,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.978381,
+       "f1": 0.989072
+      }
+     },
+     "phraAphai": {
+      "tp": 23275,
+      "fp": 0,
+      "fn": 935,
+      "tn": 0,
+      "evaluated": 24210,
+      "dropped": 0,
+      "total": 24210,
+      "coverage": 1.0,
+      "accuracy": 0.96138,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999835,
+       1.0
+      ],
+      "recall": 0.96138,
+      "recall_ci": [
+       0.958878,
+       0.963735
+      ],
+      "f1": 0.98031,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.96138,
+       "f1": 0.98031
+      }
+     },
+     "phukaoTong": {
+      "tp": 81,
+      "fp": 0,
+      "fn": 5,
+      "tn": 0,
+      "evaluated": 86,
+      "dropped": 0,
+      "total": 86,
+      "coverage": 1.0,
+      "accuracy": 0.94186,
+      "precision": 1.0,
+      "precision_ci": [
+       0.95472,
+       1.0
+      ],
+      "recall": 0.94186,
+      "recall_ci": [
+       0.87102,
+       0.974913
+      ],
+      "f1": 0.97006,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.94186,
+       "f1": 0.97006
+      }
+     },
+     "TOTAL": {
+      "tp": 35375,
+      "fp": 0,
+      "fn": 1215,
+      "tn": 2500,
+      "evaluated": 39090,
+      "dropped": 0,
+      "total": 39090,
+      "coverage": 1.0,
+      "accuracy": 0.968918,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999891,
+       1.0
+      ],
+      "recall": 0.966794,
+      "recall_ci": [
+       0.964909,
+       0.968582
+      ],
+      "f1": 0.983117,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.966794,
+       "f1": 0.983117
+      }
+     },
+     "augment_n": 2806
     }
+   }
   },
-  "has_augment": true
+  "D_klonpad_w2p": {
+   "stanza": {
+    "SuphasaetSonYing": {
+     "tp": 179,
+     "fp": 0,
+     "fn": 21,
+     "tn": 0,
+     "evaluated": 200,
+     "dropped": 0,
+     "total": 200,
+     "coverage": 1.0,
+     "accuracy": 0.895,
+     "precision": 1.0,
+     "precision_ci": [
+      0.978989,
+      1.0
+     ],
+     "recall": 0.895,
+     "recall_ci": [
+      0.844819,
+      0.930293
+     ],
+     "f1": 0.944591,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.895,
+      "f1": 0.944591
+     }
+    },
+    "khobut": {
+     "tp": 1116,
+     "fp": 0,
+     "fn": 187,
+     "tn": 0,
+     "evaluated": 1303,
+     "dropped": 0,
+     "total": 1303,
+     "coverage": 1.0,
+     "accuracy": 0.856485,
+     "precision": 1.0,
+     "precision_ci": [
+      0.99657,
+      1.0
+     ],
+     "recall": 0.856485,
+     "recall_ci": [
+      0.8364,
+      0.874475
+     ],
+     "f1": 0.922695,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.856485,
+      "f1": 0.922695
+     }
+    },
+    "khunChangKhunPhaen": {
+     "tp": 8803,
+     "fp": 0,
+     "fn": 1740,
+     "tn": 0,
+     "evaluated": 10543,
+     "dropped": 0,
+     "total": 10543,
+     "coverage": 1.0,
+     "accuracy": 0.834962,
+     "precision": 1.0,
+     "precision_ci": [
+      0.999564,
+      1.0
+     ],
+     "recall": 0.834962,
+     "recall_ci": [
+      0.827754,
+      0.841925
+     ],
+     "f1": 0.910059,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.834962,
+      "f1": 0.910059
+     }
+    },
+    "phraAphai": {
+     "tp": 21729,
+     "fp": 0,
+     "fn": 2613,
+     "tn": 0,
+     "evaluated": 24342,
+     "dropped": 0,
+     "total": 24342,
+     "coverage": 1.0,
+     "accuracy": 0.892655,
+     "precision": 1.0,
+     "precision_ci": [
+      0.999823,
+      1.0
+     ],
+     "recall": 0.892655,
+     "recall_ci": [
+      0.888704,
+      0.896482
+     ],
+     "f1": 0.943283,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.892655,
+      "f1": 0.943283
+     }
+    },
+    "phukaoTong": {
+     "tp": 67,
+     "fp": 0,
+     "fn": 20,
+     "tn": 0,
+     "evaluated": 87,
+     "dropped": 0,
+     "total": 87,
+     "coverage": 1.0,
+     "accuracy": 0.770115,
+     "precision": 1.0,
+     "precision_ci": [
+      0.945772,
+      1.0
+     ],
+     "recall": 0.770115,
+     "recall_ci": [
+      0.671415,
+      0.845969
+     ],
+     "f1": 0.87013,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.770115,
+      "f1": 0.87013
+     }
+    },
+    "TOTAL": {
+     "tp": 33152,
+     "fp": 144,
+     "fn": 4946,
+     "tn": 9856,
+     "evaluated": 48098,
+     "dropped": 0,
+     "total": 48098,
+     "coverage": 1.0,
+     "accuracy": 0.894174,
+     "precision": 0.995675,
+     "precision_ci": [
+      0.994911,
+      0.996325
+     ],
+     "recall": 0.870177,
+     "recall_ci": [
+      0.866764,
+      0.873515
+     ],
+     "f1": 0.928705,
+     "conservative": {
+      "precision": 0.995675,
+      "recall": 0.870177,
+      "f1": 0.928705
+     }
+    },
+    "augment_n": 11623
+   },
+   "rules": {
+    "r1_w1_w2": {
+     "SuphasaetSonYing": {
+      "tp": 195,
+      "fp": 0,
+      "fn": 5,
+      "tn": 0,
+      "evaluated": 200,
+      "dropped": 0,
+      "total": 200,
+      "coverage": 1.0,
+      "accuracy": 0.975,
+      "precision": 1.0,
+      "precision_ci": [
+       0.98068,
+       1.0
+      ],
+      "recall": 0.975,
+      "recall_ci": [
+       0.942821,
+       0.989275
+      ],
+      "f1": 0.987342,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.975,
+       "f1": 0.987342
+      }
+     },
+     "khobut": {
+      "tp": 1230,
+      "fp": 0,
+      "fn": 73,
+      "tn": 0,
+      "evaluated": 1303,
+      "dropped": 0,
+      "total": 1303,
+      "coverage": 1.0,
+      "accuracy": 0.943975,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996886,
+       1.0
+      ],
+      "recall": 0.943975,
+      "recall_ci": [
+       0.930134,
+       0.955207
+      ],
+      "f1": 0.97118,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.943975,
+       "f1": 0.97118
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 9791,
+      "fp": 0,
+      "fn": 752,
+      "tn": 0,
+      "evaluated": 10543,
+      "dropped": 0,
+      "total": 10543,
+      "coverage": 1.0,
+      "accuracy": 0.928673,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999608,
+       1.0
+      ],
+      "recall": 0.928673,
+      "recall_ci": [
+       0.923602,
+       0.933431
+      ],
+      "f1": 0.963018,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.928673,
+       "f1": 0.963018
+      }
+     },
+     "phraAphai": {
+      "tp": 23514,
+      "fp": 0,
+      "fn": 828,
+      "tn": 0,
+      "evaluated": 24342,
+      "dropped": 0,
+      "total": 24342,
+      "coverage": 1.0,
+      "accuracy": 0.965985,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999837,
+       1.0
+      ],
+      "recall": 0.965985,
+      "recall_ci": [
+       0.963633,
+       0.968189
+      ],
+      "f1": 0.982698,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.965985,
+       "f1": 0.982698
+      }
+     },
+     "phukaoTong": {
+      "tp": 78,
+      "fp": 0,
+      "fn": 9,
+      "tn": 0,
+      "evaluated": 87,
+      "dropped": 0,
+      "total": 87,
+      "coverage": 1.0,
+      "accuracy": 0.896552,
+      "precision": 1.0,
+      "precision_ci": [
+       0.953061,
+       1.0
+      ],
+      "recall": 0.896552,
+      "recall_ci": [
+       0.814948,
+       0.944616
+      ],
+      "f1": 0.945455,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.896552,
+       "f1": 0.945455
+      }
+     },
+     "TOTAL": {
+      "tp": 35313,
+      "fp": 124,
+      "fn": 1712,
+      "tn": 2376,
+      "evaluated": 39525,
+      "dropped": 0,
+      "total": 39525,
+      "coverage": 1.0,
+      "accuracy": 0.953548,
+      "precision": 0.996501,
+      "precision_ci": [
+       0.99583,
+       0.997064
+      ],
+      "recall": 0.953761,
+      "recall_ci": [
+       0.951574,
+       0.955853
+      ],
+      "f1": 0.974663,
+      "conservative": {
+       "precision": 0.996501,
+       "recall": 0.953761,
+       "f1": 0.974663
+      }
+     },
+     "augment_n": 3050
+    },
+    "r2_w2_w3": {
+     "SuphasaetSonYing": {
+      "tp": 191,
+      "fp": 0,
+      "fn": 9,
+      "tn": 0,
+      "evaluated": 200,
+      "dropped": 0,
+      "total": 200,
+      "coverage": 1.0,
+      "accuracy": 0.955,
+      "precision": 1.0,
+      "precision_ci": [
+       0.980283,
+       1.0
+      ],
+      "recall": 0.955,
+      "recall_ci": [
+       0.916702,
+       0.976148
+      ],
+      "f1": 0.976982,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.955,
+       "f1": 0.976982
+      }
+     },
+     "khobut": {
+      "tp": 1264,
+      "fp": 0,
+      "fn": 39,
+      "tn": 0,
+      "evaluated": 1303,
+      "dropped": 0,
+      "total": 1303,
+      "coverage": 1.0,
+      "accuracy": 0.970069,
+      "precision": 1.0,
+      "precision_ci": [
+       0.99697,
+       1.0
+      ],
+      "recall": 0.970069,
+      "recall_ci": [
+       0.959346,
+       0.978029
+      ],
+      "f1": 0.984807,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.970069,
+       "f1": 0.984807
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 10206,
+      "fp": 0,
+      "fn": 337,
+      "tn": 0,
+      "evaluated": 10543,
+      "dropped": 0,
+      "total": 10543,
+      "coverage": 1.0,
+      "accuracy": 0.968036,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999624,
+       1.0
+      ],
+      "recall": 0.968036,
+      "recall_ci": [
+       0.964504,
+       0.971227
+      ],
+      "f1": 0.983758,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.968036,
+       "f1": 0.983758
+      }
+     },
+     "phraAphai": {
+      "tp": 23369,
+      "fp": 0,
+      "fn": 973,
+      "tn": 0,
+      "evaluated": 24342,
+      "dropped": 0,
+      "total": 24342,
+      "coverage": 1.0,
+      "accuracy": 0.960028,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999836,
+       1.0
+      ],
+      "recall": 0.960028,
+      "recall_ci": [
+       0.957494,
+       0.962417
+      ],
+      "f1": 0.979606,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.960028,
+       "f1": 0.979606
+      }
+     },
+     "phukaoTong": {
+      "tp": 80,
+      "fp": 0,
+      "fn": 7,
+      "tn": 0,
+      "evaluated": 87,
+      "dropped": 0,
+      "total": 87,
+      "coverage": 1.0,
+      "accuracy": 0.91954,
+      "precision": 1.0,
+      "precision_ci": [
+       0.95418,
+       1.0
+      ],
+      "recall": 0.91954,
+      "recall_ci": [
+       0.843116,
+       0.96048
+      ],
+      "f1": 0.958084,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.91954,
+       "f1": 0.958084
+      }
+     },
+     "TOTAL": {
+      "tp": 35471,
+      "fp": 20,
+      "fn": 1391,
+      "tn": 2480,
+      "evaluated": 39362,
+      "dropped": 0,
+      "total": 39362,
+      "coverage": 1.0,
+      "accuracy": 0.964153,
+      "precision": 0.999436,
+      "precision_ci": [
+       0.99913,
+       0.999635
+      ],
+      "recall": 0.962265,
+      "recall_ci": [
+       0.960271,
+       0.964162
+      ],
+      "f1": 0.980498,
+      "conservative": {
+       "precision": 0.999436,
+       "recall": 0.962265,
+       "f1": 0.980498
+      }
+     },
+     "augment_n": 2887
+    },
+    "r3_w3_w4": {
+     "SuphasaetSonYing": {
+      "tp": 193,
+      "fp": 0,
+      "fn": 7,
+      "tn": 0,
+      "evaluated": 200,
+      "dropped": 0,
+      "total": 200,
+      "coverage": 1.0,
+      "accuracy": 0.965,
+      "precision": 1.0,
+      "precision_ci": [
+       0.980484,
+       1.0
+      ],
+      "recall": 0.965,
+      "recall_ci": [
+       0.929529,
+       0.982945
+      ],
+      "f1": 0.982188,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.965,
+       "f1": 0.982188
+      }
+     },
+     "khobut": {
+      "tp": 1206,
+      "fp": 0,
+      "fn": 97,
+      "tn": 0,
+      "evaluated": 1303,
+      "dropped": 0,
+      "total": 1303,
+      "coverage": 1.0,
+      "accuracy": 0.925556,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996825,
+       1.0
+      ],
+      "recall": 0.925556,
+      "recall_ci": [
+       0.910019,
+       0.938592
+      ],
+      "f1": 0.961339,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.925556,
+       "f1": 0.961339
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 9785,
+      "fp": 0,
+      "fn": 758,
+      "tn": 0,
+      "evaluated": 10543,
+      "dropped": 0,
+      "total": 10543,
+      "coverage": 1.0,
+      "accuracy": 0.928104,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999608,
+       1.0
+      ],
+      "recall": 0.928104,
+      "recall_ci": [
+       0.923016,
+       0.93288
+      ],
+      "f1": 0.962712,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.928104,
+       "f1": 0.962712
+      }
+     },
+     "phraAphai": {
+      "tp": 23353,
+      "fp": 0,
+      "fn": 989,
+      "tn": 0,
+      "evaluated": 24342,
+      "dropped": 0,
+      "total": 24342,
+      "coverage": 1.0,
+      "accuracy": 0.959371,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999836,
+       1.0
+      ],
+      "recall": 0.959371,
+      "recall_ci": [
+       0.956817,
+       0.961779
+      ],
+      "f1": 0.979264,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.959371,
+       "f1": 0.979264
+      }
+     },
+     "phukaoTong": {
+      "tp": 81,
+      "fp": 0,
+      "fn": 6,
+      "tn": 0,
+      "evaluated": 87,
+      "dropped": 0,
+      "total": 87,
+      "coverage": 1.0,
+      "accuracy": 0.931034,
+      "precision": 1.0,
+      "precision_ci": [
+       0.95472,
+       1.0
+      ],
+      "recall": 0.931034,
+      "recall_ci": [
+       0.857601,
+       0.968012
+      ],
+      "f1": 0.964285,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.931034,
+       "f1": 0.964285
+      }
+     },
+     "TOTAL": {
+      "tp": 34969,
+      "fp": 138,
+      "fn": 1886,
+      "tn": 2362,
+      "evaluated": 39355,
+      "dropped": 0,
+      "total": 39355,
+      "coverage": 1.0,
+      "accuracy": 0.948571,
+      "precision": 0.996069,
+      "precision_ci": [
+       0.995358,
+       0.996672
+      ],
+      "recall": 0.948826,
+      "recall_ci": [
+       0.94653,
+       0.95103
+      ],
+      "f1": 0.971874,
+      "conservative": {
+       "precision": 0.996069,
+       "recall": 0.948826,
+       "f1": 0.971874
+      }
+     },
+     "augment_n": 2880
+    },
+    "rX_inter": {
+     "SuphasaetSonYing": {
+      "tp": 191,
+      "fp": 0,
+      "fn": 8,
+      "tn": 0,
+      "evaluated": 199,
+      "dropped": 0,
+      "total": 199,
+      "coverage": 1.0,
+      "accuracy": 0.959799,
+      "precision": 1.0,
+      "precision_ci": [
+       0.980283,
+       1.0
+      ],
+      "recall": 0.959799,
+      "recall_ci": [
+       0.92269,
+       0.979491
+      ],
+      "f1": 0.979487,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.959799,
+       "f1": 0.979487
+      }
+     },
+     "khobut": {
+      "tp": 1256,
+      "fp": 0,
+      "fn": 33,
+      "tn": 0,
+      "evaluated": 1289,
+      "dropped": 0,
+      "total": 1289,
+      "coverage": 1.0,
+      "accuracy": 0.974399,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996951,
+       1.0
+      ],
+      "recall": 0.974399,
+      "recall_ci": [
+       0.964265,
+       0.981713
+      ],
+      "f1": 0.987034,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.974399,
+       "f1": 0.987034
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 10194,
+      "fp": 0,
+      "fn": 306,
+      "tn": 0,
+      "evaluated": 10500,
+      "dropped": 0,
+      "total": 10500,
+      "coverage": 1.0,
+      "accuracy": 0.970857,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999623,
+       1.0
+      ],
+      "recall": 0.970857,
+      "recall_ci": [
+       0.967464,
+       0.973906
+      ],
+      "f1": 0.985213,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.970857,
+       "f1": 0.985213
+      }
+     },
+     "phraAphai": {
+      "tp": 23309,
+      "fp": 0,
+      "fn": 901,
+      "tn": 0,
+      "evaluated": 24210,
+      "dropped": 0,
+      "total": 24210,
+      "coverage": 1.0,
+      "accuracy": 0.962784,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999835,
+       1.0
+      ],
+      "recall": 0.962784,
+      "recall_ci": [
+       0.960325,
+       0.965096
+      ],
+      "f1": 0.981039,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.962784,
+       "f1": 0.981039
+      }
+     },
+     "phukaoTong": {
+      "tp": 80,
+      "fp": 0,
+      "fn": 6,
+      "tn": 0,
+      "evaluated": 86,
+      "dropped": 0,
+      "total": 86,
+      "coverage": 1.0,
+      "accuracy": 0.930233,
+      "precision": 1.0,
+      "precision_ci": [
+       0.95418,
+       1.0
+      ],
+      "recall": 0.930233,
+      "recall_ci": [
+       0.856037,
+       0.967635
+      ],
+      "f1": 0.963856,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.930233,
+       "f1": 0.963856
+      }
+     },
+     "TOTAL": {
+      "tp": 35308,
+      "fp": 16,
+      "fn": 1282,
+      "tn": 2484,
+      "evaluated": 39090,
+      "dropped": 0,
+      "total": 39090,
+      "coverage": 1.0,
+      "accuracy": 0.966795,
+      "precision": 0.999547,
+      "precision_ci": [
+       0.999264,
+       0.999721
+      ],
+      "recall": 0.964963,
+      "recall_ci": [
+       0.96303,
+       0.966799
+      ],
+      "f1": 0.981951,
+      "conservative": {
+       "precision": 0.999547,
+       "recall": 0.964963,
+       "f1": 0.981951
+      }
+     },
+     "augment_n": 2806
+    }
+   }
+  },
+  "D_klonpad_ssg_fallback": {
+   "stanza": {
+    "SuphasaetSonYing": {
+     "tp": 179,
+     "fp": 0,
+     "fn": 21,
+     "tn": 0,
+     "evaluated": 200,
+     "dropped": 0,
+     "total": 200,
+     "coverage": 1.0,
+     "accuracy": 0.895,
+     "precision": 1.0,
+     "precision_ci": [
+      0.978989,
+      1.0
+     ],
+     "recall": 0.895,
+     "recall_ci": [
+      0.844819,
+      0.930293
+     ],
+     "f1": 0.944591,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.895,
+      "f1": 0.944591
+     }
+    },
+    "khobut": {
+     "tp": 1122,
+     "fp": 0,
+     "fn": 181,
+     "tn": 0,
+     "evaluated": 1303,
+     "dropped": 0,
+     "total": 1303,
+     "coverage": 1.0,
+     "accuracy": 0.86109,
+     "precision": 1.0,
+     "precision_ci": [
+      0.996588,
+      1.0
+     ],
+     "recall": 0.86109,
+     "recall_ci": [
+      0.841247,
+      0.87881
+     ],
+     "f1": 0.925361,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.86109,
+      "f1": 0.925361
+     }
+    },
+    "khunChangKhunPhaen": {
+     "tp": 8945,
+     "fp": 0,
+     "fn": 1598,
+     "tn": 0,
+     "evaluated": 10543,
+     "dropped": 0,
+     "total": 10543,
+     "coverage": 1.0,
+     "accuracy": 0.84843,
+     "precision": 1.0,
+     "precision_ci": [
+      0.999571,
+      1.0
+     ],
+     "recall": 0.84843,
+     "recall_ci": [
+      0.841458,
+      0.855148
+     ],
+     "f1": 0.918001,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.84843,
+      "f1": 0.918001
+     }
+    },
+    "phraAphai": {
+     "tp": 21963,
+     "fp": 0,
+     "fn": 2379,
+     "tn": 0,
+     "evaluated": 24342,
+     "dropped": 0,
+     "total": 24342,
+     "coverage": 1.0,
+     "accuracy": 0.902268,
+     "precision": 1.0,
+     "precision_ci": [
+      0.999825,
+      1.0
+     ],
+     "recall": 0.902268,
+     "recall_ci": [
+      0.898473,
+      0.905935
+     ],
+     "f1": 0.948623,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.902268,
+      "f1": 0.948623
+     }
+    },
+    "phukaoTong": {
+     "tp": 69,
+     "fp": 0,
+     "fn": 18,
+     "tn": 0,
+     "evaluated": 87,
+     "dropped": 0,
+     "total": 87,
+     "coverage": 1.0,
+     "accuracy": 0.793103,
+     "precision": 1.0,
+     "precision_ci": [
+      0.947261,
+      1.0
+     ],
+     "recall": 0.793103,
+     "recall_ci": [
+      0.696489,
+      0.864927
+     ],
+     "f1": 0.884615,
+     "conservative": {
+      "precision": 1.0,
+      "recall": 0.793103,
+      "f1": 0.884615
+     }
+    },
+    "TOTAL": {
+     "tp": 33477,
+     "fp": 96,
+     "fn": 4621,
+     "tn": 9904,
+     "evaluated": 48098,
+     "dropped": 0,
+     "total": 48098,
+     "coverage": 1.0,
+     "accuracy": 0.901929,
+     "precision": 0.997141,
+     "precision_ci": [
+      0.99651,
+      0.997658
+     ],
+     "recall": 0.878708,
+     "recall_ci": [
+      0.875391,
+      0.881948
+     ],
+     "f1": 0.934186,
+     "conservative": {
+      "precision": 0.997141,
+      "recall": 0.878708,
+      "f1": 0.934186
+     }
+    },
+    "augment_n": 11623
+   },
+   "rules": {
+    "r1_w1_w2": {
+     "SuphasaetSonYing": {
+      "tp": 195,
+      "fp": 0,
+      "fn": 5,
+      "tn": 0,
+      "evaluated": 200,
+      "dropped": 0,
+      "total": 200,
+      "coverage": 1.0,
+      "accuracy": 0.975,
+      "precision": 1.0,
+      "precision_ci": [
+       0.98068,
+       1.0
+      ],
+      "recall": 0.975,
+      "recall_ci": [
+       0.942821,
+       0.989275
+      ],
+      "f1": 0.987342,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.975,
+       "f1": 0.987342
+      }
+     },
+     "khobut": {
+      "tp": 1235,
+      "fp": 0,
+      "fn": 68,
+      "tn": 0,
+      "evaluated": 1303,
+      "dropped": 0,
+      "total": 1303,
+      "coverage": 1.0,
+      "accuracy": 0.947813,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996899,
+       1.0
+      ],
+      "recall": 0.947813,
+      "recall_ci": [
+       0.934366,
+       0.958626
+      ],
+      "f1": 0.973207,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.947813,
+       "f1": 0.973207
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 9853,
+      "fp": 0,
+      "fn": 690,
+      "tn": 0,
+      "evaluated": 10543,
+      "dropped": 0,
+      "total": 10543,
+      "coverage": 1.0,
+      "accuracy": 0.934554,
+      "precision": 1.0,
+      "precision_ci": [
+       0.99961,
+       1.0
+      ],
+      "recall": 0.934554,
+      "recall_ci": [
+       0.929673,
+       0.939118
+      ],
+      "f1": 0.96617,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.934554,
+       "f1": 0.96617
+      }
+     },
+     "phraAphai": {
+      "tp": 23608,
+      "fp": 0,
+      "fn": 734,
+      "tn": 0,
+      "evaluated": 24342,
+      "dropped": 0,
+      "total": 24342,
+      "coverage": 1.0,
+      "accuracy": 0.969846,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999837,
+       1.0
+      ],
+      "recall": 0.969846,
+      "recall_ci": [
+       0.967623,
+       0.971922
+      ],
+      "f1": 0.984692,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.969846,
+       "f1": 0.984692
+      }
+     },
+     "phukaoTong": {
+      "tp": 79,
+      "fp": 0,
+      "fn": 8,
+      "tn": 0,
+      "evaluated": 87,
+      "dropped": 0,
+      "total": 87,
+      "coverage": 1.0,
+      "accuracy": 0.908046,
+      "precision": 1.0,
+      "precision_ci": [
+       0.953627,
+       1.0
+      ],
+      "recall": 0.908046,
+      "recall_ci": [
+       0.828913,
+       0.952668
+      ],
+      "f1": 0.951807,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.908046,
+       "f1": 0.951807
+      }
+     },
+     "TOTAL": {
+      "tp": 35423,
+      "fp": 92,
+      "fn": 1602,
+      "tn": 2408,
+      "evaluated": 39525,
+      "dropped": 0,
+      "total": 39525,
+      "coverage": 1.0,
+      "accuracy": 0.957141,
+      "precision": 0.99741,
+      "precision_ci": [
+       0.996824,
+       0.997887
+      ],
+      "recall": 0.956732,
+      "recall_ci": [
+       0.954612,
+       0.958757
+      ],
+      "f1": 0.976648,
+      "conservative": {
+       "precision": 0.99741,
+       "recall": 0.956732,
+       "f1": 0.976648
+      }
+     },
+     "augment_n": 3050
+    },
+    "r2_w2_w3": {
+     "SuphasaetSonYing": {
+      "tp": 191,
+      "fp": 0,
+      "fn": 9,
+      "tn": 0,
+      "evaluated": 200,
+      "dropped": 0,
+      "total": 200,
+      "coverage": 1.0,
+      "accuracy": 0.955,
+      "precision": 1.0,
+      "precision_ci": [
+       0.980283,
+       1.0
+      ],
+      "recall": 0.955,
+      "recall_ci": [
+       0.916702,
+       0.976148
+      ],
+      "f1": 0.976982,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.955,
+       "f1": 0.976982
+      }
+     },
+     "khobut": {
+      "tp": 1267,
+      "fp": 0,
+      "fn": 36,
+      "tn": 0,
+      "evaluated": 1303,
+      "dropped": 0,
+      "total": 1303,
+      "coverage": 1.0,
+      "accuracy": 0.972371,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996977,
+       1.0
+      ],
+      "recall": 0.972371,
+      "recall_ci": [
+       0.961988,
+       0.979977
+      ],
+      "f1": 0.985992,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.972371,
+       "f1": 0.985992
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 10245,
+      "fp": 0,
+      "fn": 298,
+      "tn": 0,
+      "evaluated": 10543,
+      "dropped": 0,
+      "total": 10543,
+      "coverage": 1.0,
+      "accuracy": 0.971735,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999625,
+       1.0
+      ],
+      "recall": 0.971735,
+      "recall_ci": [
+       0.968395,
+       0.974731
+      ],
+      "f1": 0.985665,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.971735,
+       "f1": 0.985665
+      }
+     },
+     "phraAphai": {
+      "tp": 23490,
+      "fp": 0,
+      "fn": 852,
+      "tn": 0,
+      "evaluated": 24342,
+      "dropped": 0,
+      "total": 24342,
+      "coverage": 1.0,
+      "accuracy": 0.964999,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999836,
+       1.0
+      ],
+      "recall": 0.964999,
+      "recall_ci": [
+       0.962616,
+       0.967235
+      ],
+      "f1": 0.982188,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.964999,
+       "f1": 0.982188
+      }
+     },
+     "phukaoTong": {
+      "tp": 80,
+      "fp": 0,
+      "fn": 7,
+      "tn": 0,
+      "evaluated": 87,
+      "dropped": 0,
+      "total": 87,
+      "coverage": 1.0,
+      "accuracy": 0.91954,
+      "precision": 1.0,
+      "precision_ci": [
+       0.95418,
+       1.0
+      ],
+      "recall": 0.91954,
+      "recall_ci": [
+       0.843116,
+       0.96048
+      ],
+      "f1": 0.958084,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.91954,
+       "f1": 0.958084
+      }
+     },
+     "TOTAL": {
+      "tp": 35604,
+      "fp": 5,
+      "fn": 1258,
+      "tn": 2495,
+      "evaluated": 39362,
+      "dropped": 0,
+      "total": 39362,
+      "coverage": 1.0,
+      "accuracy": 0.967913,
+      "precision": 0.99986,
+      "precision_ci": [
+       0.999671,
+       0.99994
+      ],
+      "recall": 0.965873,
+      "recall_ci": [
+       0.96397,
+       0.967678
+      ],
+      "f1": 0.982573,
+      "conservative": {
+       "precision": 0.99986,
+       "recall": 0.965873,
+       "f1": 0.982573
+      }
+     },
+     "augment_n": 2887
+    },
+    "r3_w3_w4": {
+     "SuphasaetSonYing": {
+      "tp": 193,
+      "fp": 0,
+      "fn": 7,
+      "tn": 0,
+      "evaluated": 200,
+      "dropped": 0,
+      "total": 200,
+      "coverage": 1.0,
+      "accuracy": 0.965,
+      "precision": 1.0,
+      "precision_ci": [
+       0.980484,
+       1.0
+      ],
+      "recall": 0.965,
+      "recall_ci": [
+       0.929529,
+       0.982945
+      ],
+      "f1": 0.982188,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.965,
+       "f1": 0.982188
+      }
+     },
+     "khobut": {
+      "tp": 1204,
+      "fp": 0,
+      "fn": 99,
+      "tn": 0,
+      "evaluated": 1303,
+      "dropped": 0,
+      "total": 1303,
+      "coverage": 1.0,
+      "accuracy": 0.924021,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996819,
+       1.0
+      ],
+      "recall": 0.924021,
+      "recall_ci": [
+       0.908355,
+       0.937195
+      ],
+      "f1": 0.96051,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.924021,
+       "f1": 0.96051
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 9832,
+      "fp": 0,
+      "fn": 711,
+      "tn": 0,
+      "evaluated": 10543,
+      "dropped": 0,
+      "total": 10543,
+      "coverage": 1.0,
+      "accuracy": 0.932562,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999609,
+       1.0
+      ],
+      "recall": 0.932562,
+      "recall_ci": [
+       0.927616,
+       0.937193
+      ],
+      "f1": 0.965104,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.932562,
+       "f1": 0.965104
+      }
+     },
+     "phraAphai": {
+      "tp": 23401,
+      "fp": 0,
+      "fn": 941,
+      "tn": 0,
+      "evaluated": 24342,
+      "dropped": 0,
+      "total": 24342,
+      "coverage": 1.0,
+      "accuracy": 0.961343,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999836,
+       1.0
+      ],
+      "recall": 0.961343,
+      "recall_ci": [
+       0.958847,
+       0.963692
+      ],
+      "f1": 0.980291,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.961343,
+       "f1": 0.980291
+      }
+     },
+     "phukaoTong": {
+      "tp": 82,
+      "fp": 0,
+      "fn": 5,
+      "tn": 0,
+      "evaluated": 87,
+      "dropped": 0,
+      "total": 87,
+      "coverage": 1.0,
+      "accuracy": 0.942529,
+      "precision": 1.0,
+      "precision_ci": [
+       0.955248,
+       1.0
+      ],
+      "recall": 0.942529,
+      "recall_ci": [
+       0.872425,
+       0.975205
+      ],
+      "f1": 0.970414,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.942529,
+       "f1": 0.970414
+      }
+     },
+     "TOTAL": {
+      "tp": 35056,
+      "fp": 113,
+      "fn": 1799,
+      "tn": 2387,
+      "evaluated": 39355,
+      "dropped": 0,
+      "total": 39355,
+      "coverage": 1.0,
+      "accuracy": 0.951417,
+      "precision": 0.996787,
+      "precision_ci": [
+       0.996139,
+       0.997327
+      ],
+      "recall": 0.951187,
+      "recall_ci": [
+       0.94894,
+       0.95334
+      ],
+      "f1": 0.973453,
+      "conservative": {
+       "precision": 0.996787,
+       "recall": 0.951187,
+       "f1": 0.973453
+      }
+     },
+     "augment_n": 2880
+    },
+    "rX_inter": {
+     "SuphasaetSonYing": {
+      "tp": 192,
+      "fp": 0,
+      "fn": 7,
+      "tn": 0,
+      "evaluated": 199,
+      "dropped": 0,
+      "total": 199,
+      "coverage": 1.0,
+      "accuracy": 0.964824,
+      "precision": 1.0,
+      "precision_ci": [
+       0.980384,
+       1.0
+      ],
+      "recall": 0.964824,
+      "recall_ci": [
+       0.929183,
+       0.982858
+      ],
+      "f1": 0.982097,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.964824,
+       "f1": 0.982097
+      }
+     },
+     "khobut": {
+      "tp": 1261,
+      "fp": 0,
+      "fn": 28,
+      "tn": 0,
+      "evaluated": 1289,
+      "dropped": 0,
+      "total": 1289,
+      "coverage": 1.0,
+      "accuracy": 0.978278,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996963,
+       1.0
+      ],
+      "recall": 0.978278,
+      "recall_ci": [
+       0.968784,
+       0.984929
+      ],
+      "f1": 0.98902,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.978278,
+       "f1": 0.98902
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 10245,
+      "fp": 0,
+      "fn": 255,
+      "tn": 0,
+      "evaluated": 10500,
+      "dropped": 0,
+      "total": 10500,
+      "coverage": 1.0,
+      "accuracy": 0.975714,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999625,
+       1.0
+      ],
+      "recall": 0.975714,
+      "recall_ci": [
+       0.972591,
+       0.978489
+      ],
+      "f1": 0.987708,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.975714,
+       "f1": 0.987708
+      }
+     },
+     "phraAphai": {
+      "tp": 23424,
+      "fp": 0,
+      "fn": 786,
+      "tn": 0,
+      "evaluated": 24210,
+      "dropped": 0,
+      "total": 24210,
+      "coverage": 1.0,
+      "accuracy": 0.967534,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999836,
+       1.0
+      ],
+      "recall": 0.967534,
+      "recall_ci": [
+       0.965226,
+       0.969694
+      ],
+      "f1": 0.983499,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.967534,
+       "f1": 0.983499
+      }
+     },
+     "phukaoTong": {
+      "tp": 81,
+      "fp": 0,
+      "fn": 5,
+      "tn": 0,
+      "evaluated": 86,
+      "dropped": 0,
+      "total": 86,
+      "coverage": 1.0,
+      "accuracy": 0.94186,
+      "precision": 1.0,
+      "precision_ci": [
+       0.95472,
+       1.0
+      ],
+      "recall": 0.94186,
+      "recall_ci": [
+       0.87102,
+       0.974913
+      ],
+      "f1": 0.97006,
+      "conservative": {
+       "precision": 1.0,
+       "recall": 0.94186,
+       "f1": 0.97006
+      }
+     },
+     "TOTAL": {
+      "tp": 35487,
+      "fp": 5,
+      "fn": 1103,
+      "tn": 2495,
+      "evaluated": 39090,
+      "dropped": 0,
+      "total": 39090,
+      "coverage": 1.0,
+      "accuracy": 0.971655,
+      "precision": 0.999859,
+      "precision_ci": [
+       0.99967,
+       0.99994
+      ],
+      "recall": 0.969855,
+      "recall_ci": [
+       0.968053,
+       0.971558
+      ],
+      "f1": 0.984628,
+      "conservative": {
+       "precision": 0.999859,
+       "recall": 0.969855,
+       "f1": 0.984628
+      }
+     },
+     "augment_n": 2806
+    }
+   }
+  },
+  "C_kongfha_word_check": {
+   "stanza": {
+    "SuphasaetSonYing": {
+     "tp": 170,
+     "fp": 0,
+     "fn": 28,
+     "tn": 0,
+     "evaluated": 198,
+     "dropped": 2,
+     "total": 200,
+     "coverage": 0.99,
+     "accuracy": 0.858586,
+     "precision": 1.0,
+     "precision_ci": [
+      0.977902,
+      1.0
+     ],
+     "recall": 0.858586,
+     "recall_ci": [
+      0.803207,
+      0.900315
+     ],
+     "f1": 0.923913,
+     "conservative": {
+      "precision": 0.988372,
+      "recall": 0.85,
+      "f1": 0.913978
+     }
+    },
+    "khobut": {
+     "tp": 1060,
+     "fp": 0,
+     "fn": 226,
+     "tn": 0,
+     "evaluated": 1286,
+     "dropped": 17,
+     "total": 1303,
+     "coverage": 0.986953,
+     "accuracy": 0.824261,
+     "precision": 1.0,
+     "precision_ci": [
+      0.996389,
+      1.0
+     ],
+     "recall": 0.824261,
+     "recall_ci": [
+      0.802502,
+      0.844089
+     ],
+     "f1": 0.903666,
+     "conservative": {
+      "precision": 0.984215,
+      "recall": 0.813507,
+      "f1": 0.890756
+     }
+    },
+    "khunChangKhunPhaen": {
+     "tp": 7732,
+     "fp": 0,
+     "fn": 1929,
+     "tn": 0,
+     "evaluated": 9661,
+     "dropped": 882,
+     "total": 10543,
+     "coverage": 0.916343,
+     "accuracy": 0.800331,
+     "precision": 1.0,
+     "precision_ci": [
+      0.999503,
+      1.0
+     ],
+     "recall": 0.800331,
+     "recall_ci": [
+      0.792241,
+      0.808183
+     ],
+     "f1": 0.889093,
+     "conservative": {
+      "precision": 0.897609,
+      "recall": 0.733378,
+      "f1": 0.807225
+     }
+    },
+    "phraAphai": {
+     "tp": 20579,
+     "fp": 0,
+     "fn": 3117,
+     "tn": 0,
+     "evaluated": 23696,
+     "dropped": 646,
+     "total": 24342,
+     "coverage": 0.973462,
+     "accuracy": 0.868459,
+     "precision": 1.0,
+     "precision_ci": [
+      0.999813,
+      1.0
+     ],
+     "recall": 0.868459,
+     "recall_ci": [
+      0.864095,
+      0.872703
+     ],
+     "f1": 0.929599,
+     "conservative": {
+      "precision": 0.969564,
+      "recall": 0.845411,
+      "f1": 0.903241
+     }
+    },
+    "phukaoTong": {
+     "tp": 63,
+     "fp": 0,
+     "fn": 18,
+     "tn": 0,
+     "evaluated": 81,
+     "dropped": 6,
+     "total": 87,
+     "coverage": 0.931034,
+     "accuracy": 0.777778,
+     "precision": 1.0,
+     "precision_ci": [
+      0.942527,
+      1.0
+     ],
+     "recall": 0.777778,
+     "recall_ci": [
+      0.675845,
+      0.854555
+     ],
+     "f1": 0.875,
+     "conservative": {
+      "precision": 0.913043,
+      "recall": 0.724138,
+      "f1": 0.807692
+     }
+    },
+    "TOTAL": {
+     "tp": 30738,
+     "fp": 2615,
+     "fn": 5742,
+     "tn": 7166,
+     "evaluated": 46261,
+     "dropped": 1837,
+     "total": 48098,
+     "coverage": 0.961807,
+     "accuracy": 0.819351,
+     "precision": 0.921596,
+     "precision_ci": [
+      0.918663,
+      0.924433
+     ],
+     "recall": 0.842599,
+     "recall_ci": [
+      0.838825,
+      0.8463
+     ],
+     "f1": 0.880329,
+     "conservative": {
+      "precision": 0.873487,
+      "recall": 0.802203,
+      "f1": 0.836329
+     }
+    },
+    "augment_n": 11623
+   },
+   "rules": {
+    "r1_w1_w2": {
+     "SuphasaetSonYing": {
+      "tp": 188,
+      "fp": 0,
+      "fn": 10,
+      "tn": 0,
+      "evaluated": 198,
+      "dropped": 2,
+      "total": 200,
+      "coverage": 0.99,
+      "accuracy": 0.949495,
+      "precision": 1.0,
+      "precision_ci": [
+       0.979975,
+       1.0
+      ],
+      "recall": 0.949495,
+      "recall_ci": [
+       0.909541,
+       0.972339
+      ],
+      "f1": 0.974093,
+      "conservative": {
+       "precision": 0.989474,
+       "recall": 0.94,
+       "f1": 0.964103
+      }
+     },
+     "khobut": {
+      "tp": 1183,
+      "fp": 0,
+      "fn": 103,
+      "tn": 0,
+      "evaluated": 1286,
+      "dropped": 17,
+      "total": 1303,
+      "coverage": 0.986953,
+      "accuracy": 0.919907,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996763,
+       1.0
+      ],
+      "recall": 0.919907,
+      "recall_ci": [
+       0.90379,
+       0.933522
+      ],
+      "f1": 0.958283,
+      "conservative": {
+       "precision": 0.985833,
+       "recall": 0.907905,
+       "f1": 0.945266
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 8794,
+      "fp": 0,
+      "fn": 867,
+      "tn": 0,
+      "evaluated": 9661,
+      "dropped": 882,
+      "total": 10543,
+      "coverage": 0.916343,
+      "accuracy": 0.910258,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999563,
+       1.0
+      ],
+      "recall": 0.910258,
+      "recall_ci": [
+       0.904394,
+       0.915795
+      ],
+      "f1": 0.953021,
+      "conservative": {
+       "precision": 0.908847,
+       "recall": 0.834108,
+       "f1": 0.869875
+      }
+     },
+     "phraAphai": {
+      "tp": 22290,
+      "fp": 0,
+      "fn": 1406,
+      "tn": 0,
+      "evaluated": 23696,
+      "dropped": 646,
+      "total": 24342,
+      "coverage": 0.973462,
+      "accuracy": 0.940665,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999828,
+       1.0
+      ],
+      "recall": 0.940665,
+      "recall_ci": [
+       0.937585,
+       0.943602
+      ],
+      "f1": 0.969425,
+      "conservative": {
+       "precision": 0.971835,
+       "recall": 0.915701,
+       "f1": 0.942933
+      }
+     },
+     "phukaoTong": {
+      "tp": 75,
+      "fp": 0,
+      "fn": 6,
+      "tn": 0,
+      "evaluated": 81,
+      "dropped": 6,
+      "total": 87,
+      "coverage": 0.931034,
+      "accuracy": 0.925926,
+      "precision": 1.0,
+      "precision_ci": [
+       0.951274,
+       1.0
+      ],
+      "recall": 0.925926,
+      "recall_ci": [
+       0.847669,
+       0.965611
+      ],
+      "f1": 0.961539,
+      "conservative": {
+       "precision": 0.925926,
+       "recall": 0.862069,
+       "f1": 0.892857
+      }
+     },
+     "TOTAL": {
+      "tp": 32984,
+      "fp": 836,
+      "fn": 2485,
+      "tn": 1629,
+      "evaluated": 37934,
+      "dropped": 1591,
+      "total": 39525,
+      "coverage": 0.959747,
+      "accuracy": 0.912453,
+      "precision": 0.975281,
+      "precision_ci": [
+       0.973571,
+       0.976883
+      ],
+      "recall": 0.929939,
+      "recall_ci": [
+       0.927236,
+       0.932549
+      ],
+      "f1": 0.95207,
+      "conservative": {
+       "precision": 0.931462,
+       "recall": 0.890016,
+       "f1": 0.910267
+      }
+     },
+     "augment_n": 3050
+    },
+    "r2_w2_w3": {
+     "SuphasaetSonYing": {
+      "tp": 196,
+      "fp": 0,
+      "fn": 2,
+      "tn": 0,
+      "evaluated": 198,
+      "dropped": 2,
+      "total": 200,
+      "coverage": 0.99,
+      "accuracy": 0.989899,
+      "precision": 1.0,
+      "precision_ci": [
+       0.980777,
+       1.0
+      ],
+      "recall": 0.989899,
+      "recall_ci": [
+       0.963924,
+       0.997226
+      ],
+      "f1": 0.994924,
+      "conservative": {
+       "precision": 0.989899,
+       "recall": 0.98,
+       "f1": 0.984925
+      }
+     },
+     "khobut": {
+      "tp": 1239,
+      "fp": 0,
+      "fn": 47,
+      "tn": 0,
+      "evaluated": 1286,
+      "dropped": 17,
+      "total": 1303,
+      "coverage": 0.986953,
+      "accuracy": 0.963453,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996909,
+       1.0
+      ],
+      "recall": 0.963453,
+      "recall_ci": [
+       0.951739,
+       0.972406
+      ],
+      "f1": 0.981386,
+      "conservative": {
+       "precision": 0.986465,
+       "recall": 0.950883,
+       "f1": 0.968347
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 9414,
+      "fp": 0,
+      "fn": 247,
+      "tn": 0,
+      "evaluated": 9661,
+      "dropped": 882,
+      "total": 10543,
+      "coverage": 0.916343,
+      "accuracy": 0.974433,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999592,
+       1.0
+      ],
+      "recall": 0.974433,
+      "recall_ci": [
+       0.971092,
+       0.977397
+      ],
+      "f1": 0.987051,
+      "conservative": {
+       "precision": 0.914336,
+       "recall": 0.892915,
+       "f1": 0.903499
+      }
+     },
+     "phraAphai": {
+      "tp": 22789,
+      "fp": 0,
+      "fn": 907,
+      "tn": 0,
+      "evaluated": 23696,
+      "dropped": 646,
+      "total": 24342,
+      "coverage": 0.973462,
+      "accuracy": 0.961723,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999831,
+       1.0
+      ],
+      "recall": 0.961723,
+      "recall_ci": [
+       0.959205,
+       0.964093
+      ],
+      "f1": 0.980488,
+      "conservative": {
+       "precision": 0.972434,
+       "recall": 0.936201,
+       "f1": 0.953974
+      }
+     },
+     "phukaoTong": {
+      "tp": 76,
+      "fp": 0,
+      "fn": 5,
+      "tn": 0,
+      "evaluated": 81,
+      "dropped": 6,
+      "total": 87,
+      "coverage": 0.931034,
+      "accuracy": 0.938272,
+      "precision": 1.0,
+      "precision_ci": [
+       0.951885,
+       1.0
+      ],
+      "recall": 0.938272,
+      "recall_ci": [
+       0.863506,
+       0.973348
+      ],
+      "f1": 0.968153,
+      "conservative": {
+       "precision": 0.926829,
+       "recall": 0.873563,
+       "f1": 0.899408
+      }
+     },
+     "TOTAL": {
+      "tp": 34074,
+      "fp": 707,
+      "fn": 1223,
+      "tn": 1718,
+      "evaluated": 37722,
+      "dropped": 1640,
+      "total": 39362,
+      "coverage": 0.958335,
+      "accuracy": 0.948836,
+      "precision": 0.979673,
+      "precision_ci": [
+       0.978136,
+       0.981104
+      ],
+      "recall": 0.965351,
+      "recall_ci": [
+       0.963392,
+       0.967209
+      ],
+      "f1": 0.972459,
+      "conservative": {
+       "precision": 0.935559,
+       "recall": 0.92249,
+       "f1": 0.928979
+      }
+     },
+     "augment_n": 2887
+    },
+    "r3_w3_w4": {
+     "SuphasaetSonYing": {
+      "tp": 183,
+      "fp": 0,
+      "fn": 15,
+      "tn": 0,
+      "evaluated": 198,
+      "dropped": 2,
+      "total": 200,
+      "coverage": 0.99,
+      "accuracy": 0.924242,
+      "precision": 1.0,
+      "precision_ci": [
+       0.979439,
+       1.0
+      ],
+      "recall": 0.924242,
+      "recall_ci": [
+       0.87878,
+       0.953556
+      ],
+      "f1": 0.96063,
+      "conservative": {
+       "precision": 0.989189,
+       "recall": 0.915,
+       "f1": 0.950649
+      }
+     },
+     "khobut": {
+      "tp": 1202,
+      "fp": 0,
+      "fn": 84,
+      "tn": 0,
+      "evaluated": 1286,
+      "dropped": 17,
+      "total": 1303,
+      "coverage": 0.986953,
+      "accuracy": 0.934681,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996814,
+       1.0
+      ],
+      "recall": 0.934681,
+      "recall_ci": [
+       0.91984,
+       0.946933
+      ],
+      "f1": 0.966238,
+      "conservative": {
+       "precision": 0.986054,
+       "recall": 0.922487,
+       "f1": 0.953212
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 8713,
+      "fp": 0,
+      "fn": 948,
+      "tn": 0,
+      "evaluated": 9661,
+      "dropped": 882,
+      "total": 10543,
+      "coverage": 0.916343,
+      "accuracy": 0.901874,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999559,
+       1.0
+      ],
+      "recall": 0.901874,
+      "recall_ci": [
+       0.895781,
+       0.907647
+      ],
+      "f1": 0.948406,
+      "conservative": {
+       "precision": 0.908077,
+       "recall": 0.826425,
+       "f1": 0.865329
+      }
+     },
+     "phraAphai": {
+      "tp": 22703,
+      "fp": 0,
+      "fn": 993,
+      "tn": 0,
+      "evaluated": 23696,
+      "dropped": 646,
+      "total": 24342,
+      "coverage": 0.973462,
+      "accuracy": 0.958094,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999831,
+       1.0
+      ],
+      "recall": 0.958094,
+      "recall_ci": [
+       0.955468,
+       0.960572
+      ],
+      "f1": 0.978599,
+      "conservative": {
+       "precision": 0.972333,
+       "recall": 0.932668,
+       "f1": 0.952088
+      }
+     },
+     "phukaoTong": {
+      "tp": 75,
+      "fp": 0,
+      "fn": 6,
+      "tn": 0,
+      "evaluated": 81,
+      "dropped": 6,
+      "total": 87,
+      "coverage": 0.931034,
+      "accuracy": 0.925926,
+      "precision": 1.0,
+      "precision_ci": [
+       0.951274,
+       1.0
+      ],
+      "recall": 0.925926,
+      "recall_ci": [
+       0.847669,
+       0.965611
+      ],
+      "f1": 0.961539,
+      "conservative": {
+       "precision": 0.925926,
+       "recall": 0.862069,
+       "f1": 0.892857
+      }
+     },
+     "TOTAL": {
+      "tp": 33145,
+      "fp": 834,
+      "fn": 2121,
+      "tn": 1629,
+      "evaluated": 37729,
+      "dropped": 1626,
+      "total": 39355,
+      "coverage": 0.958684,
+      "accuracy": 0.921678,
+      "precision": 0.975455,
+      "precision_ci": [
+       0.973756,
+       0.977048
+      ],
+      "recall": 0.939857,
+      "recall_ci": [
+       0.937327,
+       0.942291
+      ],
+      "f1": 0.957325,
+      "conservative": {
+       "precision": 0.930909,
+       "recall": 0.898433,
+       "f1": 0.914383
+      }
+     },
+     "augment_n": 2880
+    },
+    "rX_inter": {
+     "SuphasaetSonYing": {
+      "tp": 192,
+      "fp": 0,
+      "fn": 4,
+      "tn": 0,
+      "evaluated": 196,
+      "dropped": 3,
+      "total": 199,
+      "coverage": 0.984925,
+      "accuracy": 0.979592,
+      "precision": 1.0,
+      "precision_ci": [
+       0.980384,
+       1.0
+      ],
+      "recall": 0.979592,
+      "recall_ci": [
+       0.948709,
+       0.992036
+      ],
+      "f1": 0.989691,
+      "conservative": {
+       "precision": 0.984615,
+       "recall": 0.964824,
+       "f1": 0.974619
+      }
+     },
+     "khobut": {
+      "tp": 1209,
+      "fp": 0,
+      "fn": 55,
+      "tn": 0,
+      "evaluated": 1264,
+      "dropped": 25,
+      "total": 1289,
+      "coverage": 0.980605,
+      "accuracy": 0.956487,
+      "precision": 1.0,
+      "precision_ci": [
+       0.996833,
+       1.0
+      ],
+      "recall": 0.956487,
+      "recall_ci": [
+       0.94379,
+       0.966419
+      ],
+      "f1": 0.97776,
+      "conservative": {
+       "precision": 0.979741,
+       "recall": 0.937936,
+       "f1": 0.958383
+      }
+     },
+     "khunChangKhunPhaen": {
+      "tp": 9025,
+      "fp": 0,
+      "fn": 230,
+      "tn": 0,
+      "evaluated": 9255,
+      "dropped": 1245,
+      "total": 10500,
+      "coverage": 0.881429,
+      "accuracy": 0.975149,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999575,
+       1.0
+      ],
+      "recall": 0.975149,
+      "recall_ci": [
+       0.971774,
+       0.978128
+      ],
+      "f1": 0.987418,
+      "conservative": {
+       "precision": 0.878773,
+       "recall": 0.859524,
+       "f1": 0.869042
+      }
+     },
+     "phraAphai": {
+      "tp": 22412,
+      "fp": 0,
+      "fn": 848,
+      "tn": 0,
+      "evaluated": 23260,
+      "dropped": 950,
+      "total": 24210,
+      "coverage": 0.96076,
+      "accuracy": 0.963543,
+      "precision": 1.0,
+      "precision_ci": [
+       0.999829,
+       1.0
+      ],
+      "recall": 0.963543,
+      "recall_ci": [
+       0.961056,
+       0.965876
+      ],
+      "f1": 0.981433,
+      "conservative": {
+       "precision": 0.959336,
+       "recall": 0.925733,
+       "f1": 0.942235
+      }
+     },
+     "phukaoTong": {
+      "tp": 72,
+      "fp": 0,
+      "fn": 6,
+      "tn": 0,
+      "evaluated": 78,
+      "dropped": 8,
+      "total": 86,
+      "coverage": 0.906977,
+      "accuracy": 0.923077,
+      "precision": 1.0,
+      "precision_ci": [
+       0.949347,
+       1.0
+      ],
+      "recall": 0.923077,
+      "recall_ci": [
+       0.842166,
+       0.96427
+      ],
+      "f1": 0.96,
+      "conservative": {
+       "precision": 0.9,
+       "recall": 0.837209,
+       "f1": 0.86747
+      }
+     },
+     "TOTAL": {
+      "tp": 33184,
+      "fp": 730,
+      "fn": 1161,
+      "tn": 1698,
+      "evaluated": 36773,
+      "dropped": 2317,
+      "total": 39090,
+      "coverage": 0.940727,
+      "accuracy": 0.948576,
+      "precision": 0.978475,
+      "precision_ci": [
+       0.976875,
+       0.979966
+      ],
+      "recall": 0.966196,
+      "recall_ci": [
+       0.964232,
+       0.968056
+      ],
+      "f1": 0.972297,
+      "conservative": {
+       "precision": 0.915901,
+       "recall": 0.905133,
+       "f1": 0.910485
+      }
+     },
+     "augment_n": 2806
+    }
+   }
+  }
+ },
+ "has_augment": true
 }

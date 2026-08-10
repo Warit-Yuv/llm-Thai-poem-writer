@@ -784,9 +784,23 @@ oracle limitation that the generator's oracle-gate could not self-detect:
   the augmentation needs a valid rhyme *unit*, not a standalone word.
 - Regenerated (same seed): **removing pool words cascades through every
   `rng.shuffle`, so ~96% of instances re-pick candidates** (11,147/11,623 changed).
-  Checker C verdicts are being re-scored on the changed subset (the 476 unchanged
-  instances keep their cached verdicts) via `Paper/eval_checkers/patch_verdicts.py`,
-  then `paper_report_data.py --from-verdicts` recomputes the tables.
+  Checker C verdicts were re-scored on the changed subset (the 476 unchanged
+  instances kept their cached verdicts) via `Paper/eval_checkers/patch_verdicts.py`
+  (~3.8 h on a busy machine), then `paper_report_data.py --from-verdicts`
+  recomputed the tables and `refresh_metrics.py` rebuilt the merged totals.
+- **Final v5.7 numbers** (gold recall unchanged — the corpus did not move):
+
+  | checker | augment P | augment R | augment F1 | ob recall | FN-pos combined |
+  |---|---|---|---|---|---|
+  | A · 5.0.1 | 28.4% | 62.7% | 39.1% | 91/423 (21.5%) | 848 |
+  | B · 5.3.5 | 100% | 73.9% | 85.0% | 0/423 (0%) | 423 |
+  | D_w2p | 83.4% | 92.1% | 87.5% | 405/423 (95.7%) | 128 |
+  | D_ssg | 86.8% | 87.0% | 86.9% | 288/423 (68.1%) | 211 |
+  | C · Kongfha | 30.4% | 87.1% | 45.1% | 333/423 (78.7%) | 266 |
+
+  FP by op (10,000 neg): A 1,950 (C9 1,774, C3 162) · B 0 · D_w2p 298
+  (C3 135, C9 103) · D_ssg 215 (C3 119, C9 48) · **C 3,107 (C3 2,702, C9 267)**.
+  All Session-9 conclusions hold unchanged (shifts <2 points).
 
 ## Session 9 — Final evaluation (incl. Checker C on the augmentation) + report notebook (2026-08-10)
 
