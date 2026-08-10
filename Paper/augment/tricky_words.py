@@ -190,6 +190,13 @@ ORACLE_MISREAD_EXCLUDE = frozenset({
     "เจอร์ค", "เบอร์ก", "เวอร์ค", "เออร์ค", "เธร์", "เธ่ย์", "เอร์",
     # Group E
     "เหม่",
+    # --- author-adjudicated junk (POOL_ADJUDICATION.md, 2026-08-10) ---
+    # No meaning / broken syllables the author chose to drop. The rest of the
+    # Agent-4 junk list was KEPT (syllables need no standalone meaning for the
+    # augmentation -- only a valid rhyme unit -- e.g. รวจ/นวณ/ชวร/กตัญ are
+    # compound syllables, ปณต is a name, and the borderline Pali roots stay).
+    "ควณ", "หภัก", "เสน่", "งค", "ษส", "ชส", "บส", "ตศต", "พเจ้า",
+    "ทบุ", "สเป",
 })
 
 # Curated ฤ/ฦ words with their TRUE (Royal-Society) pronunciations. ฤ words

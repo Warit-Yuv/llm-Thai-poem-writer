@@ -773,6 +773,21 @@ oracle limitation that the generator's oracle-gate could not self-detect:
   เอ-อ/เอ + โ-cluster rules are flagged for the author's final sign-off
   before the full Checker C run.
 
+### v5.7 — author adjudication of the 49 contested junk (2026-08-10)
+
+- The author reviewed `Paper/augment/output/POOL_ADJUDICATION.md` (all 49 + 15
+  borderline with pool presence + candidate/source usage).
+- **Decision: DROP 11** — ควณ, หภัก, เสน่, งค, ษส, ชส, บส, ตศต, พเจ้า, ทบุ, สเป
+  (no meaning or broken-syllable fragments) → added to `ORACLE_MISREAD_EXCLUDE`.
+- **KEEP everything else**, including compound syllables (รวจ/นวณ/ชวร/กตัญ from
+  สำรวจ/คำนวณ/ประชวร/กตัญญู), ปณต (a name), and all borderline Pali roots —
+  the augmentation needs a valid rhyme *unit*, not a standalone word.
+- Regenerated (same seed): **removing pool words cascades through every
+  `rng.shuffle`, so ~96% of instances re-pick candidates** (11,147/11,623 changed).
+  Checker C verdicts are being re-scored on the changed subset (the 476 unchanged
+  instances keep their cached verdicts) via `Paper/eval_checkers/patch_verdicts.py`,
+  then `paper_report_data.py --from-verdicts` recomputes the tables.
+
 ## Session 9 — Final evaluation (incl. Checker C on the augmentation) + report notebook (2026-08-10)
 
 ### Runs

@@ -4,6 +4,16 @@ Context: the recheck agents audited the candidate pool (`Paper/augment/output/ca
 
 Columns: **cand** = times used as a *candidate* in the 11,623 instances; **src** = times it was the *source* syllable (original corpus text — not controllable, listed for info); **pool** = still in `candidates_review.tsv`.
 
+## Author decisions (2026-08-10) — applied as v5.7
+
+**DROP (11)** — added to `ORACLE_MISREAD_EXCLUDE` in `Paper/augment/tricky_words.py`:
+`ควณ`, `หภัก`, `เสน่`, `งค`, `ษส`, `ชส`, `บส`, `ตศต`, `พเจ้า`, `ทบุ`, `สเป`
+(no meaning, or broken syllable fragments; พเจ้า/ทบุ/สเป split the syllable).
+
+**KEEP (all the rest)** — compound syllables (รวจ/นวณ/ชวร/กตัญ from สำรวจ/คำนวณ/ประชวร/กตัญญู),
+`ปณต` (a name), and all borderline Pali roots. Rationale: the augmentation needs a valid
+**rhyme unit**, not a standalone word — no-meaning syllables that don't break anything are fine.
+
 ## 49 contested junk — DECIDE DROP / KEEP
 
 | word | cand | src | pool | Agent-4 reason | decision |
