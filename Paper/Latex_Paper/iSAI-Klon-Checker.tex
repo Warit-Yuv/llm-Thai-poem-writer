@@ -16,10 +16,11 @@
 \usepackage{iftex}
 
 % ---- Thai script support (dual-engine) ----
-% The paper compiles with BOTH engines:
-%   pdflatex iSAI-Klon-Checker.tex   -> romanisation only (no Thai glyphs)
-%   xelatex  iSAI-Klon-Checker.tex   -> Thai script shown next to romanisation
-% (run twice either way). Thai fonts are auto-selected: TH Sarabun New
+% Thai renders ONLY with XeLaTeX. Build with:
+%   xelatex iSAI-Klon-Checker.tex   -> Thai script shown next to romanisation
+%   pdflatex iSAI-Klon-Checker.tex  -> romanisation only (Thai omitted; see log)
+% On Overleaf: Menu -> Compiler -> XeLaTeX (the .latexmkrc in this folder also
+% forces XeLaTeX automatically). Thai fonts are auto-selected: TH Sarabun New
 % (Overleaf), else Angsana New, else Tahoma (Windows). To add a Thai gloss
 % around any term, use \thgloss{roman}{thai} or \thpar{roman}{thai}.
 \ifXeTeX
@@ -36,12 +37,17 @@
   \newcommand{\thtxt}[1]{{\thaifont #1}}      % bare Thai text
   \newcommand{\thgloss}[2]{#1 (\thtxt{#2})}   % roman (thai)
   \newcommand{\thpar}[2]{(#1 \thtxt{#2})}     % (roman thai)
-  \newcommand{\thaistanza}[2]{\par\noindent #1\par\thtxt{#2}\par} % verse + Thai
+  \newcommand{\thaistanza}[2]{\par\small\noindent #1\par\thtxt{#2}\par\normalsize} % verse + Thai
 \else
+  \typeout{==============================================================}
+  \typeout{NOTE: compiled with pdfLaTeX -> Thai script is OMITTED.}
+  \typeout{Compile with XeLaTeX to render Thai:  xelatex iSAI-Klon-Checker.tex}
+  \typeout{(overleaf: Menu -> Compiler -> XeLaTeX; a .latexmkrc also forces it)}
+  \typeout{==============================================================}
   \newcommand{\thtxt}[1]{}
   \newcommand{\thgloss}[2]{#1}
   \newcommand{\thpar}[2]{(#1)}
-  \newcommand{\thaistanza}[2]{\par\noindent #1\par}
+  \newcommand{\thaistanza}[2]{\par\small\noindent #1\par\normalsize}
 \fi
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
@@ -49,7 +55,7 @@
     
 \begin{document}
 
-\title{Thai Poetry Rhyme Verification using a Hybrid Rule-Based Approach for Education and Generative AI}
+\title{Thai Poetry Rhyme Verification using a Hybrid Rule-Based Approach for Education and GenAI}
 
 \author{\IEEEauthorblockN{1\textsuperscript{st} Warit Yuvaniyama}
 \IEEEauthorblockA{
@@ -216,7 +222,6 @@ rhyme rules are checked in this work, following the \emph{klon} canon and
 the implementation of the PyThaiNLP \texttt{KhaveeVerifier}:
 \begin{itemize}
 \item r1 (\emph{sadap} $\rightarrow$ \emph{rap}): the final syllable of
-wak~1 must rhyme
 wak~1 must rhyme with one of the first five syllables of wak~2 (syllables
 3 and 5 are obligatory, 1, 2, and 4 are permissible);
 \item r2 (\emph{rap} $\rightarrow$ \emph{rong}): the final syllable of
@@ -226,6 +231,18 @@ wak~3 must rhyme with one of the first five syllables of wak~4;
 \item rX (inter-stanza): the final syllable of wak~4 of the previous
 stanza must rhyme with the final syllable of wak~2 of the current stanza.
 \end{itemize}
+As a concrete example, the well-known stanza of the
+\thgloss{\emph{Phukao Thong}}{นิราศภูเขาทอง} travel poem by Sunthorn Phu
+satisfies the intra-stanza rules r1--r3:
+\thaistanza{%
+\textit{thueng bang phut phut dii pen si sak}\\[0pt]
+\textit{mii khon rak rot thoi a-roi cit}\\[0pt]
+\textit{maen phut chua tua taai thamlai mit}\\[0pt]
+\textit{ca chop phit nai manut phro phut caa}}%
+{ถึงบางพูดพูดดีเป็นศรีศักดิ์\\
+มีคนรักรสถ้อยอร่อยจิต\\
+แม้นพูดชั่วตัวตายทำลายมิตร\\
+จะชอบผิดในมนุษย์เพราะพูดจา}
 Figure~\ref{fig:klon} shows the intra-stanza structure.
 
 Three orthographic phenomena make these rules hard to apply automatically.

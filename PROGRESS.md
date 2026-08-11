@@ -915,6 +915,22 @@ oracle limitation that the generator's oracle-gate could not self-detect:
   สดับ/รับ/รอง/ส่ง + the five corpus work titles.
 - Note: XeLaTeX logs 4 benign "TU/ptm" font-shape warnings (IEEEtran hardcodes ptm;
   substitution is the same Times clone — output identical).
+- **Why Thai "didn't show" for the author:** they compiled with pdfLaTeX (VS Code and
+  Overleaf defaults). Thai only renders under XeLaTeX. Fix: `.latexmkrc` at repo root
+  (Overleaf) + `Paper/Latex_Paper/.latexmkrc` (local latexmk) now force XeLaTeX
+  automatically; the pdfLaTeX fallback also prints a loud NOTE in the log. On Overleaf
+  the author can also set Menu → Compiler → XeLaTeX.
+- **Example verse added (verified).** Author supplied the famous stanza from
+  นิราศภูเขาทอง (Phukao Thong):
+  ถึงบางพูดพูดดีเป็นศรีศักดิ์ / มีคนรักรสถ้อยอร่อยจิต / แม้นพูดชั่วตัวตายทำลายมิตร /
+  จะชอบผิดในมนุษย์เพราะพูดจา — checked with the 5.3.5 `check_klon`:
+  **"The poem is correct according to the principle."** Inserted into §2.1 after the
+  rule list via `\thaistanza` (romanization + Thai; \small). (Fun fact: the famous
+  Phra Aphai Mani opening "แต่ปางหลังยังมีกรุงกษัตริย์" FAILS the strict rules — hence
+  we used the author's verified verse instead.)
+- Page count: 7 pages under both engines after the verse (XeLaTeX has the extra Thai
+  lines). Author's pre-verse trim had it at 6 — trimming suggestions available if the
+  iSAI limit is 6.
 
 ## Session 4 — Checker runtime, parity validation, smoke test (2026-08-09)
 
