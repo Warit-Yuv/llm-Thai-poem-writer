@@ -6,6 +6,7 @@
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
+\usepackage{algorithm}
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
@@ -257,38 +258,46 @@ and final class.
 
 \begin{figure}[t]
 \centering
-\begin{tikzpicture}[x=0.62cm,y=0.55cm,
-  cell/.style={draw, line width=0.4pt}]
+\begin{tikzpicture}[
+  cell/.style={draw, minimum width=0.66cm, minimum height=0.42cm, inner sep=0pt, font=\tiny},
+  lbl/.style={font=\scriptsize, anchor=east}]
   % wak 1 (sadap)
-  \foreach \i in {1,...,7}{\draw[cell] (\i,0) rectangle (\i+1,1);}
-  \draw[cell,fill=gray!30] (8,0) rectangle (9,1);
+  \foreach \i/\s in {1/thueng,2/bang,3/phut,4/phut,5/dii,6/pen,7/si,8/sak}
+    \node[cell] (w1\i) at (\i*0.68,0) {\s};
+  \node[cell,fill=gray!25,line width=0.9pt] at (w18) {sak};
+  \node[lbl] at (0.1,0) {\emph{sadap}};
   % wak 2 (rap)
-  \foreach \i in {1,...,7}{\draw[cell] (\i,1.5) rectangle (\i+1,2.5);}
-  \draw[cell,fill=gray!30] (5,1.5) rectangle (6,2.5);
-  \draw[cell,fill=gray!30] (8,1.5) rectangle (9,2.5);
+  \foreach \i/\s in {1/mii,2/khon,3/rak,4/rot,5/thoi,6/a,7/roi,8/cit}
+    \node[cell] (w2\i) at (\i*0.68,-0.85) {\s};
+  \node[cell,fill=gray!25,line width=0.9pt] at (w23) {rak};
+  \node[cell,fill=gray!25,line width=0.9pt] at (w28) {cit};
+  \node[lbl] at (0.1,-0.85) {\emph{rap}};
   % wak 3 (rong)
-  \foreach \i in {1,...,7}{\draw[cell] (\i,3.0) rectangle (\i+1,4.0);}
-  \draw[cell,fill=gray!30] (8,3.0) rectangle (9,4.0);
+  \foreach \i/\s in {1/maen,2/phut,3/chua,4/tua,5/taai,6/tham,7/lai,8/mit}
+    \node[cell] (w3\i) at (\i*0.68,-1.70) {\s};
+  \node[cell,fill=gray!25,line width=0.9pt] at (w38) {mit};
+  \node[lbl] at (0.1,-1.70) {\emph{rong}};
   % wak 4 (song)
-  \foreach \i in {1,...,7}{\draw[cell] (\i,4.5) rectangle (\i+1,5.5);}
-  \draw[cell,fill=gray!30] (5,4.5) rectangle (6,5.5);
-  \draw[cell,fill=gray!30] (8,4.5) rectangle (9,5.5);
-  % labels
-  \node[anchor=west, font=\scriptsize] at (9.4,0.5) {wak 1 \emph{sadap}};
-  \node[anchor=west, font=\scriptsize] at (9.4,2.0) {wak 2 \emph{rap}};
-  \node[anchor=west, font=\scriptsize] at (9.4,3.5) {wak 3 \emph{rong}};
-  \node[anchor=west, font=\scriptsize] at (9.4,5.0) {wak 4 \emph{song}};
+  \foreach \i/\s in {1/ca,2/chop,3/phit,4/nai,5/ma,6/nut,7/phro,8/phut,9/caa}
+    \node[cell] (w4\i) at (\i*0.68,-2.55) {\s};
+  \node[cell,fill=gray!25,line width=0.9pt] at (w43) {phit};
+  \node[lbl] at (0.1,-2.55) {\emph{song}};
   % rhyme arrows
-  \draw[thick,->] (8.5,1.0) .. controls (6.6,1.15) and (6.1,1.32) .. (5.5,1.5);
-  \node[font=\tiny] at (6.9,1.18) {r1};
-  \draw[thick,->] (8.5,2.5) .. controls (8.5,2.72) .. (8.5,3.0);
-  \node[font=\tiny] at (8.9,2.75) {r2};
-  \draw[thick,->] (8.5,4.0) .. controls (6.6,4.15) and (6.1,4.32) .. (5.5,4.5);
-  \node[font=\tiny] at (6.9,4.18) {r3};
+  \draw[thick,->] (w18) .. controls (4.0,-0.18) and (3.0,-0.42) .. (w23);
+  \node[font=\tiny] at (4.05,-0.42) {r1};
+  \draw[thick,->] (w28) -- (w38);
+  \node[font=\tiny] at (5.7,-1.28) {r2};
+  \draw[thick,->] (w38) .. controls (4.0,-1.88) and (3.0,-2.12) .. (w43);
+  \node[font=\tiny] at (4.05,-2.12) {r3};
 \end{tikzpicture}
-\caption{Rhyme structure of one Klon-Paed stanza. Shaded cells are the
-syllables that must rhyme; rX (not shown) links wak~4 of one stanza to wak~2
-of the next.}
+\ifXeTeX\\[2pt]{\small\centering\thtxt{ถึงบางพูดพูดดีเป็นศรีศักดิ์ มีคนรักรสถ้อยอร่อยจิต
+แม้นพูดชั่วตัวตายทำลายมิตร จะชอบผิดในมนุษย์เพราะพูดจา}}\fi
+\caption{The example stanza (Section~2.1) with its rhyme positions shaded
+and linked: r1 (\emph{sadap}$\rightarrow$\emph{rap}), r2
+(\emph{rap}$\rightarrow$\emph{rong}), r3
+(\emph{rong}$\rightarrow$\emph{song}); rX (not shown) links wak~4 of one
+stanza to wak~2 of the next. Syllables are romanised; the original Thai
+verse is shown below in the XeLaTeX build.}
 \label{fig:klon}
 \end{figure}
 
@@ -360,6 +369,29 @@ extracted: the final syllable of every wak, and the first five syllables of
 waks~2 and~4. (3)~The rhyme test \texttt{is\_sumpus} decides whether two
 syllables rhyme; a rule holds if the test succeeds for at least one
 permitted target. The eight-syllable metre is additionally reported.
+Algorithm~\ref{alg:klon} summarises this flow.
+
+\begin{algorithm}[t]
+\caption{Rhyme verification of a Klon-Paed poem (\texttt{check\_klon}).}
+\label{alg:klon}
+\begin{algorithmic}[1]
+\REQUIRE poem $T$ with waks separated by whitespace; type $k\in\{4,8\}$
+\ENSURE list of rhyme errors (empty $\Leftrightarrow$ poem is valid)
+\STATE $W\gets$ split $T$ into waks, grouped into stanzas of four
+\FOR{each stanza $(w_1,w_2,w_3,w_4)$}
+  \FOR{$i\gets 1$ \TO $4$}
+    \STATE $S_i\gets$ \textsc{ssg}($w_i$) \COMMENT{syllable tokens of wak $i$}
+  \ENDFOR
+  \FOR{each rule $\rho\in\{\mathrm{r1},\mathrm{r2},\mathrm{r3},\mathrm{rX}\}$}
+    \STATE $(a,B_\rho)\gets$ source syllable $a$ and target set $B_\rho$ of rule $\rho$
+    \IF{$\nexists\, b\in B_\rho$ with \textsc{is\_sumpus}($a,b$)}
+      \STATE record an error for rule $\rho$
+    \ENDIF
+  \ENDFOR
+\ENDFOR
+\RETURN the list of errors
+\end{algorithmic}
+\end{algorithm}
 
 The accuracy of the verifier rests on three functions.
 \texttt{check\_sara} returns the canonical vowel of a syllable. It handles
@@ -389,15 +421,40 @@ final consonant rather than part of a vowel digraph or an initial cluster:
 the \emph{y} of \emph{thai} is silent, the \emph{l} of \emph{plae} belongs
 to the initial cluster, but the \emph{l} of \emph{chon} is a true final.
 
-Compared with the 5.0.1 verifier (Model~A), the changes are: (i)~SSG
-syllable segmentation replaces dictionary subword tokenisation, which
-missegments compounds and fails on out-of-vocabulary words; (ii)~karun
-silencing and true-final detection are implemented; (iii)~phonetic
-normalisation in \texttt{is\_sumpus} is applied to both words independently
-(the 5.0.1 \texttt{elif} chain normalises at most one word, so rhymes in
-which both words belong to the same special-vowel class can be missed);
-(iv)~the r3 rule is implemented (5.0.1 has no r3); and (v)~single-character
-tokens no longer crash the mattra analysis.
+Table~\ref{tab:changes} summarises the principal changes of the 5.3.5
+verifier relative to the 5.0.1 baseline, each with a concrete example;
+they were developed and merged in the PyThaiNLP project~\cite{pythainlp}.
+The fixes target precisely the failure families probed by the augmentation
+(Section~\ref{sec:results}): karun and \emph{ru} traps, short/long and
+compound-vowel swaps, and the one-sided special-vowel normalisation that
+our C9 operator exploits. Together they raise per-rule gold recall from
+86--89\% (5.0.1) to 95--97\% (5.3.5) and eliminate false positives on the
+curated negatives.
+
+\begin{table}[t]
+\caption{Principal changes of the 5.3.5 \texttt{KhaveeVerifier} over the
+5.0.1 baseline.}
+\label{tab:changes}
+\centering
+\footnotesize
+\begin{tabular}{p{2.9cm}p{4.5cm}}
+\toprule
+\textbf{Aspect} & \textbf{5.0.1 $\rightarrow$ 5.3.5 (example)} \\
+\midrule
+Segmentation & dict subword $\rightarrow$ SSG syllable segmentation \\
+Karun (thanthakhat) & ignored $\rightarrow$ silenced (\emph{ohm}$\rightarrow$\emph{o}) \\
+True finals y/l/w & naive $\rightarrow$ cluster-aware (\emph{thai}, \emph{klai}$\rightarrow$mae ka) \\
+Special-vowel norm. & one-sided $\rightarrow$ both-sided (\emph{cham}$\sim$\emph{kam}) \\
+Compound/reduced vowels & misread $\rightarrow$ compound-vowel classifier,
+short-vowel mark, and \emph{ua} diphthong (\emph{chet}$\rightarrow$short \emph{e};
+\emph{tua}$\sim$\emph{chua}) \\
+\emph{ru} & one sound $\rightarrow$ three sounds (\emph{roek}, \emph{rit}, \emph{rue-du}) \\
+r3 rule & absent $\rightarrow$ implemented (all four rules) \\
+Silent \emph{r} & misread $\rightarrow$ stripped in \texttt{check\_marttra} (\emph{but}, \emph{phet}) \\
+Single-char words & crash $\rightarrow$ guarded (\emph{na}, \emph{tha}$\rightarrow$a) \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Dictionary-Enhanced Verification (Klonpad, Model D)}
 

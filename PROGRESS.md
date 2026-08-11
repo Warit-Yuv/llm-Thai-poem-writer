@@ -932,6 +932,21 @@ oracle limitation that the generator's oracle-gate could not self-detect:
   lines). Author's pre-verse trim had it at 6 — trimming suggestions available if the
   iSAI limit is 6.
 
+### Algorithm 1 + changes table + new Fig 1 (same session)
+- **Algorithm 1 (`alg:klon`)** added in §3.1: the `check_klon` flow (split→group
+  stanzas→ssg segment→per-rule `is_sumpus`) using `algorithmic`+`algorithm` packages.
+- **Table 1 (`tab:changes`)**: principal 5.0.1→5.3.5 fixes with examples, grounded in
+  the merged PyThaiNLP PR #1453 commit history (karun handling, true finals,
+  both-sided special-vowel normalisation, compound vowels, three-sound ฤ, r3,
+  silent-ร clusters, single-char safety) + connecting text mapping fixes→augmentation
+  operators (C2/C9/C3) and the gold-recall gains (86–89% → 95–97%).
+- **New Fig 1 (`fig:klon`)**: replaced the abstract box diagram with the **actual
+  verse** (ถึงบางพูด…) — romanised syllable cells, rhyme positions shaded
+  (ศักดิ์~รัก=r1, จิต~มิตร=r2, มิตร~ผิด=r3 — **verified with 5.3.5**; note r3 is
+  มิตร~ผิด, NOT มนุษย์), arrows + Thai verse line (XeLaTeX only).
+- Verified: XeLaTeX compiles (7 pp, only benign TU/ptm warnings); algorithm, table,
+  figure and Thai all confirmed in the extracted PDF text.
+
 ## Session 4 — Checker runtime, parity validation, smoke test (2026-08-09)
 
 ### Checker C runtime (resolved)
