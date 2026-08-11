@@ -13,19 +13,43 @@
 \usepackage{array}
 \usepackage{tikz}
 \usepackage{url}
+\usepackage{iftex}
 
-% Optional: to render Thai script, compile with XeLaTeX and uncomment:
-%   \usepackage{fontspec}
-%   \newfontfamily\thaifont{Leelawadee UI}[Script=Thai]
-%   \newcommand{\th}[1]{{\thaifont #1}}   % e.g. \th{กลอนแปด}
-% All Thai terms in this draft are romanised so it compiles with pdflatex.
+% ---- Thai script support (dual-engine) ----
+% The paper compiles with BOTH engines:
+%   pdflatex iSAI-Klon-Checker.tex   -> romanisation only (no Thai glyphs)
+%   xelatex  iSAI-Klon-Checker.tex   -> Thai script shown next to romanisation
+% (run twice either way). Thai fonts are auto-selected: TH Sarabun New
+% (Overleaf), else Angsana New, else Tahoma (Windows). To add a Thai gloss
+% around any term, use \thgloss{roman}{thai} or \thpar{roman}{thai}.
+\ifXeTeX
+  \usepackage{fontspec}
+  \IfFontExistsTF{TH Sarabun New}
+    {\newfontfamily\thaifont{TH Sarabun New}[Script=Thai]}
+    {\IfFontExistsTF{Angsana New}
+      {\newfontfamily\thaifont{Angsana New}[Script=Thai]}
+      {\newfontfamily\thaifont{Tahoma}[Script=Thai]}}
+  \setmainfont{TeX Gyre Termes}[NFSSFamily=ptm]   % Times clone, matches IEEEtran
+  \setmonofont{TeX Gyre Cursor}[NFSSFamily=ttm]
+  \XeTeXlinebreaklocale "th"
+  \XeTeXlinebreakskip = 0pt plus 1pt
+  \newcommand{\thtxt}[1]{{\thaifont #1}}      % bare Thai text
+  \newcommand{\thgloss}[2]{#1 (\thtxt{#2})}   % roman (thai)
+  \newcommand{\thpar}[2]{(#1 \thtxt{#2})}     % (roman thai)
+  \newcommand{\thaistanza}[2]{\par\noindent #1\par\thtxt{#2}\par} % verse + Thai
+\else
+  \newcommand{\thtxt}[1]{}
+  \newcommand{\thgloss}[2]{#1}
+  \newcommand{\thpar}[2]{(#1)}
+  \newcommand{\thaistanza}[2]{\par\noindent #1\par}
+\fi
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     
 \begin{document}
 
-\title{Thai Poetry Rhyme Verification using a Hybrid Rule-Based Approach for Education}
+\title{Thai Poetry Rhyme Verification using a Hybrid Rule-Based Approach for Education and Generative AI}
 
 \author{\IEEEauthorblockN{1\textsuperscript{st} Warit Yuvaniyama}
 \IEEEauthorblockA{
@@ -72,15 +96,14 @@ https://orcid.org/0000-0003-1405-1071*}
 \maketitle
 
 \begin{abstract}
-Thai Klon-Paed poetry, the eight-syllable verse form, imposes strict phonetic
-constraints: each four-line stanza must satisfy an interlocking rhyme scheme in
-which rhyming syllables share both a vowel sound (sara) and a final-consonant
-class (mattra). Because Thai is written without word boundaries and its
-orthography hides implicit vowels, silenced letters, and consonant clusters,
-automatically verifying rhymes is non-trivial, and neither classical
-rule-based checkers nor grapheme-to-phoneme (G2P) romanisation checkers handle
-the resulting edge cases reliably. We present a hybrid rule-based verification
-approach. First, we improve the KhaveeVerifier algorithm---vowel analysis,
+In Thai \thgloss{Klon-Paed}{กลอนแปด} poetry (the eight-syllable verse form) each four-line stanza must satisfy an interlocking rhyming pattern
+where each rhyming syllables must share both a vowel sound \thpar{sara}{สระ} and a final-consonant
+class \thpar{mattra}{มาตราตัวสะกด}. Because Thai is written without word boundaries and its
+orthography alters form or conceals implicit vowels, silenced letters, and consonant clusters.
+Automatic verification of rhymes is non-trivial, and neither classical rule-based checkers nor
+grapheme-to-phoneme (G2P) romanization checkers deal with the resulting edge cases reliably.
+We present a hybrid rule-based verification approach.
+First, we improve the KhaveeVerifier algorithm---vowel analysis,
 final-consonant-class analysis, the rhyme test, karun silencing, and true-final
 detection---and ship it in PyThaiNLP 5.3.5 (Model~B). Second, we introduce
 Klonpad (Model~D), which augments these rules with a gold-standard
@@ -107,23 +130,22 @@ Thai orthography does not map straightforwardly onto pronunciation, and
 this gap becomes especially apparent in the classical register used by Thai
 poetry. The script is written without explicit word boundaries; vowels are
 frequently implicit; consonants or entire clusters can be silenced by the
-thanthakhat (karun) diacritic; and irregular words whose pronunciations do
+\thgloss{thanthakhat}{ทัณฑฆาต} (karun) diacritic; and irregular words whose pronunciations do
 not follow the standard phonetic rules are common. Complex phonological
-structures, such as consonant blending (\emph{kham khuap klam}) and leading
-consonants (\emph{aksorn nam}), further obscure syllable boundaries, vowel
+structures, such as consonant blending \thpar{\emph{kham khuap klam}}{คำควบกล้ำ} and leading
+consonants \thpar{\emph{aksorn nam}}{อักษรนำ}, further obscure syllable boundaries, vowel
 quality, and tone in an already unsegmented writing system. As a result,
 syllabification, pronunciation, and tone assignment are genuinely difficult
 tasks for both human learners and computational systems.
 
 Klon-Paed, the eight-syllable Thai verse form, depends on exactly these
-phonetic properties. Each stanza (\emph{bot}) consists of four
-eight-syllable lines (\emph{wak}). A valid rhyme between two syllables
-requires that they share both the vowel sound (sara) and the
-final-consonant class (mattra); matching the spelling alone is not
-sufficient. Four canonical rhyme rules must hold within and across stanzas
+phonetic properties. Each stanza \thpar{\emph{bot}}{บท} consists of four
+sets of seven-to-nine-syllable lines \thpar{\emph{wak}}{วรรค}. A valid rhyme between two syllables
+requires that they share both the vowel sound \thpar{sara}{สระ} and the
+final-consonant class \thpar{mattra}{มาตราตัวสะกด}. Four canonical rhyme rules must hold within (r1, r2, and r3) and across stanzas (rX)
 (Section~\ref{sec:bg}), and the final syllable of every wak participates in
 the scheme. A single silent letter---for example the silent \emph{r} of
-\emph{phhet} (`diamond')---or a misread vowel length is enough to break a
+\emph{\thgloss{phhet}{เพชร}} (`diamond')---or a misread vowel length is enough to break a
 rhyme. These constraints are strict and deterministic, which is precisely
 what makes them hard for statistical systems.
 
@@ -182,16 +204,19 @@ A Klon-Paed stanza has four waks of eight syllables each. Thai syllables
 are written without delimiters and a word may consist of one or more
 syllables, so the metre must be recovered by syllabification rather than by
 counting words. Within this skeleton the verse obeys a fixed rhyme scheme.
-Two syllables rhyme (\emph{sumpus}) when they share the same vowel sound
-(sara) and the same final-consonant class (mattra), as defined by the Royal
+Two syllables rhyme \thpar{\emph{sumpus}}{สัมผัส} when they share the same vowel sound
+\thpar{sara}{สระ} and the same final-consonant class \thpar{mattra}{มาตราตัวสะกด}, as defined by the Royal
 Institute of Thailand; tone is not part of the rhyme. The mattra classes
-(\emph{mae})---ka, kong, kok, kot, kon, kop, kom, koey, and koewa---group
+\thpar{\emph{mae}}{แม่}---ka, kong, kok, kot, kon, kop, kom, koey, and koewa---group
 the final consonants of Thai syllables by their phonetic outcome (the
-velar, dental, labial, nasal, semivowel, and w finals). Four canonical
+velar, dental, labial, nasal, semivowel, and w finals). The four waks are
+the \thpar{\emph{sadap}}{สดับ}, \thpar{\emph{rap}}{รับ}, \thpar{\emph{rong}}{รอง}, and
+\thpar{\emph{song}}{ส่ง}. Four canonical
 rhyme rules are checked in this work, following the \emph{klon} canon and
 the implementation of the PyThaiNLP \texttt{KhaveeVerifier}:
 \begin{itemize}
 \item r1 (\emph{sadap} $\rightarrow$ \emph{rap}): the final syllable of
+wak~1 must rhyme
 wak~1 must rhyme with one of the first five syllables of wak~2 (syllables
 3 and 5 are obligatory, 1, 2, and 4 are permissible);
 \item r2 (\emph{rap} $\rightarrow$ \emph{rong}): the final syllable of
@@ -204,8 +229,8 @@ stanza must rhyme with the final syllable of wak~2 of the current stanza.
 Figure~\ref{fig:klon} shows the intra-stanza structure.
 
 Three orthographic phenomena make these rules hard to apply automatically.
-First, compound, transformed, and reduced vowels (\emph{sara prasom},
-\emph{sara plianrup}, \emph{sara lotrup}) let several spellings map to one
+First, compound, transformed, and reduced vowels \thpar{\emph{sara prasom}}{สระประสม},
+\thpar{\emph{sara plianrup}}{สระเปลี่ยนรูป}, \thpar{\emph{sara lotrup}}{สระลดรูป} let several spellings map to one
 vowel sound. Second, the thanthakhat (karun) diacritic silences a letter
 or a whole cluster, so the written form contains letters that are not
 pronounced. Third, a trailing \emph{y}, \emph{l}, or \emph{w} may be a
@@ -323,12 +348,12 @@ The accuracy of the verifier rests on three functions.
 \texttt{check\_sara} returns the canonical vowel of a syllable. It handles
 simple vowels, compound vowels (\emph{sara prasom}), transformed and
 reduced vowels (\emph{sara plianrup/lotrup}), the special vowels
-(\emph{sara koen}: \emph{am}, \emph{ai}, \emph{ao}), Pali/Sanskrit words
+\thpar{\emph{sara koen}}{สระเกิน}: \emph{am}, \emph{ai}, \emph{ao}), Pali/Sanskrit words
 with silent terminal vowels, and words whose karun-stripped form changes
 the vowel. \texttt{check\_marttra} returns the Royal-Institute
 final-consonant class of a syllable, strictly by orthography. It resolves
 karun first, strips a silent \emph{r} in the \emph{tr}/\emph{chr}/\emph{pr}
-clusters of loanwords (e.g., \emph{but}, \emph{net}, \emph{phhet}),
+clusters of loanwords (e.g., \emph{but}, \emph{net}, \thgloss{\emph{phhet}}{เพชร}),
 handles single-character words, and classifies the \emph{sara koen}
 orthographically as \emph{mae ka}; phonetic rhyming for these is restored
 later in \texttt{is\_sumpus}. Finally, \texttt{is\_sumpus} applies phonetic
@@ -340,7 +365,7 @@ syllables are equal.
 
 Two further mechanisms account for most of the improvement over the 5.0.1
 baseline. \texttt{handle\_karun\_sound\_silence} strips characters silenced
-by the thanthakhat (e.g., \emph{ohm} $\rightarrow$ \emph{o}), so that
+by the thanthakhat (e.g., \thgloss{\emph{ohm}}{โอห์ม} $\rightarrow$ \emph{o}), so that
 \emph{ohm} and \emph{o} are judged to rhyme. \texttt{\_is\_true\_final}
 decides whether a trailing \emph{y}, \emph{l}, or \emph{w} is a genuine
 final consonant rather than part of a vowel digraph or an initial cluster:
@@ -369,8 +394,8 @@ of Model~B's rules.
 
 The dictionary, \texttt{POETRY\_OVERRIDES}, contains 4{,}292 hand-verified
 entries mapping a surface form to its syllable sequence (e.g.,
-\emph{phhet} $\rightarrow$ \emph{phet}; \emph{sattruu} $\rightarrow$
-\emph{sat-truu}; \emph{kasatrii} $\rightarrow$ \emph{ka-sat-trii}). It was
+\thgloss{\emph{phhet}}{เพชร} $\rightarrow$ \emph{phet}; \thgloss{\emph{sattruu}}{ศัตรู} $\rightarrow$
+\emph{sat-truu}; \thgloss{\emph{kasatrii}}{กษัตรี} $\rightarrow$ \emph{ka-sat-trii}). It was
 built from the frequent vocabulary of the Phra Aphai Mani corpus with
 manual supervision, and every entry is checked by a four-guard pipeline
 that rejects pronunciations hallucinated by the Word2Phrase (w2p) neural
@@ -401,9 +426,9 @@ tltk failures reduce coverage.
 \subsection{Gold-Standard Corpus Compilation}
 
 We collected five classical Thai narrative poems from the Vajirayana
-digital library~\cite{vajirayana}: \emph{Khobut}, \emph{Khun Chang Khun
-Phaen}, \emph{Phra Aphai Mani}, \emph{Phukao Thong}, and \emph{Suphasaet
-Son Ying}. A cleaning pipeline normalised the text and split it into
+digital library~\cite{vajirayana}: \thgloss{\emph{Khobut}}{โคบุตร},
+\thgloss{\emph{Khun Chang Khun Phaen}}{ขุนช้างขุนแผน}, \thgloss{\emph{Phra Aphai Mani}}{พระอภัยมณี},
+\thgloss{\emph{Phukao Thong}}{ภูเขาทอง}, and \thgloss{\emph{Suphasaet Son Ying}}{สุภาษิตสอนหญิง}. A cleaning pipeline normalised the text and split it into
 stanzas of four waks, discarding only chapter-opening fragments and
 scribal \emph{o} marks. Crucially, waks with ten or more syllables were
 retained rather than dropped: removing them silently severs the
@@ -457,18 +482,18 @@ different-vowel-and-mattra swaps (C6), same-mattra swaps (C0), same-vowel
 swaps (C1), short/long vowel swaps (C3), liquid-final swaps (C4), a
 systematic trap in which the 5.0.1 checker reads the candidate as rhyming
 with the target while 5.3.5 does not (C9), leading-consonant words (C5),
-and karun/\emph{ru}/cluster traps (C2). C3 and C9 dominate the mix because
+and karun/\thgloss{\emph{ru}}{ฤ}/cluster traps (C2). C3 and C9 dominate the mix because
 they are the operators that best discriminate the checkers.
 
 \paragraph{Positives (recall probes).} The 1{,}200 \emph{tricky}
 positives swap the target syllable with a rhyming candidate that exercises
-normalisation (\emph{sara plianrup/lotrup}), \emph{ru}, karun, and
+normalisation \thpar{\emph{sara plianrup/lotrup}}{สระเปลี่ยนรูป/ลดรูป}, \thgloss{\emph{ru}}{ฤ}, karun, and
 true-final cases; all are oracle-confirmed rhymes. A further 423
 \emph{oracle-blind} positives are genuine rhymes that the oracle itself
 cannot verify and therefore labels as non-rhymes: the silent-\emph{r}
-\emph{phhet} (true \emph{eh}+kot, which the oracle reads with the long
+\thgloss{\emph{phhet}}{เพชร} (true \emph{eh}+kot, which the oracle reads with the long
 \emph{ae} because the dead final carries no short-vowel mark), and the
-first-sara words \emph{sattruu}, \emph{kasatrii}, and \emph{kasatriiya}
+first-sara words \thgloss{\emph{sattruu}}{ศัตรู}, \thgloss{\emph{kasatrii}}{กษัตรี}, and \thgloss{\emph{kasatriiya}}{กษัตรีย์}
 (SSG keeps each as one token, so \texttt{check\_sara} hears only the first
 vowel). For these instances the gold label is the \emph{linguistic} truth,
 not the oracle verdict---a checker that hears the real rhyme receives

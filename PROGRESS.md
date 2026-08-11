@@ -894,9 +894,27 @@ oracle limitation that the generator's oracle-gate could not self-detect:
 - All paper numbers are the FINAL v5.7 values (A 28.4/62.7/39.1, B 100/73.9/85.0,
   D_w2p 83.4/92.1/87.5, D_ssg 86.8/87.0/86.9, C 30.4/87.1/45.1; gold 88.5% D_ssg;
   oracle-blind D_w2p 95.7%).
-- Open items for author: (a) decide title (currently "…for Education" — could broaden
-  to "…for Education and Generative AI"); (b) insert the real Hugging Face Space URL;
-  (c) optional Thai script via the commented XeLaTeX block; (d) iSAI page limit (6-8 pp).
+- Open items for author: (a) title updated by author to "…for Education and
+  Generative AI"; (b) insert the real Hugging Face Space URL; (c) **Thai example
+  verse** — author to supply a famous stanza (the famous Phra Aphai Mani opening
+  actually FAILS the strict rules, so the author will provide one); (d) iSAI page
+  limit (currently 7 pp with Thai glosses — trim if the limit is 6).
+
+### Thai script support added (dual-engine, same session)
+- `iSAI-Klon-Checker.tex` is now **dual-engine**: `pdflatex` → romanisation only
+  (no Thai glyphs); `xelatex` → Thai script next to romanisation (verified: Angsana
+  New embedded, text extracts correctly).
+- Fonts auto-selected via `fontspec` `\IfFontExistsTF`: TH Sarabun New (Overleaf) →
+  Angsana New → Tahoma (Windows). Main font mapped to TeX Gyre Termes (Times clone,
+  `NFSSFamily=ptm`); Thai line-breaking locale set (`\XeTeXlinebreaklocale "th"`).
+- Macros: `\thtxt{thai}` (bare), `\thgloss{roman}{thai}` → "roman (thai)",
+  `\thpar{roman}{thai}` → "(roman thai)", `\thaistanza{roman}{thai}` (verse, unused
+  until the author supplies a stanza).
+- Key terms glossed: กลอนแปด สระ มาตราตัวสะกด วรรค บท สัมผัส แม่ ทัณฑฆาต การันต์
+  คำควบกล้ำ อักษรนำ สระประสม/เปลี่ยนรูป/ลดรูป/เกิน ฤ เพชร ศัตรู กษัตรี กษัตรีย์ โอห์ม
+  สดับ/รับ/รอง/ส่ง + the five corpus work titles.
+- Note: XeLaTeX logs 4 benign "TU/ptm" font-shape warnings (IEEEtran hardcodes ptm;
+  substitution is the same Times clone — output identical).
 
 ## Session 4 — Checker runtime, parity validation, smoke test (2026-08-09)
 
