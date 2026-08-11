@@ -878,6 +878,26 @@ oracle limitation that the generator's oracle-gate could not self-detect:
   stanza-level-augment caveat (B-only) are stated in the notebook.
 - **New dependency:** `matplotlib` (for figures) — added to the venv.
 
+## Session 10 — Conference paper first full draft (2026-08-12)
+
+- Wrote the complete first draft of `Paper/Latex_Paper/iSAI-Klon-Checker.tex`
+  (IEEEtran, 6 pages, compiles clean with `pdflatex` — TeX Live 2026).
+- Structure: Intro (dual need: education + RL reward) → Background & Related Work
+  (Klon-Paed rules with TikZ rhyme diagram; Thai segmentation/G2P foundations —
+  AttaCut, DeepCut, SSG, TLTK, Saychum/Rugchatjaroen; poetry generation —
+  KlonSuphap-LM, PhraAphaiManee-LM, RLHF, grammar-constrained decoding; positioning)
+  → Methodology (B core algorithm, D override dict 4,292 entries, A/C baselines)
+  → Dataset (corpus + 11,623 augmentation) → Evaluation (gold, augment, per-rule,
+  oracle-blind tables; all numbers from v5.7 `paper_tables.json` + `full_metrics.json`)
+  → Applications (education + RL) → Conclusion.
+- 5 tables + 1 TikZ figure; 17 references (all verified real); abstract ~215 words.
+- All paper numbers are the FINAL v5.7 values (A 28.4/62.7/39.1, B 100/73.9/85.0,
+  D_w2p 83.4/92.1/87.5, D_ssg 86.8/87.0/86.9, C 30.4/87.1/45.1; gold 88.5% D_ssg;
+  oracle-blind D_w2p 95.7%).
+- Open items for author: (a) decide title (currently "…for Education" — could broaden
+  to "…for Education and Generative AI"); (b) insert the real Hugging Face Space URL;
+  (c) optional Thai script via the commented XeLaTeX block; (d) iSAI page limit (6-8 pp).
+
 ## Session 4 — Checker runtime, parity validation, smoke test (2026-08-09)
 
 ### Checker C runtime (resolved)

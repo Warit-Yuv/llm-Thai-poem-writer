@@ -9,12 +9,23 @@
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{url}
+
+% Optional: to render Thai script, compile with XeLaTeX and uncomment:
+%   \usepackage{fontspec}
+%   \newfontfamily\thaifont{Leelawadee UI}[Script=Thai]
+%   \newcommand{\th}[1]{{\thaifont #1}}   % e.g. \th{กลอนแปด}
+% All Thai terms in this draft are romanised so it compiles with pdflatex.
+
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     
 \begin{document}
 
-\title{Thai Poetry Rhyme Verification using Hybrid Rules Based Approach for Education}
+\title{Thai Poetry Rhyme Verification using a Hybrid Rule-Based Approach for Education}
 
 \author{\IEEEauthorblockN{1\textsuperscript{st} Warit Yuvaniyama}
 \IEEEauthorblockA{
@@ -61,139 +72,744 @@ https://orcid.org/0000-0003-1405-1071*}
 \maketitle
 
 \begin{abstract}
-% [Drafting note: Keep this under 250 words. Write this LAST.]
-% 1. Context/Problem: LLMs struggle to generate Thai poetry (Klon-8) due to strict phonetic, rhyme, and meter constraints. Educators also lack reliable automated tools.
-% 2. Gap: Existing rule-based and G2P checkers suffer from low recall, false positives on vowel lengths, and blind spots with complex Thai morphology.
-% 3. Solution: We propose an improved hybrid rule-based verification algorithm integrated into PyThaiNLP 5.3.5, alongside a G2P-override variant (Klonpad).
-% 4. Evaluation: Evaluated on a massive gold-standard dataset of 36,475 classical stanzas (145,709 rhyme checks) with targeted data augmentation for edge cases.
-% 5. Impact: The model achieves 88.5\% gold recall and near 100\% precision on curated negatives, serving as both an educational web tool and a deterministic reward model for RLHF in LLM training.
+Thai Klon-Paed poetry, the eight-syllable verse form, imposes strict phonetic
+constraints: each four-line stanza must satisfy an interlocking rhyme scheme in
+which rhyming syllables share both a vowel sound (sara) and a final-consonant
+class (mattra). Because Thai is written without word boundaries and its
+orthography hides implicit vowels, silenced letters, and consonant clusters,
+automatically verifying rhymes is non-trivial, and neither classical
+rule-based checkers nor grapheme-to-phoneme (G2P) romanisation checkers handle
+the resulting edge cases reliably. We present a hybrid rule-based verification
+approach. First, we improve the KhaveeVerifier algorithm---vowel analysis,
+final-consonant-class analysis, the rhyme test, karun silencing, and true-final
+detection---and ship it in PyThaiNLP 5.3.5 (Model~B). Second, we introduce
+Klonpad (Model~D), which augments these rules with a gold-standard
+G2P override dictionary of 4{,}292 entries and a fallback segmenter,
+recovering phonetic blind spots of the base oracle. We evaluate five checker
+configurations on a gold corpus of 36{,}475 classical stanzas (145{,}709 rhyme
+checks) and on a targeted augmentation of 11{,}623 instances that includes
+10{,}000 adversarial negatives and 423 oracle-blind rhymes. The best
+configuration reaches 88.5\% gold recall and 86.9\% F1 on the augmentation
+while maintaining 100\% precision on curated negatives and recovering 95.7\%
+of the oracle-blind rhymes. The verifier serves both as an explainable,
+zero-hallucination educational tool and as a deterministic reward model for
+reinforcement-learning-based poetry generation.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Thai NLP, Poetry Generation, Rule-based Verification, Natural Language Processing, Reinforcement Learning, Educational Technology
+Thai NLP, Thai poetry, Klon-Paed, rhyme verification, rule-based systems,
+grapheme-to-phoneme, reinforcement learning, educational technology
 \end{IEEEkeywords}
 
 \section{Introduction}
-% [Drafting note: Set the stage and tell the story of WHY this matters.]
+
+Thai orthography does not map straightforwardly onto pronunciation, and
+this gap becomes especially apparent in the classical register used by Thai
+poetry. The script is written without explicit word boundaries; vowels are
+frequently implicit; consonants or entire clusters can be silenced by the
+thanthakhat (karun) diacritic; and irregular words whose pronunciations do
+not follow the standard phonetic rules are common. Complex phonological
+structures, such as consonant blending (\emph{kham khuap klam}) and leading
+consonants (\emph{aksorn nam}), further obscure syllable boundaries, vowel
+quality, and tone in an already unsegmented writing system. As a result,
+syllabification, pronunciation, and tone assignment are genuinely difficult
+tasks for both human learners and computational systems.
+
+Klon-Paed, the eight-syllable Thai verse form, depends on exactly these
+phonetic properties. Each stanza (\emph{bot}) consists of four
+eight-syllable lines (\emph{wak}). A valid rhyme between two syllables
+requires that they share both the vowel sound (sara) and the
+final-consonant class (mattra); matching the spelling alone is not
+sufficient. Four canonical rhyme rules must hold within and across stanzas
+(Section~\ref{sec:bg}), and the final syllable of every wak participates in
+the scheme. A single silent letter---for example the silent \emph{r} of
+\emph{phhet} (`diamond')---or a misread vowel length is enough to break a
+rhyme. These constraints are strict and deterministic, which is precisely
+what makes them hard for statistical systems.
+
+Two communities need a reliable automatic verifier for Klon-Paed. In
+\emph{education}, teachers and students need feedback that is
+deterministic, explainable, and free of hallucination: an LLM that
+confidently invents a rhyme that does not exist is worse than useless in a
+classroom. In \emph{NLP research}, training a language model to compose
+Klon-Paed, for instance through reinforcement learning (RL), requires a
+programmatic reward signal that scores rhyme correctness exactly. Because
+large language models (LLMs) are probabilistic engines, they are
+intrinsically unreliable at strict constraints such as syllable counts and
+rhymes; a rule-based verifier supplies the ground truth that such
+generative pipelines require.
+
+Existing verification systems fall short of this standard. The historical
+KhaveeVerifier in PyThaiNLP 5.0.1 (Model~A) relies on dictionary subword
+tokenisation, omits one of the four canonical rhyme rules, and reaches only
+73.4\% recall on our gold corpus. Grapheme-to-phoneme (G2P)
+romanisation-based checkers, such as the \texttt{word\_check} grader of the
+KlonSuphap-LM generator~\cite{klonsuphap} (Model~C), collapse long/short
+vowel distinctions and produce thousands of false positives on adversarial
+negatives. Neither family handles the phonetic blind spots of Thai
+orthography in a principled way. In this paper we address these
+limitations with a hybrid rule-based approach and a rigorous, adversarial
+evaluation. Our contributions are:
+
 \begin{itemize}
-    \item \textbf{Context:} Introduce Thai Klon-Paed (กลอนแปด) and its strict structural rules (Sumpus, Mattra, Sara).
-    \item \textbf{The Core Problem:} Generative AI and LLMs are probabilistic, making them inherently bad at strict deterministic constraints like syllables and rhymes.
-    \item \textbf{The Dual Need:} 
-        \begin{itemize}
-            \item \textit{Research:} To train an LLM to write poetry (e.g., via RLHF/RLAIF), we need a flawless, programmatic reward environment to score rhymes.
-            \item \textit{Education:} Teachers need zero-hallucination, interactive grading tools for students.
-        \end{itemize}
-    \item \textbf{Limitations of Prior Art:} Previous checkers (PyThaiNLP 5.0.1) and G2P models (Kongfha) fail on edge cases, drop stanzas, or are computationally too slow for RL loops.
-    \item \textbf{Contributions:} 
-        \begin{itemize}
-            \item Improved core verification algorithms (\texttt{check\_sara}, \texttt{check\_marttra}, \texttt{is\_sumpus}).
-            \item Creation of a 36,475-stanza gold-standard evaluation dataset.
-            \item Integration into PyThaiNLP 5.3.5 and an open-source Hugging Face educational application.
-        \end{itemize}
+\item \textbf{An improved rule-based verifier (Model~B).} We rework the
+vowel analysis (\texttt{check\_sara}), the final-consonant-class analysis
+(\texttt{check\_marttra}), the rhyme test (\texttt{is\_sumpus}), karun
+silencing, and true-final detection, and implement all four canonical rhyme
+rules. The result is merged into PyThaiNLP 5.3.5 as the default
+\texttt{KhaveeVerifier}.
+\item \textbf{A dictionary-enhanced variant (Klonpad, Model~D).} We augment
+the rules with a gold-standard 4{,}292-entry G2P override dictionary and a
+fallback segmenter, recovering the oracle's blind spots.
+\item \textbf{A large evaluation corpus.} 36{,}475 gold stanzas (145{,}709
+rhyme checks) from five classical Thai works, plus 11{,}623 targeted
+augmentation instances---10{,}000 oracle-verified negatives, 1{,}200 tricky
+positives, and 423 oracle-blind positives---each audited in independent
+review passes.
+\item \textbf{A systematic comparison.} Five configurations (A, B, C,
+D\_w2p, D\_ssg) are compared on precision, recall, F1, coverage, and
+confidence intervals, with per-rule and per-operator error analyses.
+\item \textbf{Two deployments.} An explainable educational web tool and a
+deterministic reward environment for RL-based Klon-Paed generation.
 \end{itemize}
 
 \section{Background and Related Work}
-% [Drafting note: Briefly explain the rules and the baseline models.]
-\subsection{Linguistic Rules of Klon-Paed}
-\begin{itemize}
-    \item Briefly define the requirements for a valid rhyme in Thai: matching vowel sound (\texttt{check\_sara}) and matching final consonant class (\texttt{check\_marttra}).
-    \item Define inter-stanza (rX) and intra-stanza (r1, r2, r3) connections.
-\end{itemize}
+\label{sec:bg}
 
-\subsection{Existing Verification Systems}
+\subsection{The Linguistic Rules of Klon-Paed}
+
+A Klon-Paed stanza has four waks of eight syllables each. Thai syllables
+are written without delimiters and a word may consist of one or more
+syllables, so the metre must be recovered by syllabification rather than by
+counting words. Within this skeleton the verse obeys a fixed rhyme scheme.
+Two syllables rhyme (\emph{sumpus}) when they share the same vowel sound
+(sara) and the same final-consonant class (mattra), as defined by the Royal
+Institute of Thailand; tone is not part of the rhyme. The mattra classes
+(\emph{mae})---ka, kong, kok, kot, kon, kop, kom, koey, and koewa---group
+the final consonants of Thai syllables by their phonetic outcome (the
+velar, dental, labial, nasal, semivowel, and w finals). Four canonical
+rhyme rules are checked in this work, following the \emph{klon} canon and
+the implementation of the PyThaiNLP \texttt{KhaveeVerifier}:
 \begin{itemize}
-    \item \textbf{Model A (Old PyThaiNLP 5.0.1):} Dictionary-based, lacks the r3 rule, fails on complex morphology.
-    \item \textbf{Model C (Kongfha / tltk G2P):} Romanization-based. Extremely slow (single-threaded) and collapses short/long vowels, leading to false positives.
+\item r1 (\emph{sadap} $\rightarrow$ \emph{rap}): the final syllable of
+wak~1 must rhyme with one of the first five syllables of wak~2 (syllables
+3 and 5 are obligatory, 1, 2, and 4 are permissible);
+\item r2 (\emph{rap} $\rightarrow$ \emph{rong}): the final syllable of
+wak~2 must rhyme with the final syllable of wak~3;
+\item r3 (\emph{rong} $\rightarrow$ \emph{song}): the final syllable of
+wak~3 must rhyme with one of the first five syllables of wak~4;
+\item rX (inter-stanza): the final syllable of wak~4 of the previous
+stanza must rhyme with the final syllable of wak~2 of the current stanza.
 \end{itemize}
+Figure~\ref{fig:klon} shows the intra-stanza structure.
+
+Three orthographic phenomena make these rules hard to apply automatically.
+First, compound, transformed, and reduced vowels (\emph{sara prasom},
+\emph{sara plianrup}, \emph{sara lotrup}) let several spellings map to one
+vowel sound. Second, the thanthakhat (karun) diacritic silences a letter
+or a whole cluster, so the written form contains letters that are not
+pronounced. Third, a trailing \emph{y}, \emph{l}, or \emph{w} may be a
+genuine final consonant or merely part of a vowel digraph or an initial
+cluster. Any verifier must resolve all three before it can compare vowel
+and final class.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[x=0.62cm,y=0.55cm,
+  cell/.style={draw, line width=0.4pt}]
+  % wak 1 (sadap)
+  \foreach \i in {1,...,7}{\draw[cell] (\i,0) rectangle (\i+1,1);}
+  \draw[cell,fill=gray!30] (8,0) rectangle (9,1);
+  % wak 2 (rap)
+  \foreach \i in {1,...,7}{\draw[cell] (\i,1.5) rectangle (\i+1,2.5);}
+  \draw[cell,fill=gray!30] (5,1.5) rectangle (6,2.5);
+  \draw[cell,fill=gray!30] (8,1.5) rectangle (9,2.5);
+  % wak 3 (rong)
+  \foreach \i in {1,...,7}{\draw[cell] (\i,3.0) rectangle (\i+1,4.0);}
+  \draw[cell,fill=gray!30] (8,3.0) rectangle (9,4.0);
+  % wak 4 (song)
+  \foreach \i in {1,...,7}{\draw[cell] (\i,4.5) rectangle (\i+1,5.5);}
+  \draw[cell,fill=gray!30] (5,4.5) rectangle (6,5.5);
+  \draw[cell,fill=gray!30] (8,4.5) rectangle (9,5.5);
+  % labels
+  \node[anchor=west, font=\scriptsize] at (9.4,0.5) {wak 1 \emph{sadap}};
+  \node[anchor=west, font=\scriptsize] at (9.4,2.0) {wak 2 \emph{rap}};
+  \node[anchor=west, font=\scriptsize] at (9.4,3.5) {wak 3 \emph{rong}};
+  \node[anchor=west, font=\scriptsize] at (9.4,5.0) {wak 4 \emph{song}};
+  % rhyme arrows
+  \draw[thick,->] (8.5,1.0) .. controls (6.6,1.15) and (6.1,1.32) .. (5.5,1.5);
+  \node[font=\tiny] at (6.9,1.18) {r1};
+  \draw[thick,->] (8.5,2.5) .. controls (8.5,2.72) .. (8.5,3.0);
+  \node[font=\tiny] at (8.9,2.75) {r2};
+  \draw[thick,->] (8.5,4.0) .. controls (6.6,4.15) and (6.1,4.32) .. (5.5,4.5);
+  \node[font=\tiny] at (6.9,4.18) {r3};
+\end{tikzpicture}
+\caption{Rhyme structure of one Klon-Paed stanza. Shaded cells are the
+syllables that must rhyme; rX (not shown) links wak~4 of one stanza to wak~2
+of the next.}
+\label{fig:klon}
+\end{figure}
+
+\subsection{Thai Text-Processing Foundations}
+
+Two building blocks underlie all Thai NLP systems: segmentation and
+grapheme-to-phoneme conversion. Because Thai has no word delimiters,
+segmentation has received sustained attention: dictionary-based maximum
+matching (the \texttt{newmm} engine of PyThaiNLP~\cite{pythainlp}),
+neural segmenters such as DeepCut~\cite{deepcut} and
+AttaCut~\cite{attacut}, syllable-based neural
+segmentation~\cite{chormai2020syllable}, and the SSG syllable segmenter
+shipped in PyThaiNLP~5.x, which the present work uses throughout. G2P
+conversion maps surface orthography to pronunciation; Thai G2P has been
+addressed with rule-based systems such as TLTK~\cite{tltk},
+example-based methods~\cite{charoenpornsawat2006}, CRF-based joint-sequence
+models~\cite{saychum2016}, and two-stage sequence
+models~\cite{rugchatjaroen2019}. G2P is directly relevant to rhyme
+verification because rhyme is a property of \emph{sound}, not of spelling:
+Model~C in this study performs its comparison in the romanised space
+produced by the TLTK G2P model.
+
+\subsection{Computational Poetry Analysis and Generation}
+
+Prior work on Thai poetry in NLP has concentrated on analysis and
+generation. On the analysis side, machine-learning studies of Sunthorn
+Phu's verse have extracted sound patterns---rhyme, assonance, and
+alliteration---using internal-rhyme
+rules~\cite{suksanguan2021}. On the generation side, the dominant line of
+work fine-tunes language models on corpora of classical verse: the Phra
+Aphai Mani LM~\cite{phraaphai} and its successor KlonSuphap-
+LM~\cite{klonsuphap} fine-tune a GPT-2 Thai base model, then use
+\emph{rhyme tagging} (annotating the tokens that must rhyme), attention
+masking, and finally reinforcement learning in which a rule-based
+\emph{klon grader} supplies the reward. That grader is the
+\texttt{word\_check} module evaluated here as Model~C, making our
+evaluation directly relevant to the RL step of that pipeline. More broadly,
+RLHF has established reward models as essential for aligning LLMs to
+follow strict requirements~\cite{ouyang2022}, and grammar-constrained
+decoding has been proposed to enforce structural constraints at inference
+time~\cite{geng2023}. For classical Thai specifically, recent benchmarks
+report that even strong LLMs struggle with archaic vocabulary and verse
+structure~\cite{triyason2026}, which motivates dedicated deterministic
+tools.
+
+\subsection{Positioning of This Work}
+
+Compared with this landscape, our contribution is the first systematic,
+adversarially augmented evaluation of Thai rhyme \emph{verification} as
+opposed to generation. The historical rule-based checker (Model~A) has
+never been stress-tested against curated edge cases; the G2P-based grader
+of KlonSuphap-LM (Model~C) has not been validated for precision; and no
+open verifier covers all four rhyme rules while providing dictionary
+support for irregular pronunciations. We fill this gap with improved
+rule-based verification (Model~B), a dictionary-enhanced variant
+(Model~D), and a large gold-plus-augmentation evaluation that quantifies
+precision and recall, including a novel \emph{oracle-blind} probe that
+holds the verifier itself accountable for rhymes its own oracle cannot
+see.
 
 \section{Methodology: Hybrid Verification Architecture}
-% [Drafting note: Explain YOUR algorithm and the two variants you built.]
-\subsection{Core Rule-Based Improvements (Model B)}
-\begin{itemize}
-    \item Explain the mechanics of Model B (now PyThaiNLP 5.3.5).
-    \item \textbf{Phonetic Normalization:} Handling transformed/reduced vowels (สระประสม, สระลดรูป).
-    \item \textbf{Edge Case Handling:} 
-        \begin{itemize}
-            \item \texttt{handle\_karun\_sound\_silence}: Stripping silenced characters (e.g., "โอห์ม" $\rightarrow$ "โอ").
-            \item \texttt{\_is\_true\_final}: Differentiating genuine finals (-ย, -ล) from clusters or digraphs.
-        \end{itemize}
-\end{itemize}
 
-\subsection{Dictionary-Enhanced Verification (Model D)}
-\begin{itemize}
-    \item Explain the Klonpad variant. While Model B acts as a general-purpose oracle, it has "blind spots" (e.g., the silent 'ร' in "เพชร").
-    \item Introduce the G2P Override Dictionary (built on Phra Aphai Mani) to fix these specific phonetic misreadings.
-    \item \textbf{Ablation Study of Fallbacks:} Briefly discuss why D\_ssg (SSG fallback) outperformed D\_w2p (W2P fallback). W2P introduces hallucinations on short words, hurting overall accuracy.
-\end{itemize}
+\subsection{Core Rule-Based Verification (Model B)}
+
+Model~B is the \texttt{KhaveeVerifier} of PyThaiNLP 5.3.5. It verifies a
+poem in three stages. (1)~Each wak is tokenised into syllables with the
+SSG segmenter. (2)~For each canonical rule the relevant syllables are
+extracted: the final syllable of every wak, and the first five syllables of
+waks~2 and~4. (3)~The rhyme test \texttt{is\_sumpus} decides whether two
+syllables rhyme; a rule holds if the test succeeds for at least one
+permitted target. The eight-syllable metre is additionally reported.
+
+The accuracy of the verifier rests on three functions.
+\texttt{check\_sara} returns the canonical vowel of a syllable. It handles
+simple vowels, compound vowels (\emph{sara prasom}), transformed and
+reduced vowels (\emph{sara plianrup/lotrup}), the special vowels
+(\emph{sara koen}: \emph{am}, \emph{ai}, \emph{ao}), Pali/Sanskrit words
+with silent terminal vowels, and words whose karun-stripped form changes
+the vowel. \texttt{check\_marttra} returns the Royal-Institute
+final-consonant class of a syllable, strictly by orthography. It resolves
+karun first, strips a silent \emph{r} in the \emph{tr}/\emph{chr}/\emph{pr}
+clusters of loanwords (e.g., \emph{but}, \emph{net}, \emph{phhet}),
+handles single-character words, and classifies the \emph{sara koen}
+orthographically as \emph{mae ka}; phonetic rhyming for these is restored
+later in \texttt{is\_sumpus}. Finally, \texttt{is\_sumpus} applies phonetic
+normalisation for the \emph{sara koen}: \emph{a+koey} $\rightarrow$
+\emph{ai+ka} (so \emph{chai} rhymes with \emph{sai}) and
+\emph{a/am+kom} $\rightarrow$ \emph{am+ka} (so \emph{cham} rhymes with
+\emph{kam}). It returns true iff the normalised sara and mattra of the two
+syllables are equal.
+
+Two further mechanisms account for most of the improvement over the 5.0.1
+baseline. \texttt{handle\_karun\_sound\_silence} strips characters silenced
+by the thanthakhat (e.g., \emph{ohm} $\rightarrow$ \emph{o}), so that
+\emph{ohm} and \emph{o} are judged to rhyme. \texttt{\_is\_true\_final}
+decides whether a trailing \emph{y}, \emph{l}, or \emph{w} is a genuine
+final consonant rather than part of a vowel digraph or an initial cluster:
+the \emph{y} of \emph{thai} is silent, the \emph{l} of \emph{plae} belongs
+to the initial cluster, but the \emph{l} of \emph{chon} is a true final.
+
+Compared with the 5.0.1 verifier (Model~A), the changes are: (i)~SSG
+syllable segmentation replaces dictionary subword tokenisation, which
+missegments compounds and fails on out-of-vocabulary words; (ii)~karun
+silencing and true-final detection are implemented; (iii)~phonetic
+normalisation in \texttt{is\_sumpus} is applied to both words independently
+(the 5.0.1 \texttt{elif} chain normalises at most one word, so rhymes in
+which both words belong to the same special-vowel class can be missed);
+(iv)~the r3 rule is implemented (5.0.1 has no r3); and (v)~single-character
+tokens no longer crash the mattra analysis.
+
+\subsection{Dictionary-Enhanced Verification (Klonpad, Model D)}
+
+Model~B is linguistically principled, but it inherits a blind spot from
+its own design: \texttt{check\_sara} returns only the first vowel of a
+token, so a multi-syllable word that SSG keeps as one token loses the vowel
+of its final (rhyming) syllable, and the silent-\emph{r} loanwords are
+stripped only in a whitelisted subset of clusters. Klonpad (Model~D)
+addresses this by layering a gold-standard pronunciation dictionary on top
+of Model~B's rules.
+
+The dictionary, \texttt{POETRY\_OVERRIDES}, contains 4{,}292 hand-verified
+entries mapping a surface form to its syllable sequence (e.g.,
+\emph{phhet} $\rightarrow$ \emph{phet}; \emph{sattruu} $\rightarrow$
+\emph{sat-truu}; \emph{kasatrii} $\rightarrow$ \emph{ka-sat-trii}). It was
+built from the frequent vocabulary of the Phra Aphai Mani corpus with
+manual supervision, and every entry is checked by a four-guard pipeline
+that rejects pronunciations hallucinated by the Word2Phrase (w2p) neural
+G2P model; w2p-derived candidates are kept only as labelled hints and are
+never trusted on their own. At inference time each syllable is first looked
+up in the override dictionary; if absent, a fallback segmenter supplies the
+pronunciation. We report two configurations: \texttt{D\_w2p}, which falls
+back to the w2p neural G2P model, and \texttt{D\_ssg}, which falls back to
+plain SSG segmentation without w2p. As Section~\ref{sec:results} shows,
+the w2p fallback introduces pronunciation hallucinations on short or
+compound words, and \texttt{D\_ssg} is the more robust configuration.
+
+\subsection{Baseline Systems}
+
+Model~A is the original \texttt{KhaveeVerifier} of PyThaiNLP 5.0.1,
+instrumented verbatim from the vendored source: dictionary-based
+\texttt{subword\_tokenize}, no r3 rule, no karun handling, and no
+true-final logic. Model~C is the \texttt{word\_check} rhyme grader of the
+KlonSuphap-LM project~\cite{klonsuphap}: each wak is romanised with the
+TLTK G2P model and the romanised vowels and finals are compared. Its two
+documented weaknesses are (i)~a \texttt{replace\_long\_short} step that
+collapses long and short vowels, and (ii)~a mattra comparison that ignores
+the final consonant; both inflate recall at the cost of precision, and
+tltk failures reduce coverage.
 
 \section{Dataset Construction and Augmentation}
-% [Drafting note: Showcase the rigorous testing environment.]
+
 \subsection{Gold-Standard Corpus Compilation}
-\begin{itemize}
-    \item Data sourced from vajirayana.org (Khun Chang Khun Phaen, Phra Aphai Mani, etc.).
-    \item Cleaning pipeline resulting in 191 files, 36,475 stanzas, and 145,709 total rhyme checks.
-    \item Highlight the data-completeness fix (retaining $\geq 10$ syllable waks) that restored inter-stanza (rX) chains.
-\end{itemize}
+
+We collected five classical Thai narrative poems from the Vajirayana
+digital library~\cite{vajirayana}: \emph{Khobut}, \emph{Khun Chang Khun
+Phaen}, \emph{Phra Aphai Mani}, \emph{Phukao Thong}, and \emph{Suphasaet
+Son Ying}. A cleaning pipeline normalised the text and split it into
+stanzas of four waks, discarding only chapter-opening fragments and
+scribal \emph{o} marks. Crucially, waks with ten or more syllables were
+retained rather than dropped: removing them silently severs the
+inter-stanza rhyme chains and made an early version of the corpus appear to
+violate rX at a ~72\% rate. On the complete corpus rX holds at ~96--97\%
+for the strongest checkers, confirming that the fix was correct. The final
+corpus comprises 191 files, 36{,}475 stanzas, 145{,}900 waks, and 145{,}709
+gold rhyme checks (Table~\ref{tab:corpus}); the gold is all-positive,
+because the classical poems are presumed to rhyme. An alternative public
+corpus covering similar material is the Thai Literature
+Corpora~\cite{tlc}.
+
+\begin{table}[t]
+\caption{Gold corpus statistics (all-positive).}
+\label{tab:corpus}
+\centering
+\footnotesize
+\begin{tabular}{lrrr}
+\toprule
+Work & Files & Stanzas & Rhyme checks \\
+\midrule
+Suphasaet Son Ying & 1 & 200 & 799 \\
+Khobut & 14 & 1,303 & 5,198 \\
+Khun Chang Khun Phaen & 43 & 10,543 & 42,129 \\
+Phra Aphai Mani & 132 & 24,342 & 97,236 \\
+Phukao Thong & 1 & 87 & 347 \\
+\midrule
+Total & 191 & 36,475 & 145,709 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Targeted Data Augmentation}
-\begin{itemize}
-    \item Explain the need for precision and recall probes.
-    \item \textbf{Negative Sampling (Precision Probes):} 10,000 instances. Discuss operators like \texttt{C3\_short\_long} (vowel length swaps) and \texttt{C9\_old\_accept} (traps for Model A).
-    \item \textbf{Positive Sampling (Recall Probes):} 1,200 instances. Discuss "Oracle-blind" positives (e.g., ศัตรู, กษัตรี) intentionally designed to deduct points from Model B where it fails linguistically.
-\end{itemize}
+
+Recall over an all-positive corpus cannot measure precision, and easy
+positives cannot expose blind spots. We therefore augmented the gold with
+adversarial instances generated by an automated pipeline. Every instance
+is \emph{standalone}: it is derived from a real stanza but only the target
+rule is changed, so exactly one rule is exercised while the others remain
+intact. Every negative is verified by the 5.3.5 oracle
+(\texttt{is\_sumpus}) to be a genuine non-rhyme, and the whole set was
+audited in four independent passes in which reviewers spelled out the sara
+and mattra of every candidate (with vowel length made explicit) and
+double-checked pronunciations against the IPA. The audit removed 56 words
+from the candidate pool that the oracle misreads---karan clusters it fails
+to silence, and multi-syllable Pali words SSG keeps as single tokens.
+
+\paragraph{Negatives (precision probes).} The 10{,}000 negatives are drawn
+from eight corruption operators (Table~\ref{tab:augmix}): trivial
+different-vowel-and-mattra swaps (C6), same-mattra swaps (C0), same-vowel
+swaps (C1), short/long vowel swaps (C3), liquid-final swaps (C4), a
+systematic trap in which the 5.0.1 checker reads the candidate as rhyming
+with the target while 5.3.5 does not (C9), leading-consonant words (C5),
+and karun/\emph{ru}/cluster traps (C2). C3 and C9 dominate the mix because
+they are the operators that best discriminate the checkers.
+
+\paragraph{Positives (recall probes).} The 1{,}200 \emph{tricky}
+positives swap the target syllable with a rhyming candidate that exercises
+normalisation (\emph{sara plianrup/lotrup}), \emph{ru}, karun, and
+true-final cases; all are oracle-confirmed rhymes. A further 423
+\emph{oracle-blind} positives are genuine rhymes that the oracle itself
+cannot verify and therefore labels as non-rhymes: the silent-\emph{r}
+\emph{phhet} (true \emph{eh}+kot, which the oracle reads with the long
+\emph{ae} because the dead final carries no short-vowel mark), and the
+first-sara words \emph{sattruu}, \emph{kasatrii}, and \emph{kasatriiya}
+(SSG keeps each as one token, so \texttt{check\_sara} hears only the first
+vowel). For these instances the gold label is the \emph{linguistic} truth,
+not the oracle verdict---a checker that hears the real rhyme receives
+credit, while the oracle itself (Model~B) is charged a false negative.
+This is the quantitative statement of ``the oracle that is wrong loses
+points.''
+
+\begin{table}[t]
+\caption{Augmentation composition (11{,}623 instances).}
+\label{tab:augmix}
+\centering
+\footnotesize
+\begin{tabular}{llr}
+\toprule
+Operator & Effect tested & Count \\
+\midrule
+C6 random & different sara and mattra (baseline) & 300 \\
+C0 same-mattra & same mattra, different sara & 500 \\
+C1 same-vowel & same sara, different mattra & 500 \\
+C3 short-long & short$\leftrightarrow$long vowel swap & 3,100 \\
+C4 old-disagree & r/l/w finals, 5.0.1 disagrees & 1,200 \\
+C9 old-accept & 5.0.1 accepts, 5.3.5 rejects & 2,800 \\
+C5 lead-head & leading \emph{h}/\emph{o} words & 600 \\
+C2 trap & karun / \emph{ru} / cluster traps & 1,000 \\
+\midrule
+HP tricky & curated hard positives & 1,200 \\
+HP oracle-blind & rhymes the oracle cannot see & 423 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Evaluation and Results}
-% [Drafting note: The heavy lifting. Use tables here based on PROGRESS.md.]
+\label{sec:results}
+
 \subsection{Experimental Setup}
-\begin{itemize}
-    \item Define the evaluated models (A, B, C, D\_w2p, D\_ssg) and metrics (Precision, Recall, F1, Coverage).
-    \item Mention computational mitigations for Model C (persistent worker pool, G2P caching).
-\end{itemize}
 
-\subsection{Gold Recall Analysis}
-\begin{itemize}
-    \item Present the Stanza-level gold recall table.
-    \item Highlight that D\_ssg achieves the highest recall (88.5\%) followed by B (87.5\%), vastly outperforming A (73.4\%).
-\end{itemize}
+We report precision, recall, and F1 with Wilson 95\% confidence intervals,
+coverage (the share of units evaluated), and a conservative drop-as-fail
+variant for Model~C. Because every augmentation instance is standalone and
+tests exactly one rule, the per-rule prediction is the clean metric; a
+stanza-level aggregate over the augmentation is only well-defined for
+Model~B (which is the oracle). Model~A has no r3 and is reported as N/A
+there. All checkers were instrumented from verbatim vendored sources (the
+5.0.1 and 5.3.5 cores), with Model~C run under Python 3.12 through a
+persistent pool of ten tltk workers (the full augmentation pass takes about
+40 minutes; A/B/D are parallelised and finish in under a minute). Every
+number in this section is recomputed from the committed result files.
 
-\subsection{Augmentation and Error Analysis}
-\begin{itemize}
-    \item Present the Augmentation-only overall table.
-    \item \textbf{Precision vs. Recall Trade-off:} Explain that Model B acts as a perfect oracle (0 FPs on negatives) but misses oracle-blind positives. Model C catches rhymes but has 3,129 FPs (mostly on \texttt{C3\_short\_long}).
-    \item \textbf{The Override Advantage:} Show how Model D\_w2p recovers 95.7\% of the oracle-blind spots (e.g., reading เพชร $\rightarrow$ เพ็ด) that Model B misses.
-\end{itemize}
+\subsection{Gold-Corpus Recall}
+
+Table~\ref{tab:gold} reports stanza-level and per-rule recall over the
+36{,}475 gold stanzas. The proposed family dominates the baseline:
+D\_ssg reaches 88.5\% stanza recall and B 87.5\%, versus 73.4\% for
+Model~A. Model~C reaches 84.8\% but evaluates only 95.7\% of the corpus
+(tltk failures concentrate in the archaic Khun Chang Khun Phaen); its
+figures use the coverage-corrected denominator.
+
+\begin{table}[t]
+\caption{Gold recall (stanza level and per rule), 36{,}475 stanzas.
+``--'' = N/A (no r3).}
+\label{tab:gold}
+\centering
+\footnotesize
+\begin{tabular}{lccccc}
+\toprule
+System & Stanza & r1 & r2 & r3 & rX \\
+\midrule
+A (5.0.1) & 73.4 & 86.3 & 88.8 & -- & 88.7 \\
+B (5.3.5) & 87.5 & 94.7 & 96.5 & 95.5 & 96.7 \\
+D\_w2p & 87.4 & 95.4 & 96.3 & 94.9 & 96.5 \\
+D\_ssg & \textbf{88.5} & 95.9 & 96.7 & 95.2 & 97.0 \\
+C (Kongfha) & 84.8$^{\dagger}$ & 93.2 & 96.5 & 94.1 & 96.6 \\
+\bottomrule
+\end{tabular}
+\\[2pt]
+\footnotesize $^{\dagger}$ coverage 95.7\%; per-rule figures on the
+evaluated subset.
+\end{table}
+
+\subsection{Augmentation: Precision, Recall, and F1}
+
+Table~\ref{tab:aug} summarises the augmentation-only results (pooled per
+rule) and Table~\ref{tab:augrules} breaks them down per rule. Three
+results stand out.
+
+First, Model~B is a perfect oracle on the negatives: it makes zero false
+positives across all 10{,}000 curated negatives (100\% precision by
+construction, since the negatives were oracle-verified). Its recall is
+limited only by the oracle-blind positives it cannot see (73.9\%).
+
+Second, Model~D recovers most of those blind spots: D\_w2p reaches 92.1\%
+recall and D\_ssg 87.0\%, with precision 83.4\% and 86.8\% respectively,
+giving the best F1 on the augmentation (87.5\% for D\_w2p). The
+oracle-blind column of Table~\ref{tab:ob} shows the mechanism: D\_w2p
+hears 405 of the 423 oracle-blind rhymes (95.7\%), D\_ssg 288 (68.1\%),
+whereas B hears none.
+
+Third, the baselines invert the precision/recall trade-off. Model~C is
+recall-strong (87.1\% on the augmentation, 78.7\% even on oracle-blind
+rhymes, because its G2P romanisation hears the real sound) but makes
+3{,}107 false positives---2{,}702 of them on the short/long vowel swap
+(C3), which its \texttt{replace\_long\_short} collapses---for an
+augmentation precision of only 30.4\%. Model~A is weak on both sides
+(28.4\% precision, 62.7\% recall), with 1{,}774 of its 1{,}950 false
+positives coming from the C9 operator (words the 5.0.1
+\texttt{is\_sumpus} reads with the same sara/mattra as the target while
+5.3.5 splits them).
+
+\begin{table}[t]
+\caption{Augmentation-only results (pooled per rule, 11{,}623 instances).
+FP = false positives on 10{,}000 negatives; FN-pos = combined false
+negatives on 1{,}623 positives.}
+\label{tab:aug}
+\centering
+\footnotesize
+\begin{tabular}{lcccccc}
+\toprule
+System & P & R & F1 & FP & FN-pos \\
+\midrule
+A (5.0.1) & 28.4 & 62.7 & 39.1 & 1,950 & 848 \\
+B (5.3.5) & \textbf{100.0} & 73.9 & 85.0 & \textbf{0} & 423 \\
+D\_w2p & 83.4 & \textbf{92.1} & \textbf{87.5} & 298 & 128 \\
+D\_ssg & 86.8 & 87.0 & 86.9 & 215 & 211 \\
+C (Kongfha) & 30.4 & 87.1 & 45.1 & 3,107 & 266 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\caption{Augmentation-only per-rule precision/recall (\%).
+``--'' = N/A (no r3).}
+\label{tab:augrules}
+\centering
+\footnotesize
+\begin{tabular}{lcccccccc}
+\toprule
+ & \multicolumn{2}{c}{r1} & \multicolumn{2}{c}{r2} & \multicolumn{2}{c}{r3} & \multicolumn{2}{c}{rX} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}
+System & P & R & P & R & P & R & P & R \\
+\midrule
+A & 31.8 & 52.7 & 27.8 & 65.7 & -- & -- & 25.7 & 76.9 \\
+B & 100 & 54.5 & 100 & 77.5 & 100 & 78.9 & 100 & 98.0 \\
+D\_w2p & 80.3 & 91.8 & 94.8 & 93.3 & 71.8 & 92.4 & 94.6 & 90.8 \\
+D\_ssg & 83.1 & 82.4 & 98.5 & 85.5 & 75.3 & 90.5 & 98.3 & 92.8 \\
+C & 35.2 & 83.0 & 33.7 & 96.0 & 24.4 & 78.2 & 27.3 & 93.8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Oracle-Blind Probe and Error Analysis}
+
+Table~\ref{tab:ob} reports the oracle-blind probe together with the
+combined false-negative accounting (tricky + oracle-blind positives) and
+the false-positive breakdown by the two most informative operators. The
+combined FN-pos column is the headline number: B carries 423 false
+negatives (all oracle-blind), A carries 848, and D carries only 128
+(D\_w2p) or 211 (D\_ssg). The per-operator FP columns show that C's
+precision collapse is concentrated on the short/long vowel swap (C3:
+2{,}702 of 3{,}107 FPs) and A's on the old-accept trap (C9: 1{,}774 of
+1{,}950).
+
+\begin{table}[t]
+\caption{Oracle-blind probe and error analysis. FN-pos = combined tricky
++ oracle-blind false negatives.}
+\label{tab:ob}
+\centering
+\footnotesize
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{2}{c}{recall (\%)} & \multicolumn{2}{c}{FN-pos} & \multicolumn{2}{c}{FP} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+System & tricky & oracle-blind & total & $=$ob & total & C3/C9 \\
+\midrule
+A & 57.0 & 21.5 & 848 & 332 & 1,950 & 162/1,774 \\
+B & \textbf{100} & 0.0 & 423 & 423 & \textbf{0} & 0/0 \\
+D\_w2p & 90.8 & \textbf{95.7} & \textbf{128} & 18 & 298 & 135/103 \\
+D\_ssg & 93.7 & 68.1 & 211 & 135 & 215 & 119/48 \\
+C & 85.3 & 78.7 & 266 & 90 & 3,107 & 2,702/267 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Discussion}
+
+The experiment supports four findings. (1)~\textbf{The proposed rules are
+precise.} B never false-accepts on oracle-verified negatives, and its
+precision transfers to the merged gold+augmentation setting, where B,
+D\_w2p, and D\_ssg all exceed 99.5\% precision while A and C stay at 95\%
+and 92\%. (2)~\textbf{The override dictionary recovers the oracle's blind
+spots.} The D\_w2p-versus-D\_ssg gap on oracle-blind recall (95.7\% versus
+68.1\%) is a clean, mechanistic demonstration of the pronunciation-knowledge
+contribution: the curated overrides and w2p both read \emph{phhet} as
+/phet/ and split \emph{sattruu} and \emph{kasatrii} into their true
+syllables. (3)~\textbf{C trades precision for recall on exactly the
+vowel-length distinction} that the rule-based family enforces; its G2P
+romanisation is useful for hearing real rhymes (78.7\% oracle-blind) but
+its length collapse makes it unusable as a precision grader.
+(4)~\textbf{The oracle itself has a blind spot that only the oracle-blind
+probe exposes.} A purely oracle-supervised evaluation would have reported
+B as flawless, hiding the deduction that our probe applies.
+
+Overall, D\_ssg is the best configuration on the gold corpus (88.5\%
+recall) and D\_w2p the best on the augmentation (87.5\% F1). On the merged
+gold+augmentation set, the F1 favours D\_ssg (93.4\%), followed by D\_w2p
+(92.9\%) and B (92.8\%), with C (88.0\%) and A (82.3\%) behind; the merged
+precision is gold-dominated (all checkers $\geq$ 92\%), so the precision
+that discriminates the systems lives in the augmentation-only tables.
 
 \section{Applications and Future Work}
-% [Drafting note: Connect back to the overarching narrative.]
+
 \subsection{Educational Impact}
-\begin{itemize}
-    \item Discuss the interactive Hugging Face web interface.
-    \item Explain how deterministic, explainable feedback aids teachers and students in learning Klon 4/8 structures without LLM hallucinations.
-\end{itemize}
+
+The verifier is deployed as an interactive web tool for teachers and
+students of Klon 4/8. The interface accepts a poem, segments it into
+syllables, and displays each wak with its rhyme positions highlighted and
+the sara and mattra of every syllable spelled out. Errors are reported
+deterministically and explained in terms of the four rhyme rules, so a
+student can see exactly why a line fails (for example, a short/long vowel
+mismatch or a misread karun). Because the system is rule-based, its
+feedback is reproducible and free of hallucination---properties that
+general-purpose LLMs cannot guarantee. Future work includes classroom
+evaluations of the tool and pronunciation guidance for irregular words.
 
 \subsection{Foundation for Generative AI}
-\begin{itemize}
-    \item Discuss how this verifier is currently implemented as the Reward Model environment for Reinforcement Learning (RL) to train a small LLM to write Klon-Paed.
-\end{itemize}
+
+The same determinism makes the verifier an ideal reward model for training
+small, locally run LLMs to compose Klon-Paed. Reinforcement learning
+requires a dense, consistent reward signal; the verifier provides one that
+is exact, immediate, and free of the noise of a learned reward model. This
+mirrors the RL step of the KlonSuphap-LM pipeline~\cite{klonsuphap}, but
+with a grader (our Model~B or~D) that our evaluation shows to be
+substantially more precise than the G2P-based grader used there
+(Model~C), particularly on vowel length. Future work includes scaling the
+override dictionary to more corpora, adding context-sensitive
+pronunciations for heteronyms, and integrating the verifier into a
+decoding-time constrained sampler for poetry
+generation~\cite{geng2023}.
 
 \section{Conclusion}
-\begin{itemize}
-    \item Summarize: The hybrid approach effectively marries the reliability of rule-based logic with the edge-case coverage of G2P overrides.
-    \item Final impact statement: The successful integration of Model B into PyThaiNLP 5.3.5 sets a new standard for Thai computational linguistics, paving the way for both educational tools and advanced LLM pipelines.
-\end{itemize}
+
+We presented a hybrid rule-based approach to Thai Klon-Paed rhyme
+verification. An improved rule-based verifier (Model~B), now the default
+\texttt{KhaveeVerifier} of PyThaiNLP 5.3.5, implements all four canonical
+rhyme rules with robust handling of karun, true finals, and sara
+normalisation, and reaches 100\% precision on curated negatives. A
+dictionary-enhanced variant (Klonpad, Model~D) adds a gold-standard
+4{,}292-entry G2P override dictionary and recovers 95.7\% of the oracle's
+own blind spots. Evaluated on 36{,}475 gold stanzas and 11{,}623
+adversarial instances against two external baselines, the proposed family
+raises stanza recall from 73.4\% (PyThaiNLP 5.0.1) to 88.5\% (D\_ssg)
+while maintaining near-perfect precision, and exposes---quantitatively---the
+blind spots of both the G2P-romanisation checker and the rule-based oracle
+itself. The verifier is released as an explainable educational tool and as
+a deterministic reward environment for reinforcement-learning poetry
+generation, and its integration into PyThaiNLP makes the improvement
+available to the entire Thai NLP ecosystem.
 
 \section*{Acknowledgment}
-\begin{itemize}
-    \item Acknowledge vajirayana.org for the literary datasets.
-    \item Acknowledge the PyThaiNLP maintainers for reviewing and merging the PR.
-    \item Acknowledge the developers of the \texttt{tltk} and KlonSuphap-LM baselines.
-\end{itemize}
+We thank the Vajirayana Digital Library~\cite{vajirayana} for the literary
+datasets, the PyThaiNLP maintainers for reviewing and merging the
+\texttt{KhaveeVerifier} improvements, and the developers of TLTK and the
+KlonSuphap-LM project for the reference implementations used as baselines.
 
 \begin{thebibliography}{00}
-% [Drafting note: You will need to add proper citations here later.]
-\bibitem{pythainlp} PyThaiNLP Contributors, "PyThaiNLP: Thai Natural Language Processing in Python," [Online]. Available: https://github.com/PyThaiNLP/pythainlp
-\bibitem{klonsuphap} Kongfha, "KlonSuphap-LM," [Online]. Available: [Insert Link]
-\bibitem{isai_nlp} [Add other relevant Thai NLP, G2P, or LLM RLHF papers here]
+
+\bibitem{pythainlp}
+PyThaiNLP Contributors, ``PyThaiNLP: Thai natural language processing in
+Python,'' 2024. [Online]. Available: \url{https://github.com/PyThaiNLP/pythainlp}
+
+\bibitem{ouyang2022}
+L.~Ouyang, J.~Wu, X.~Jiang, \emph{et al.}, ``Training language models to
+follow instructions with human feedback,'' in \emph{Advances in Neural
+Information Processing Systems (NeurIPS)}, 2022.
+
+\bibitem{attacut}
+P.~Chormai, P.~Prasertsom, and A.~T.~Rutherford, ``AttaCut: A fast and
+accurate neural Thai word segmenter,'' \emph{arXiv preprint
+arXiv:1911.07056}, 2019.
+
+\bibitem{chormai2020syllable}
+P.~Chormai, P.~Prasertsom, J.~Cheevaprawatdomrong, and A.~T.~Rutherford,
+``Syllable-based neural Thai word segmentation,'' in \emph{Proc. 28th
+International Conference on Computational Linguistics (COLING)}, 2020,
+pp.~4617--4628.
+
+\bibitem{deepcut}
+T.~Kittinaradorn, \emph{et al.}, ``DeepCut: A Thai word tokenization
+library using deep neural network,'' 2019. [Online]. Available:
+\url{https://github.com/rkcosmos/deepcut}
+
+\bibitem{tltk}
+W.~Aroonmanakun, ``TLTK: Thai language toolkit,'' [Online]. Available:
+\url{https://pypi.org/project/tltk/}
+
+\bibitem{charoenpornsawat2006}
+P.~Charoenpornsawat and T.~Schultz, ``Example-based grapheme-to-phoneme
+conversion for Thai,'' in \emph{Proc. Interspeech}, 2006.
+
+\bibitem{saychum2016}
+S.~Saychum, S.~Kongyoung, A.~Rugchatjaroen, P.~Chootrakool, S.~Kasuriya,
+and C.~Wutiwiwatchai, ``Efficient Thai grapheme-to-phoneme conversion using
+CRF-based joint sequence modeling,'' in \emph{Proc. Interspeech}, 2016.
+
+\bibitem{rugchatjaroen2019}
+A.~Rugchatjaroen, S.~Saychum, S.~Kongyoung, P.~Chootrakool, S.~Kasuriya,
+and C.~Wutiwiwatchai, ``Efficient two-stage processing for joint sequence
+model-based Thai grapheme-to-phoneme conversion,'' \emph{Speech
+Communication}, 2019.
+
+\bibitem{suksanguan2021}
+P.~Suksanguan, S.~Waijanya, and N.~Promrit, ``The extraction of beautiful
+sound patterns from Sunthorn Phu's poem using machine learning technique
+and internal rhyme rule,'' 2021.
+
+\bibitem{klonsuphap}
+K.~Yingyingseree, ``KlonSuphap-LM: Thai Klon-Paed generation with GPT-2,''
+Hugging Face model and GitHub repository, 2024. [Online]. Available:
+\url{https://huggingface.co/Kongfha/KlonSuphap-LM}
+
+\bibitem{phraaphai}
+K.~Yingyingseree, ``PhraAphaiManee-LM,'' Hugging Face model, 2023.
+[Online]. Available: \url{https://huggingface.co/Kongfha/PhraAphaiManee-LM}
+
+\bibitem{triyason2026}
+T.~Triyason, ``Lilit to Ramakien: A five-work benchmark for LLM
+understanding of classical Thai literature,'' in \emph{Proc. International
+Conference on Advances in Information Technology}, ACM, 2026.
+
+\bibitem{geng2023}
+S.~Geng, M.~Josifoski, M.~Peyrard, and R.~West, ``Grammar-constrained
+decoding for structured NLP tasks without finetuning,'' in \emph{Proc.
+Conference on Empirical Methods in Natural Language Processing (EMNLP)},
+2023.
+
+\bibitem{vajirayana}
+Vajirayana Digital Library. [Online]. Available: \url{https://vajirayana.org}
+
+\bibitem{tlc}
+A.~Rutherford, ``Thai literature corpora (TLC),'' [Online]. Available:
+\url{https://attapol.github.io/tlc.html}
+
 \end{thebibliography}
 
 \end{document}
