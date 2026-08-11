@@ -1,0 +1,199 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+%Template version as of 6/27/2024
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+    
+\begin{document}
+
+\title{Thai Poetry Rhyme Verification using Hybrid Rules Based Approach for Education}
+
+\author{\IEEEauthorblockN{1\textsuperscript{st} Warit Yuvaniyama}
+\IEEEauthorblockA{
+\textit{School of Information, Computer,} \\
+\textit{and Communication Technology} \\
+\textit{Sirindhorn International Institute} \\
+\textit{of Technology, Thammasat University}\\
+Pathum Thani 12120, Thailand \\
+https://orcid.org/0009-0007-1630-4286}
+\and
+\IEEEauthorblockN{2\textsuperscript{nd} Athit Phinyachok}
+\IEEEauthorblockA{\textit{School of Information, Computer,} \\
+\textit{and Communication Technology} \\
+\textit{Sirindhorn International Institute} \\
+\textit{of Technology, Thammasat University}\\
+Pathum Thani 12120, Thailand \\
+https://orcid.org/0009-0000-3783-8104}
+\and
+\IEEEauthorblockN{3\textsuperscript{rd} Gunn Sanguankittipun}
+\IEEEauthorblockA{\textit{School of Information, Computer,} \\
+\textit{and Communication Technology} \\
+\textit{Sirindhorn International Institute} \\
+\textit{of Technology, Thammasat University}\\
+Pathum Thani 12120, Thailand \\
+https://orcid.org/0009-0005-8812-4992}
+\and
+\IEEEauthorblockN{4\textsuperscript{th} Leo Colombo}
+\IEEEauthorblockA{\textit{School of Information, Computer,} \\
+\textit{and Communication Technology} \\
+\textit{Sirindhorn International Institute} \\
+\textit{of Technology, Thammasat University}\\
+Pathum Thani 12120, Thailand \\
+https://orcid.org/0009-0004-9133-5398}
+\and
+\IEEEauthorblockN{5\textsuperscript{th} Prachya Boonkwan*}
+\IEEEauthorblockA{\textit{School of Information, Computer,} \\
+\textit{and Communication Technology} \\
+\textit{Sirindhorn International Institute} \\
+\textit{of Technology, Thammasat University}\\
+Pathum Thani 12120, Thailand \\
+https://orcid.org/0000-0003-1405-1071*}
+}
+
+\maketitle
+
+\begin{abstract}
+% [Drafting note: Keep this under 250 words. Write this LAST.]
+% 1. Context/Problem: LLMs struggle to generate Thai poetry (Klon-8) due to strict phonetic, rhyme, and meter constraints. Educators also lack reliable automated tools.
+% 2. Gap: Existing rule-based and G2P checkers suffer from low recall, false positives on vowel lengths, and blind spots with complex Thai morphology.
+% 3. Solution: We propose an improved hybrid rule-based verification algorithm integrated into PyThaiNLP 5.3.5, alongside a G2P-override variant (Klonpad).
+% 4. Evaluation: Evaluated on a massive gold-standard dataset of 36,475 classical stanzas (145,709 rhyme checks) with targeted data augmentation for edge cases.
+% 5. Impact: The model achieves 88.5\% gold recall and near 100\% precision on curated negatives, serving as both an educational web tool and a deterministic reward model for RLHF in LLM training.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Thai NLP, Poetry Generation, Rule-based Verification, Natural Language Processing, Reinforcement Learning, Educational Technology
+\end{IEEEkeywords}
+
+\section{Introduction}
+% [Drafting note: Set the stage and tell the story of WHY this matters.]
+\begin{itemize}
+    \item \textbf{Context:} Introduce Thai Klon-Paed (กลอนแปด) and its strict structural rules (Sumpus, Mattra, Sara).
+    \item \textbf{The Core Problem:} Generative AI and LLMs are probabilistic, making them inherently bad at strict deterministic constraints like syllables and rhymes.
+    \item \textbf{The Dual Need:} 
+        \begin{itemize}
+            \item \textit{Research:} To train an LLM to write poetry (e.g., via RLHF/RLAIF), we need a flawless, programmatic reward environment to score rhymes.
+            \item \textit{Education:} Teachers need zero-hallucination, interactive grading tools for students.
+        \end{itemize}
+    \item \textbf{Limitations of Prior Art:} Previous checkers (PyThaiNLP 5.0.1) and G2P models (Kongfha) fail on edge cases, drop stanzas, or are computationally too slow for RL loops.
+    \item \textbf{Contributions:} 
+        \begin{itemize}
+            \item Improved core verification algorithms (\texttt{check\_sara}, \texttt{check\_marttra}, \texttt{is\_sumpus}).
+            \item Creation of a 36,475-stanza gold-standard evaluation dataset.
+            \item Integration into PyThaiNLP 5.3.5 and an open-source Hugging Face educational application.
+        \end{itemize}
+\end{itemize}
+
+\section{Background and Related Work}
+% [Drafting note: Briefly explain the rules and the baseline models.]
+\subsection{Linguistic Rules of Klon-Paed}
+\begin{itemize}
+    \item Briefly define the requirements for a valid rhyme in Thai: matching vowel sound (\texttt{check\_sara}) and matching final consonant class (\texttt{check\_marttra}).
+    \item Define inter-stanza (rX) and intra-stanza (r1, r2, r3) connections.
+\end{itemize}
+
+\subsection{Existing Verification Systems}
+\begin{itemize}
+    \item \textbf{Model A (Old PyThaiNLP 5.0.1):} Dictionary-based, lacks the r3 rule, fails on complex morphology.
+    \item \textbf{Model C (Kongfha / tltk G2P):} Romanization-based. Extremely slow (single-threaded) and collapses short/long vowels, leading to false positives.
+\end{itemize}
+
+\section{Methodology: Hybrid Verification Architecture}
+% [Drafting note: Explain YOUR algorithm and the two variants you built.]
+\subsection{Core Rule-Based Improvements (Model B)}
+\begin{itemize}
+    \item Explain the mechanics of Model B (now PyThaiNLP 5.3.5).
+    \item \textbf{Phonetic Normalization:} Handling transformed/reduced vowels (สระประสม, สระลดรูป).
+    \item \textbf{Edge Case Handling:} 
+        \begin{itemize}
+            \item \texttt{handle\_karun\_sound\_silence}: Stripping silenced characters (e.g., "โอห์ม" $\rightarrow$ "โอ").
+            \item \texttt{\_is\_true\_final}: Differentiating genuine finals (-ย, -ล) from clusters or digraphs.
+        \end{itemize}
+\end{itemize}
+
+\subsection{Dictionary-Enhanced Verification (Model D)}
+\begin{itemize}
+    \item Explain the Klonpad variant. While Model B acts as a general-purpose oracle, it has "blind spots" (e.g., the silent 'ร' in "เพชร").
+    \item Introduce the G2P Override Dictionary (built on Phra Aphai Mani) to fix these specific phonetic misreadings.
+    \item \textbf{Ablation Study of Fallbacks:} Briefly discuss why D\_ssg (SSG fallback) outperformed D\_w2p (W2P fallback). W2P introduces hallucinations on short words, hurting overall accuracy.
+\end{itemize}
+
+\section{Dataset Construction and Augmentation}
+% [Drafting note: Showcase the rigorous testing environment.]
+\subsection{Gold-Standard Corpus Compilation}
+\begin{itemize}
+    \item Data sourced from vajirayana.org (Khun Chang Khun Phaen, Phra Aphai Mani, etc.).
+    \item Cleaning pipeline resulting in 191 files, 36,475 stanzas, and 145,709 total rhyme checks.
+    \item Highlight the data-completeness fix (retaining $\geq 10$ syllable waks) that restored inter-stanza (rX) chains.
+\end{itemize}
+
+\subsection{Targeted Data Augmentation}
+\begin{itemize}
+    \item Explain the need for precision and recall probes.
+    \item \textbf{Negative Sampling (Precision Probes):} 10,000 instances. Discuss operators like \texttt{C3\_short\_long} (vowel length swaps) and \texttt{C9\_old\_accept} (traps for Model A).
+    \item \textbf{Positive Sampling (Recall Probes):} 1,200 instances. Discuss "Oracle-blind" positives (e.g., ศัตรู, กษัตรี) intentionally designed to deduct points from Model B where it fails linguistically.
+\end{itemize}
+
+\section{Evaluation and Results}
+% [Drafting note: The heavy lifting. Use tables here based on PROGRESS.md.]
+\subsection{Experimental Setup}
+\begin{itemize}
+    \item Define the evaluated models (A, B, C, D\_w2p, D\_ssg) and metrics (Precision, Recall, F1, Coverage).
+    \item Mention computational mitigations for Model C (persistent worker pool, G2P caching).
+\end{itemize}
+
+\subsection{Gold Recall Analysis}
+\begin{itemize}
+    \item Present the Stanza-level gold recall table.
+    \item Highlight that D\_ssg achieves the highest recall (88.5\%) followed by B (87.5\%), vastly outperforming A (73.4\%).
+\end{itemize}
+
+\subsection{Augmentation and Error Analysis}
+\begin{itemize}
+    \item Present the Augmentation-only overall table.
+    \item \textbf{Precision vs. Recall Trade-off:} Explain that Model B acts as a perfect oracle (0 FPs on negatives) but misses oracle-blind positives. Model C catches rhymes but has 3,129 FPs (mostly on \texttt{C3\_short\_long}).
+    \item \textbf{The Override Advantage:} Show how Model D\_w2p recovers 95.7\% of the oracle-blind spots (e.g., reading เพชร $\rightarrow$ เพ็ด) that Model B misses.
+\end{itemize}
+
+\section{Applications and Future Work}
+% [Drafting note: Connect back to the overarching narrative.]
+\subsection{Educational Impact}
+\begin{itemize}
+    \item Discuss the interactive Hugging Face web interface.
+    \item Explain how deterministic, explainable feedback aids teachers and students in learning Klon 4/8 structures without LLM hallucinations.
+\end{itemize}
+
+\subsection{Foundation for Generative AI}
+\begin{itemize}
+    \item Discuss how this verifier is currently implemented as the Reward Model environment for Reinforcement Learning (RL) to train a small LLM to write Klon-Paed.
+\end{itemize}
+
+\section{Conclusion}
+\begin{itemize}
+    \item Summarize: The hybrid approach effectively marries the reliability of rule-based logic with the edge-case coverage of G2P overrides.
+    \item Final impact statement: The successful integration of Model B into PyThaiNLP 5.3.5 sets a new standard for Thai computational linguistics, paving the way for both educational tools and advanced LLM pipelines.
+\end{itemize}
+
+\section*{Acknowledgment}
+\begin{itemize}
+    \item Acknowledge vajirayana.org for the literary datasets.
+    \item Acknowledge the PyThaiNLP maintainers for reviewing and merging the PR.
+    \item Acknowledge the developers of the \texttt{tltk} and KlonSuphap-LM baselines.
+\end{itemize}
+
+\begin{thebibliography}{00}
+% [Drafting note: You will need to add proper citations here later.]
+\bibitem{pythainlp} PyThaiNLP Contributors, "PyThaiNLP: Thai Natural Language Processing in Python," [Online]. Available: https://github.com/PyThaiNLP/pythainlp
+\bibitem{klonsuphap} Kongfha, "KlonSuphap-LM," [Online]. Available: [Insert Link]
+\bibitem{isai_nlp} [Add other relevant Thai NLP, G2P, or LLM RLHF papers here]
+\end{thebibliography}
+
+\end{document}
