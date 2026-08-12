@@ -3,6 +3,7 @@ from pathlib import Path
 import sys
 import textwrap
 import unittest
+from unittest.mock import patch
 
 
 UI_ROOT = Path(__file__).resolve().parents[1]
@@ -15,6 +16,7 @@ from checker import (
     compare_rhyme,
     parse_waks,
     tokenize_editor_units,
+    _rhyme_checks,
 )
 from core import KhaveeVerifier
 
@@ -113,6 +115,30 @@ class CheckerTests(unittest.TestCase):
         self.assertFalse(result["word_count_passed"])
         self.assertEqual(result["status"], "ไม่ผ่าน")
         self.assertTrue(any("หน่วยคำ" in note for note in result["notes"]))
+
+    def test_klon_eight_checks_every_candidate_position_one_through_five(self):
+        lines = [
+            {"spoken_syllables": ["ก", "ข", "ค", "ง", "จ", "ฉ", "ช", "ส่ง"]},
+            {"spoken_syllables": ["รับหนึ่ง", "รับสอง", "รับสาม", "รับสี่", "รับห้า", "หก", "เจ็ด", "ปลายรับ"]},
+            {"spoken_syllables": ["ก", "ข", "ค", "ง", "จ", "ฉ", "ช", "ปลายรอง"]},
+            {"spoken_syllables": ["ส่งหนึ่ง", "ส่งสอง", "ส่งสาม", "ส่งสี่", "ส่งห้า", "หก", "เจ็ด", "ปลายส่ง"]},
+        ]
+
+        def fake_rhyme(source, target):
+            return (source, target) in {
+                ("ส่ง", "รับหนึ่ง"),
+                ("ส่ง", "รับสี่"),
+                ("ปลายรับ", "ปลายรอง"),
+                ("ปลายรอง", "ส่งสอง"),
+                ("ปลายรอง", "ส่งห้า"),
+            }
+
+        with patch("checker._safe_rhyme", side_effect=fake_rhyme):
+            checks = _rhyme_checks(lines, k_type=8)
+
+        self.assertEqual([item["position"] for item in checks[0]["candidates"]], [1, 2, 3, 4, 5])
+        self.assertEqual(checks[0]["matched_positions"], [1, 4])
+        self.assertEqual(checks[2]["matched_positions"], [2, 5])
 
     def test_incomplete_poem_is_rejected(self):
         report = check_klon("หนึ่งบรรทัด\nสองบรรทัด")

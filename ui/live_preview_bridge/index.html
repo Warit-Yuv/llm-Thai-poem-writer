@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="th">
+<head><meta charset="utf-8"></head>
+<body>
+<script>
+  const MAX_TEXT_LENGTH = 100000;
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  let debounceMs = 450;
+  let canonicalText = "";
+  let lastSubmittedText = "";
+  let boundTextarea = null;
+  let inputTimer = 0;
+  let revision = 0;
+  let diagramFrame = 0;
+  let observedGrid = null;
+  let gridResizeObserver = null;
+
+  function send(type, data = {}) {
+    window.parent.postMessage(
+      Object.assign({ isStreamlitMessage: true, type }, data),
+      "*"
+    );
+  }
+
+  function parentDocument() {
+    try { return window.parent.document; }
+    catch (_) { return null; }
+  }
+
+  function poemTextarea() {
+    const doc = parentDocument();
+    return doc && doc.querySelector(".st-key-poem_input textarea");
+  }
+
+  function hideStaleAnalysis() {
+    const doc = parentDocument();
+    if (!doc) return;
+    const marker = doc.getElementById("analysis-results-anchor");
+    if (!marker) return;
+    const container = marker.closest('[data-testid="stElementContainer"]');
+    if (!container) return;
+    let sibling = container.nextElementSibling;
+    while (sibling) {
+      sibling.style.display = "none";
+      sibling = sibling.nextElementSibling;
+    }
+  }
+
+  function submitLatestText() {
+    inputTimer = 0;
+    const textarea = poemTextarea();
+    if (!textarea) return;
+    const text = String(textarea.value || "").slice(0, MAX_TEXT_LENGTH);
+    if (text === lastSubmittedText) return;
+    lastSubmittedText = text;
+    revision += 1;
+    send("streamlit:setComponentValue", {
+      value: { text, revision }
+    });
+  }
+
+  function handlePoemInput() {
+    hideStaleAnalysis();
+    if (inputTimer) window.clearTimeout(inputTimer);
+    inputTimer = window.setTimeout(submitLatestText, debounceMs);
+  }
+
+  function bindTextarea() {
+    const textarea = poemTextarea();
+    if (!textarea || textarea === boundTextarea) return;
+    if (boundTextarea) {
+      boundTextarea.removeEventListener("input", handlePoemInput);
+    }
+    boundTextarea = textarea;
+    boundTextarea.addEventListener("input", handlePoemInput, { passive: true });
+  }
+
+  function poemCellMap(doc) {
+    const cells = new Map();
+    let klonType = 0;
+    doc.querySelectorAll('[class*="st-key-poem_cell_"] textarea').forEach((textarea) => {
+      const holder = textarea.closest('[class*="st-key-poem_cell_"]');
+      if (!holder) return;
+      const match = String(holder.className).match(
+        /(?:^|\s)st-key-poem_cell_(4|8)_(\d+)_(\d+)(?:\s|$)/
+      );
+      if (!match) return;
+      const rect = textarea.getBoundingClientRect();
+      if (rect.width < 1 || rect.height < 1) return;
+      klonType = Number(match[1]);
+      cells.set(`${match[2]}:${match[3]}`, rect);
+    });
+    return { cells, klonType };
+  }
+
+  function addDiagramPath(svg, commands, optional = false) {
+    const path = svg.ownerDocument.createElementNS(SVG_NS, "path");
+    path.setAttribute("d", commands);
+    if (optional) path.setAttribute("class", "optional");
+    svg.appendChild(path);
+  }
+
+  function positionBahtLabels(doc, cells, slotCount) {
+    const compact = window.parent.innerWidth <= 720;
+    doc.querySelectorAll('[class*="st-key-baht_row_"]').forEach((row) => {
+      const match = String(row.className).match(
+        /(?:^|\s)st-key-baht_row_(\d+)(?:\s|$)/
+      );
+      const label = row.querySelector(".baht-label");
+      if (!match || !label) return;
+      if (compact) {
+        label.style.removeProperty("left");
+        return;
+      }
+      const bahtIndex = Number(match[1]);
+      const leftCell = cells.get(`${bahtIndex * 2}:${slotCount - 1}`);
+      const rightCell = cells.get(`${bahtIndex * 2 + 1}:0`);
+      if (!leftCell || !rightCell) return;
+      const rowRect = row.getBoundingClientRect();
+      const gapCentre = (leftCell.right + rightCell.left) / 2 - rowRect.left;
+      label.style.left = `${gapCentre}px`;
+    });
+  }
+
+  function scheduleDiagram() {
+    if (diagramFrame) window.parent.cancelAnimationFrame(diagramFrame);
+    diagramFrame = window.parent.requestAnimationFrame(drawDiagram);
+  }
+
+  function observeDiagramGrid(grid) {
+    if (grid === observedGrid) return;
+    if (gridResizeObserver) gridResizeObserver.disconnect();
+    observedGrid = grid;
+    if (!grid || !window.parent.ResizeObserver) return;
+    gridResizeObserver = new window.parent.ResizeObserver(scheduleDiagram);
+    gridResizeObserver.observe(grid);
+  }
+
+  function drawDiagram() {
+    diagramFrame = 0;
+    const doc = parentDocument();
+    if (!doc) return;
+    const grid = doc.querySelector(".st-key-poem_grid");
+    observeDiagramGrid(grid);
+    if (!grid) return;
+
+    doc.querySelectorAll(".poem-rhyme-overlay").forEach((overlay) => {
+      if (overlay.parentElement !== grid) overlay.remove();
+    });
+
+    const { cells, klonType } = poemCellMap(doc);
+    if (!klonType || !cells.size) return;
+    const slotCount = klonType;
+    positionBahtLabels(doc, cells, slotCount);
+    const gridRect = grid.getBoundingClientRect();
+    let svg = Array.from(grid.children).find(
+      (child) => child.classList && child.classList.contains("poem-rhyme-overlay")
+    );
+    if (!svg) {
+      svg = doc.createElementNS(SVG_NS, "svg");
+      svg.setAttribute("class", "poem-rhyme-overlay");
+      svg.setAttribute("aria-hidden", "true");
+      grid.appendChild(svg);
+    }
+    svg.setAttribute("viewBox", `0 0 ${gridRect.width} ${gridRect.height}`);
+    svg.replaceChildren();
+
+    const point = (line, slot) => {
+      const rect = cells.get(`${line}:${slot}`);
+      if (!rect) return null;
+      return {
+        x: (rect.left + rect.right) / 2 - gridRect.left,
+        y: (rect.top + rect.bottom) / 2 - gridRect.top,
+        top: rect.top - gridRect.top,
+        bottom: rect.bottom - gridRect.top,
+        right: rect.right - gridRect.left
+      };
+    };
+    const p = (value) => Math.round(value * 2) / 2;
+    const mainSlot = klonType === 8 ? 2 : 1;
+    const optionalSlots = klonType === 8 ? [0, 1, 3, 4] : [0, 2];
+    const lineIndexes = Array.from(cells.keys()).map((key) => Number(key.split(":")[0]));
+    const maxLine = Math.max(...lineIndexes);
+
+    for (let stanzaStart = 0; stanzaStart <= maxLine; stanzaStart += 4) {
+      const firstSource = point(stanzaStart, slotCount - 1);
+      const firstMain = point(stanzaStart + 1, mainSlot);
+      if (firstSource && firstMain) {
+        const options = optionalSlots.map((slot) => point(stanzaStart + 1, slot)).filter(Boolean);
+        const baseline = Math.min(firstSource.top, firstMain.top) - 36;
+        addDiagramPath(
+          svg,
+          `M ${p(firstSource.x)} ${p(firstSource.top)} V ${p(baseline)} H ${p(firstMain.x)} V ${p(firstMain.top)}`
+        );
+        options.forEach((target) => {
+          addDiagramPath(svg, `M ${p(target.x)} ${p(baseline)} V ${p(target.top)}`, true);
+        });
+        const farthest = Math.max(firstMain.x, ...options.map((target) => target.x));
+        if (farthest > firstMain.x) {
+          addDiagramPath(svg, `M ${p(firstMain.x)} ${p(baseline)} H ${p(farthest)}`, true);
+        }
+      }
+
+      const receive = point(stanzaStart + 1, slotCount - 1);
+      const secondSource = point(stanzaStart + 2, slotCount - 1);
+      const secondMain = point(stanzaStart + 3, mainSlot);
+      if (receive && secondSource && secondMain) {
+        const options = optionalSlots.map((slot) => point(stanzaStart + 3, slot)).filter(Boolean);
+        const baseline = secondSource.top - 36;
+        addDiagramPath(
+          svg,
+          `M ${p(receive.x)} ${p(receive.bottom)} V ${p(baseline)} H ${p(secondSource.x)} V ${p(secondSource.top)}`
+        );
+        addDiagramPath(
+          svg,
+          `M ${p(secondSource.x)} ${p(baseline)} H ${p(secondMain.x)} V ${p(secondMain.top)}`
+        );
+        options.forEach((target) => {
+          addDiagramPath(svg, `M ${p(target.x)} ${p(baseline)} V ${p(target.top)}`, true);
+        });
+        const farthest = Math.max(secondMain.x, ...options.map((target) => target.x));
+        if (farthest > secondMain.x) {
+          addDiagramPath(svg, `M ${p(secondMain.x)} ${p(baseline)} H ${p(farthest)}`, true);
+        }
+      }
+
+      const send = point(stanzaStart + 3, slotCount - 1);
+      const nextReceive = point(stanzaStart + 5, slotCount - 1);
+      if (send && nextReceive) {
+        const outside = Math.min(
+          gridRect.width - 8,
+          Math.max(send.right, nextReceive.right) + 14
+        );
+        addDiagramPath(
+          svg,
+          `M ${p(send.right)} ${p(send.y)} H ${p(outside)} V ${p(nextReceive.y)} H ${p(nextReceive.right)}`
+        );
+      }
+    }
+  }
+
+  window.addEventListener("message", (event) => {
+    if (event.source !== window.parent) return;
+    if (!event.data || event.data.type !== "streamlit:render") return;
+    const args = event.data.args || {};
+    canonicalText = String(args.canonical_text || "").slice(0, MAX_TEXT_LENGTH);
+    lastSubmittedText = canonicalText;
+    const requestedDelay = Number(args.debounce_ms || 450);
+    debounceMs = Math.min(1000, Math.max(250, requestedDelay));
+    bindTextarea();
+    scheduleDiagram();
+    send("streamlit:setFrameHeight", { height: 0 });
+  });
+
+  const observer = new MutationObserver((mutations) => {
+    bindTextarea();
+    const affectsDiagram = mutations.some((mutation) => {
+      const target = mutation.target && mutation.target.nodeType === 1
+        ? mutation.target
+        : mutation.target && mutation.target.parentElement;
+      if (target && target.closest && target.closest(".poem-rhyme-overlay")) return false;
+      const changed = [...mutation.addedNodes, ...mutation.removedNodes];
+      return !changed.length || changed.some((node) =>
+        !(node.nodeType === 1 && node.classList && node.classList.contains("poem-rhyme-overlay"))
+      );
+    });
+    if (affectsDiagram) scheduleDiagram();
+  });
+  const doc = parentDocument();
+  if (doc && doc.body) observer.observe(doc.body, { childList: true, subtree: true });
+  window.parent.addEventListener("resize", scheduleDiagram, { passive: true });
+
+  send("streamlit:componentReady", { apiVersion: 1 });
+  send("streamlit:setFrameHeight", { height: 0 });
+  scheduleDiagram();
+</script>
+</body>
+</html>
