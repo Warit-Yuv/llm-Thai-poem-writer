@@ -300,6 +300,12 @@ h1,h2,h3 { color:var(--ink); letter-spacing:-.02em; }
 }
 [class*="st-key-poem_cell_"] textarea::-webkit-scrollbar { display:none; }
 [class*="st-key-poem_cell_"] textarea::placeholder { color:#a8998e; opacity:1; }
+.st-key-add_baht {
+  display:flex !important;
+  justify-content:center !important;
+  width:100% !important;
+  max-width:none !important;
+}
 .st-key-add_baht button {
   display:flex; align-items:center; justify-content:center;
   box-sizing:border-box !important; flex:0 0 2.75rem !important;
@@ -311,9 +317,12 @@ h1,h2,h3 { color:var(--ink); letter-spacing:-.02em; }
   background:#fffdf8 !important; color:var(--vermilion) !important;
   font-size:1.45rem !important; box-shadow:none !important;
 }
-.st-key-add_baht [data-testid="stButton"] { display:flex; justify-content:center; width:100%; min-width:2.75rem; overflow:visible; }
+.st-key-add_baht [data-testid="stButton"] { display:flex; justify-content:center; width:100% !important; min-width:2.75rem; overflow:visible; }
 .st-key-add_baht button:hover { border-color:var(--vermilion) !important; background:#fff7ef !important; transform:none !important; }
 .st-key-add_baht button p { color:var(--vermilion) !important; font-size:1.45rem !important; line-height:1 !important; }
+@media (min-width:641px) {
+  .st-key-add_baht { transform:translateX(.4rem); }
+}
 .input-workbench { margin-top:.2rem; }
 .workbench-title { margin:0 0 .48rem; color:var(--vermilion); font-size:1.08rem; font-weight:700; line-height:1.45; }
 .rhyme-lab-result { display:grid; grid-template-columns:minmax(8.4rem,.72fr) minmax(0,1.55fr); gap:.65rem; margin-top:.65rem; }
@@ -525,9 +534,40 @@ div[data-testid="stDialog"] div[role="dialog"] { background:#fffdf9 !important; 
   .summary-tile-label { font-size:clamp(.68rem,2.2vw,.78rem); }
   .summary-tile-value { margin-top:.38rem; font-size:1.55rem; }
   .line-card { grid-column:auto; height:auto; }
-  .st-key-poem_grid { padding:.8rem; }
+  .st-key-poem_grid {
+    overflow-x:clip;
+    padding:.7rem .35rem .8rem;
+  }
+  .st-key-poem_grid [data-testid="stHorizontalBlock"] {
+    flex-direction:row !important;
+    flex-wrap:nowrap !important;
+    gap:.18rem !important;
+  }
+  .st-key-poem_grid [data-testid="stColumn"] {
+    flex:1 1 0 !important;
+    width:0 !important;
+    min-width:0 !important;
+  }
+  .st-key-poem_grid [class*="st-key-poem_cell_"] {
+    min-width:0 !important;
+  }
+  .st-key-poem_grid [class*="st-key-poem_cell_"] [data-testid="stTextAreaRootElement"] {
+    min-height:clamp(1.05rem,4.7vw,1.55rem) !important;
+    height:clamp(1.05rem,4.7vw,1.55rem) !important;
+  }
+  .st-key-poem_grid [class*="st-key-poem_cell_"] textarea {
+    min-height:clamp(1.05rem,4.7vw,1.55rem) !important;
+    height:clamp(1.05rem,4.7vw,1.55rem) !important;
+    padding:.18rem .02rem !important;
+    font-size:clamp(.43rem,1.65vw,.62rem) !important;
+    line-height:1.15 !important;
+  }
+  .st-key-poem_grid [class*="st-key-baht_row_"] { min-height:4.15rem; }
+  .st-key-poem_grid .wak-label { margin:.16rem 0 .1rem; font-size:clamp(.52rem,1.8vw,.68rem); }
+  .st-key-poem_grid .wak-label.baht-ek { transform:translateY(1.15rem); }
+  .st-key-poem_grid .baht-label { font-size:clamp(.5rem,1.7vw,.64rem); }
   .stanza-bracket { position:relative; left:auto; top:auto; bottom:auto; width:auto; height:1.25rem; margin:0 0 .15rem; }
-  .stanza-bracket span { position:static; display:block; width:auto; transform:none; color:var(--vermilion); text-align:left; }
+  .stanza-bracket span { position:static; display:block; width:auto; transform:none; color:#574a42; text-align:left; }
   .stanza-bracket i { display:none; }
   .baht-label { position:relative; left:auto; bottom:auto; display:table; transform:none; margin:.15rem auto 0; color:var(--muted); }
   .rhyme-lab-result { grid-template-columns:1fr; }
@@ -536,6 +576,8 @@ div[data-testid="stDialog"] div[role="dialog"] { background:#fffdf9 !important; 
 @media (max-width:480px) {
   .line-card { grid-template-columns:1fr; min-height:0; }
   .beats { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .st-key-poem_grid { padding-left:.22rem; padding-right:.22rem; }
+  .st-key-poem_grid [data-testid="stHorizontalBlock"] { gap:.1rem !important; }
 }
 </style>
 """.replace("__FONT_FACE__", decorative_font_css()),
@@ -904,8 +946,7 @@ def render_poem_editor(klon_type: int) -> None:
                     rhyme_wire_html("inter-stanza", klon_type),
                     unsafe_allow_html=True,
                 )
-        add_left, add_center, add_right = st.columns([1, .13, 1])
-        add_center.button(
+        st.button(
             "＋",
             key="add_baht",
             on_click=add_baht,
