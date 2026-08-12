@@ -15,6 +15,7 @@ from checker import (
     check_klon,
     compare_rhyme,
     parse_waks,
+    tokenize_editor_syllable_units,
     tokenize_editor_units,
     _rhyme_checks,
 )
@@ -52,6 +53,17 @@ class CheckerTests(unittest.TestCase):
         self.assertEqual(result["syllable_count"], 8)
         self.assertEqual(result["rhythm"], [3, 2, 3])
         self.assertEqual(result["meter_status"], "ผ่าน")
+
+    def test_editor_spoken_units_match_the_analyzer_for_hidden_syllables(self):
+        text = "เห็นเรือรบตบตีมหาสมุทร"
+        units = tokenize_editor_syllable_units(text)
+        analysis = analyze_wak(text, k_type=8)
+
+        self.assertEqual(
+            units,
+            ["เห็น", "เรือ", "รบ", "ตบ", "ตี", "มะ", "หา", "สะ", "หมุด"],
+        )
+        self.assertEqual(len(units), analysis["syllable_count"])
 
     def test_rhyme_pair(self):
         self.assertTrue(compare_rhyme("หมาย", "กาย")["passed"])

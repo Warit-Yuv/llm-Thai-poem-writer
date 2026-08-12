@@ -23,6 +23,7 @@ from checker import (  # noqa: E402
     compare_rhyme,
     parse_waks,
     pronounce_word,
+    tokenize_editor_syllable_units,
     tokenize_editor_units,
 )
 
@@ -46,7 +47,8 @@ EXAMPLE_POEMS = {
 KLON_NAMES = {4: "กลอนสี่", 8: "กลอนแปด"}
 WAK_NAMES = ("วรรคสดับ", "วรรครับ", "วรรครอง", "วรรคส่ง")
 WORD_SLOTS = {4: 4, 8: 8}
-EDITOR_SCHEMA_VERSION = 10
+MAX_WORD_SLOTS = {4: 5, 8: 9}
+EDITOR_SCHEMA_VERSION = 12
 MAX_PREVIEW_TEXT_LENGTH = 100_000
 EDITOR_LINE_SEPARATOR = re.compile(r"\r\n?|\n")
 
@@ -403,10 +405,18 @@ div[data-testid="stDialog"] div[role="dialog"] { background:#fffdf9 !important; 
 [data-testid="stTextArea"] textarea { font-size:1rem; line-height:1.65; }
 [data-testid="stButtonGroup"] { width:min(100%,650px); margin:.25rem 0 .35rem; }
 [data-testid="stButtonGroup"] > label {
-  color:var(--ink);
-  font-size:.96rem;
+  color:var(--vermilion);
+  font-size:.92rem;
   font-weight:700;
+  letter-spacing:.025em;
   margin-bottom:.45rem;
+}
+[data-testid="stButtonGroup"] > label p {
+  color:var(--vermilion) !important;
+  font-size:.92rem !important;
+  font-weight:700 !important;
+  letter-spacing:.025em !important;
+  line-height:1.4 !important;
 }
 [data-testid="stButtonGroup"] div[role="radiogroup"] {
   display:grid;
@@ -544,10 +554,26 @@ def poem_cell_key(klon_type: int, line_index: int, slot_index: int) -> str:
     return f"poem_cell_{klon_type}_{line_index}_{slot_index}"
 
 
+def poem_line_source_key(klon_type: int, line_index: int) -> str:
+    return f"poem_line_source_{klon_type}_{line_index}"
+
+
+def poem_line_snapshot_key(klon_type: int, line_index: int) -> str:
+    return f"poem_line_snapshot_{klon_type}_{line_index}"
+
+
 def _clear_poem_cells(klon_type: int | None = None) -> None:
-    prefix = "poem_cell_" if klon_type is None else f"poem_cell_{klon_type}_"
+    prefixes = (
+        ("poem_cell_", "poem_line_source_", "poem_line_snapshot_")
+        if klon_type is None
+        else (
+            f"poem_cell_{klon_type}_",
+            f"poem_line_source_{klon_type}_",
+            f"poem_line_snapshot_{klon_type}_",
+        )
+    )
     for key in list(st.session_state):
-        if key.startswith(prefix):
+        if key.startswith(prefixes):
             del st.session_state[key]
 
 
@@ -572,16 +598,46 @@ def _fit_words_to_slots(words: list[str], slot_count: int) -> list[str]:
     return words[: slot_count - 1] + ["".join(words[slot_count - 1 :])]
 
 
+def _slot_count_for_units(klon_type: int, unit_count: int) -> int:
+    """Use the canonical slot count until a supported extra syllable appears."""
+    return min(
+        MAX_WORD_SLOTS[klon_type],
+        max(WORD_SLOTS[klon_type], unit_count),
+    )
+
+
+def editor_line_slot_count(klon_type: int, line_index: int) -> int:
+    """Return this line's visible slot count from its current editable values."""
+    maximum = MAX_WORD_SLOTS[klon_type]
+    populated = [
+        slot_index + 1
+        for slot_index in range(maximum)
+        if str(
+            st.session_state.get(
+                poem_cell_key(klon_type, line_index, slot_index), ""
+            )
+        ).strip()
+    ]
+    return _slot_count_for_units(klon_type, max(populated, default=0))
+
+
 def poem_from_grid(klon_type: int) -> str:
-    slot_count = WORD_SLOTS[klon_type]
     baht_count = max(2, int(st.session_state.get("editor_baht_count", 2)))
     rows = []
     for line_index in range(baht_count * 2):
+        slot_count = editor_line_slot_count(klon_type, line_index)
         words = [
             st.session_state.get(poem_cell_key(klon_type, line_index, slot_index), "").strip()
             for slot_index in range(slot_count)
         ]
-        rows.append("".join(word for word in words if word))
+        snapshot = st.session_state.get(
+            poem_line_snapshot_key(klon_type, line_index)
+        )
+        source = st.session_state.get(poem_line_source_key(klon_type, line_index))
+        if isinstance(snapshot, list) and words == snapshot[:slot_count] and isinstance(source, str):
+            rows.append(source)
+        else:
+            rows.append("".join(word for word in words if word))
     return "\n".join(rows).rstrip()
 
 
@@ -598,16 +654,20 @@ def load_poem_into_grid(
     # The text box is the canonical poem.  Remove both klon layouts so an old
     # inactive grid can never reappear after the user changes poem type.
     _clear_poem_cells()
-    slot_count = WORD_SLOTS[klon_type]
     normalized_waks: list[str] = []
     for line_index in range(baht_count * 2):
         wak = waks[line_index] if line_index < len(waks) else ""
-        words = tokenize_editor_units(wak)
+        source_units = tokenize_editor_units(wak)
+        source_wak = "".join(source_units) or wak.strip()
+        words = tokenize_editor_syllable_units(wak)
+        slot_count = _slot_count_for_units(klon_type, len(words))
         fitted = _fit_words_to_slots(words, slot_count)
         for slot_index, word in enumerate(fitted):
             st.session_state[poem_cell_key(klon_type, line_index, slot_index)] = word
+        st.session_state[poem_line_source_key(klon_type, line_index)] = source_wak
+        st.session_state[poem_line_snapshot_key(klon_type, line_index)] = list(fitted)
         if wak:
-            normalized_waks.append("".join(words) or wak.strip())
+            normalized_waks.append(source_wak)
     if normalize_text:
         st.session_state.poem_input = "\n".join(normalized_waks)
     st.session_state.editor_klon_type = klon_type
@@ -658,12 +718,31 @@ def sync_cell_to_text(cell_key: str, line_index: int, slot_index: int, klon_type
         clear_analysis()
         return
 
-    words = tokenize_editor_units(raw_value)
-    slot_count = WORD_SLOTS[klon_type]
+    words = tokenize_editor_syllable_units(raw_value)
     if len(words) > 1:
-        fitted = _fit_words_to_slots(words, slot_count - slot_index)
+        # Keep the user's exact written line as canonical text while expanding
+        # this cell in place into the spoken syllables used by the checker.
+        raw_poem = poem_from_grid(klon_type)
+        raw_rows = raw_poem.splitlines()
+        available = MAX_WORD_SLOTS[klon_type] - slot_index
+        fitted = _fit_words_to_slots(words, available)
         for offset, word in enumerate(fitted):
-            st.session_state[poem_cell_key(klon_type, line_index, slot_index + offset)] = word
+            st.session_state[
+                poem_cell_key(klon_type, line_index, slot_index + offset)
+            ] = word
+        visible_slots = editor_line_slot_count(klon_type, line_index)
+        st.session_state[poem_line_source_key(klon_type, line_index)] = (
+            raw_rows[line_index] if line_index < len(raw_rows) else raw_value
+        )
+        st.session_state[poem_line_snapshot_key(klon_type, line_index)] = [
+            st.session_state.get(
+                poem_cell_key(klon_type, line_index, current_slot), ""
+            ).strip()
+            for current_slot in range(visible_slots)
+        ]
+        st.session_state.poem_input = raw_poem
+        clear_analysis()
+        return
     else:
         st.session_state[cell_key] = words[0] if words else ""
     st.session_state.poem_input = poem_from_grid(klon_type)
@@ -751,7 +830,6 @@ def rhyme_wire_html(kind: str, klon_type: int) -> str:
 
 
 def render_poem_editor(klon_type: int) -> None:
-    slot_count = WORD_SLOTS[klon_type]
     baht_count = max(2, int(st.session_state.get("editor_baht_count", 2)))
     with st.container(border=True, key="poem_grid"):
         stanza_count = math.ceil(baht_count / 2)
@@ -790,6 +868,7 @@ def render_poem_editor(klon_type: int) -> None:
                             line_index = baht_index * 2 + column_offset
                             wak_name = WAK_NAMES[line_index % 4]
                             with wak_column:
+                                slot_count = editor_line_slot_count(klon_type, line_index)
                                 for slot_index in range(slot_count):
                                     key = poem_cell_key(klon_type, line_index, slot_index)
                                     if key not in st.session_state:
@@ -803,7 +882,7 @@ def render_poem_editor(klon_type: int) -> None:
                                         f"{wak_name} คำที่ {slot_index + 1}",
                                         key=key,
                                         height=38,
-                                        placeholder=f"คำ{slot_index + 1}",
+                                        placeholder=str(slot_index + 1),
                                         help=(f"อ่านว่า {'-'.join(spoken)}" if len(spoken) > 1 else None),
                                         label_visibility="collapsed",
                                         on_change=sync_cell_to_text,

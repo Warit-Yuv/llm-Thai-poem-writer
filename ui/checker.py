@@ -101,6 +101,32 @@ def tokenize_editor_units(text: str) -> list[str]:
     return units
 
 
+def tokenize_editor_syllable_units(text: str) -> list[str]:
+    """Return one visible editor unit per spoken syllable.
+
+    Prefer lossless written syllables whenever their count agrees with the
+    project's pronunciation pipeline.  When Thai orthography hides spoken
+    syllables (``มหาสมุทร`` -> ``มะ-หา-สะ-หมุด``), use the readable spoken
+    forms in the diagram.  The caller keeps the original written line as the
+    canonical analysis text, so this visual respelling cannot alter research
+    input unless the user deliberately edits a diagram cell.
+    """
+    units: list[str] = []
+    for word in tokenize_written_words(text):
+        written_units = tokenize_editor_units(word)
+        spoken, _ = pronounce_word(word)
+        spoken_units = [
+            syllable.replace("ฺ", "").strip()
+            for syllable in spoken
+            if syllable.strip()
+        ]
+        if spoken_units and len(written_units) != len(spoken_units):
+            units.extend(spoken_units)
+        else:
+            units.extend(written_units or spoken_units or [word])
+    return units
+
+
 @lru_cache(maxsize=20_000)
 def pronounce_word(word: str) -> tuple[tuple[str, ...], str]:
     """Return spoken syllables and provenance for one written token."""

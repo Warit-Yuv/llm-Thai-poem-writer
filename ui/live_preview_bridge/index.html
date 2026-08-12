@@ -100,7 +100,20 @@
     svg.appendChild(path);
   }
 
-  function positionBahtLabels(doc, cells, slotCount) {
+  function lineSlots(cells, line) {
+    return Array.from(cells.keys())
+      .map((key) => key.split(":").map(Number))
+      .filter(([lineIndex]) => lineIndex === line)
+      .map(([, slotIndex]) => slotIndex)
+      .sort((left, right) => left - right);
+  }
+
+  function lastSlot(cells, line) {
+    const slots = lineSlots(cells, line);
+    return slots.length ? slots[slots.length - 1] : null;
+  }
+
+  function positionBahtLabels(doc, cells) {
     const compact = window.parent.innerWidth <= 720;
     doc.querySelectorAll('[class*="st-key-baht_row_"]').forEach((row) => {
       const match = String(row.className).match(
@@ -113,7 +126,11 @@
         return;
       }
       const bahtIndex = Number(match[1]);
-      const leftCell = cells.get(`${bahtIndex * 2}:${slotCount - 1}`);
+      const leftLine = bahtIndex * 2;
+      const leftLastSlot = lastSlot(cells, leftLine);
+      const leftCell = leftLastSlot === null
+        ? null
+        : cells.get(`${leftLine}:${leftLastSlot}`);
       const rightCell = cells.get(`${bahtIndex * 2 + 1}:0`);
       if (!leftCell || !rightCell) return;
       const rowRect = row.getBoundingClientRect();
@@ -150,8 +167,7 @@
 
     const { cells, klonType } = poemCellMap(doc);
     if (!klonType || !cells.size) return;
-    const slotCount = klonType;
-    positionBahtLabels(doc, cells, slotCount);
+    positionBahtLabels(doc, cells);
     const gridRect = grid.getBoundingClientRect();
     let svg = Array.from(grid.children).find(
       (child) => child.classList && child.classList.contains("poem-rhyme-overlay")
@@ -183,7 +199,7 @@
     const maxLine = Math.max(...lineIndexes);
 
     for (let stanzaStart = 0; stanzaStart <= maxLine; stanzaStart += 4) {
-      const firstSource = point(stanzaStart, slotCount - 1);
+      const firstSource = point(stanzaStart, lastSlot(cells, stanzaStart));
       const firstMain = point(stanzaStart + 1, mainSlot);
       if (firstSource && firstMain) {
         const options = optionalSlots.map((slot) => point(stanzaStart + 1, slot)).filter(Boolean);
@@ -201,8 +217,8 @@
         }
       }
 
-      const receive = point(stanzaStart + 1, slotCount - 1);
-      const secondSource = point(stanzaStart + 2, slotCount - 1);
+      const receive = point(stanzaStart + 1, lastSlot(cells, stanzaStart + 1));
+      const secondSource = point(stanzaStart + 2, lastSlot(cells, stanzaStart + 2));
       const secondMain = point(stanzaStart + 3, mainSlot);
       if (receive && secondSource && secondMain) {
         const options = optionalSlots.map((slot) => point(stanzaStart + 3, slot)).filter(Boolean);
@@ -224,8 +240,8 @@
         }
       }
 
-      const send = point(stanzaStart + 3, slotCount - 1);
-      const nextReceive = point(stanzaStart + 5, slotCount - 1);
+      const send = point(stanzaStart + 3, lastSlot(cells, stanzaStart + 3));
+      const nextReceive = point(stanzaStart + 5, lastSlot(cells, stanzaStart + 5));
       if (send && nextReceive) {
         const outside = Math.min(
           gridRect.width - 8,
