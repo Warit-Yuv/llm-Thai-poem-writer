@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Streamlit runtime files
+.streamlit/secrets.toml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# HF Space local run artifacts
+.space_metadata

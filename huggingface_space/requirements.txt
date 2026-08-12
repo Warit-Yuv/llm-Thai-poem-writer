@@ -1,0 +1,10 @@
+# Runtime dependencies for the Hugging Face Space (free CPU tier).
+# Only what the Streamlit UI actually imports is installed:
+#   - streamlit: the app framework
+#   - pythainlp : Thai tokenization / pronunciation for checker.py and core.py
+#
+# pandas, tqdm and ssg are used only by build/notebook tooling in the parent
+# repository and are intentionally NOT installed here to keep the Space build
+# small and fast on the free tier.
+streamlit>=1.44,<2
+pythainlp==5.3.5
