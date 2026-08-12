@@ -243,10 +243,11 @@
       const send = point(stanzaStart + 3, lastSlot(cells, stanzaStart + 3));
       const nextReceive = point(stanzaStart + 5, lastSlot(cells, stanzaStart + 5));
       if (send && nextReceive) {
-        const outside = Math.min(
-          gridRect.width - 8,
-          Math.max(send.right, nextReceive.right) + 14
-        );
+        const farthestRight = Math.max(send.right, nextReceive.right);
+        const sideClearance = gridRect.width - farthestRight;
+        const outside = sideClearance < 22
+          ? gridRect.width - 3
+          : farthestRight + 14;
         addDiagramPath(
           svg,
           `M ${p(send.right)} ${p(send.y)} H ${p(outside)} V ${p(nextReceive.y)} H ${p(nextReceive.right)}`

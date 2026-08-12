@@ -34,10 +34,10 @@ VALID_KLON_4 = """ฉันชื่อหมูกรอบ
 
 
 class CheckerTests(unittest.TestCase):
-    def test_editor_uses_readable_units_without_changing_the_spelling(self):
+    def test_editor_uses_exact_ssg_units(self):
         self.assertEqual(
             tokenize_editor_units("ฉันชื่อหมูกรอบ"),
-            ["ฉัน", "ชื่อ", "หมู", "กรอบ"],
+            ["ฉัน", "ชื่อ", "หมูก", "รอบ"],
         )
         self.assertEqual(
             tokenize_editor_units("บาทหลวงงกตกประหม่าให้ล่าทัพ"),
@@ -54,16 +54,23 @@ class CheckerTests(unittest.TestCase):
         self.assertEqual(result["rhythm"], [3, 2, 3])
         self.assertEqual(result["meter_status"], "ผ่าน")
 
-    def test_editor_spoken_units_match_the_analyzer_for_hidden_syllables(self):
+    def test_editor_ssg_units_match_the_analyzer(self):
         text = "เห็นเรือรบตบตีมหาสมุทร"
         units = tokenize_editor_syllable_units(text)
         analysis = analyze_wak(text, k_type=8)
 
         self.assertEqual(
             units,
-            ["เห็น", "เรือ", "รบ", "ตบ", "ตี", "มะ", "หา", "สะ", "หมุด"],
+            ["เห็น", "เรือ", "รบ", "ตบ", "ตี", "มหา", "สมุทร"],
         )
         self.assertEqual(len(units), analysis["syllable_count"])
+
+    def test_pronunciation_pipeline_is_ssg_only(self):
+        from checker import pronounce_word
+
+        syllables, source = pronounce_word("มหาสมุทร")
+        self.assertEqual(syllables, ("มหา", "สมุทร"))
+        self.assertEqual(source, "ssg")
 
     def test_rhyme_pair(self):
         self.assertTrue(compare_rhyme("หมาย", "กาย")["passed"])
@@ -157,10 +164,13 @@ class CheckerTests(unittest.TestCase):
         self.assertFalse(report["complete_stanzas"])
         self.assertEqual(report["summary"]["verdict"], "ไม่ผ่าน")
 
-    def test_seven_syllables_are_review_not_silent_pass(self):
+    def test_seven_syllables_pass_supported_klon_eight_meter(self):
         result = analyze_wak("ดนตรีมีคุณที่ข้อไหน")
         self.assertEqual(result["syllable_count"], 7)
-        self.assertEqual(result["meter_status"], "ควรตรวจ")
+        self.assertEqual(result["rhythm"], [3, 2, 2])
+        self.assertEqual(result["meter_status"], "ผ่าน")
+        self.assertTrue(result["meter_passed"])
+        self.assertEqual(result["notes"], [])
 
 
 class ParseWaksTests(unittest.TestCase):
