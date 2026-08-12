@@ -370,6 +370,7 @@ h1,h2,h3 { color:var(--ink); letter-spacing:-.02em; }
 .result-issue-card { padding:.8rem 1rem; background:#fffdf9; border:1px solid #e3d7ca; border-radius:9px; box-shadow:0 3px 9px rgba(77,43,28,.03); }
 .result-issue-card.review { border-color:#ead4aa; }
 .result-syllable-card { display:block; min-height:5.4rem; padding:1rem 1.2rem; }
+.result-rhyme-card { display:flex; flex-direction:column; justify-content:center; min-height:5.4rem; padding:1rem 1.2rem; }
 .result-syllable-detail { display:flex; align-items:baseline; flex-wrap:wrap; gap:.35rem .8rem; margin-top:.42rem; }
 .result-issue-meta { color:var(--muted); font-size:.72rem; }
 .result-issue-body { display:flex; align-items:baseline; justify-content:space-between; gap:1rem; margin-top:.24rem; }
@@ -382,6 +383,8 @@ h1,h2,h3 { color:var(--ink); letter-spacing:-.02em; }
 .result-rhyme-rule { color:#c83a30; font-size:.9rem; font-weight:700; line-height:1.45; }
 .result-rhyme-detail { margin-top:.26rem; color:#5f5047; font-size:.8rem; line-height:1.55; }
 .result-rhyme-detail strong { color:var(--ink); }
+.result-rhyme-card .result-rhyme-rule { font-size:1.08rem; }
+.result-rhyme-card .result-rhyme-detail { margin-top:.42rem; font-size:.96rem; }
 div[data-baseweb="modal"], div[data-testid="stDialog"] { background:rgba(42,40,39,.34) !important; backdrop-filter:blur(2px) saturate(.72); }
 div[data-testid="stDialog"] div[role="dialog"] { background:#fffdf9 !important; border:1px solid #ded2c5; box-shadow:0 18px 48px rgba(45,38,34,.2) !important; }
 .stButton>button { border-radius:10px; min-height:2.6rem; font-size:.9rem; font-weight:600; }
@@ -1122,14 +1125,14 @@ def result_issues_html(report: dict) -> str:
                 )
                 pair = f'{check["source"]} → [{candidates}]'
             cards.append(
-                '<div class="result-issue-card">'
+                '<div class="result-issue-card result-rhyme-card">'
                 f'<div class="result-rhyme-rule">× {escape(check["rule"])}</div>'
                 f'<div class="result-rhyme-detail"><strong>{escape(pair)}</strong> · วรรค {check["source_line"]} → {check["target_line"]} · ไม่พบเสียงสัมผัส</div>'
                 "</div>"
             )
         if not cards:
             cards.append(
-                '<div class="result-issue-card"><div class="result-rhyme-rule">× ไม่พบจุดสัมผัสที่ตรวจได้</div>'
+                '<div class="result-issue-card result-rhyme-card"><div class="result-rhyme-rule">× ไม่พบจุดสัมผัสที่ตรวจได้</div>'
                 '<div class="result-rhyme-detail">ระบบไม่พบพยางค์ที่เพียงพอสำหรับตรวจสัมผัสของบทนี้</div></div>'
             )
         sections.append(
