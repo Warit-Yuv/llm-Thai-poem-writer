@@ -3,8 +3,8 @@
 This Streamlit research interface presents structural analysis for กลอนสี่ and
 กลอนแปด. สัมผัส verification is provided by the repository's
 `core.KhaveeVerifier`.
-Pronunciation lookup prioritizes the curated `POETRY_OVERRIDES` dictionary and
-falls back to the PyThaiNLP w2p and ssg engines when necessary.
+The UI uses PyThaiNLP `syllable_tokenize(engine="ssg")` exclusively for
+syllable segmentation. It does not use the w2p pronunciation model.
 
 ## Run locally
 

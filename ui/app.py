@@ -49,6 +49,7 @@ WAK_NAMES = ("วรรคสดับ", "วรรครับ", "วรรค�
 WORD_SLOTS = {4: 4, 8: 8}
 MAX_WORD_SLOTS = {4: 5, 8: 9}
 EDITOR_SCHEMA_VERSION = 12
+REPORT_SCHEMA_VERSION = "1.2"
 MAX_PREVIEW_TEXT_LENGTH = 100_000
 EDITOR_LINE_SEPARATOR = re.compile(r"\r\n?|\n")
 
@@ -325,6 +326,10 @@ h1,h2,h3 { color:var(--ink); letter-spacing:-.02em; }
 }
 .input-workbench { margin-top:.2rem; }
 .workbench-title { margin:0 0 .48rem; color:var(--vermilion); font-size:1.08rem; font-weight:700; line-height:1.45; }
+.workbench-heading-row { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.22rem clamp(.35rem,1vw,.8rem); margin:0 0 .48rem; }
+.workbench-heading-row .workbench-title { flex:0 0 auto; margin:0; font-size:clamp(.86rem,1.25vw,1.08rem); white-space:nowrap; }
+.input-meter-warning { display:inline-flex; flex:0 0 auto; align-items:center; justify-content:flex-end; gap:.42rem; color:#f5a019; font-size:clamp(.7rem,1vw,.84rem); font-weight:700; line-height:1.28; text-align:left; white-space:nowrap; }
+.input-meter-warning svg { width:1.55rem; height:1.55rem; flex:0 0 1.55rem; stroke:currentColor; }
 .rhyme-lab-result { display:grid; grid-template-columns:minmax(8.4rem,.72fr) minmax(0,1.55fr); gap:.65rem; margin-top:.65rem; }
 .rhyme-verdict { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:7rem; padding:.72rem; border:1px solid var(--line); border-radius:10px; background:#fffdf9; text-align:center; }
 .rhyme-verdict.pass { border-color:#b9dccb; background:#f3fbf6; color:#176443; }
@@ -508,6 +513,10 @@ div[data-testid="stDialog"] div[role="dialog"] { background:#fffdf9 !important; 
   .block-container { padding-top:1rem; }
   .hero { padding:1.15rem 1rem 1.05rem; }
   .hero .project-link { letter-spacing:.025em; }
+  .workbench-heading-row { flex-wrap:wrap; gap:.22rem .38rem; }
+  .workbench-heading-row .workbench-title { flex:0 0 100%; font-size:.92rem; }
+  .input-meter-warning { flex:0 0 100%; justify-content:flex-start; font-size:.74rem; }
+  .input-meter-warning svg { width:1.25rem; height:1.25rem; flex-basis:1.25rem; }
   .result-heading-row { gap:.5rem; }
   .result-heading-row h2 { width:100%; font-size:1.55rem; }
   .result-status-pill { flex:1; justify-content:center; min-width:8.5rem; font-size:.84rem; }
@@ -592,6 +601,36 @@ def clear_analysis() -> None:
     st.session_state.pop("analysis_error", None)
 
 
+def input_meter_warning_html(poem_text: str, klon_type: int) -> str:
+    """Show a compact live warning when a written wak is outside its range."""
+    limits = {4: (4, 5), 8: (7, 9)}
+    minimum, maximum = limits[klon_type]
+    out_of_range = False
+    for wak in parse_waks(poem_text):
+        count = len(tokenize_editor_syllable_units(wak))
+        if count < minimum or count > maximum:
+            out_of_range = True
+            break
+
+    warning = ""
+    if out_of_range:
+        warning = (
+            '<span class="input-meter-warning" role="status">'
+            '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">'
+            '<path d="M12 3 22 21H2L12 3Z" stroke-width="1.7" stroke-linejoin="round"/>'
+            '<path d="M12 8v6" stroke-width="1.7" stroke-linecap="round"/>'
+            '<circle cx="12" cy="17.5" r="1" fill="currentColor" stroke="none"/>'
+            '</svg>'
+            f'<span>โปรดพิมพ์ให้ {minimum}–{maximum} พยางค์</span>'
+            '</span>'
+        )
+    return (
+        '<div class="workbench-heading-row">'
+        '<div class="workbench-title">วางหรือพิมพ์กลอน</div>'
+        f'{warning}</div>'
+    )
+
+
 def poem_cell_key(klon_type: int, line_index: int, slot_index: int) -> str:
     return f"poem_cell_{klon_type}_{line_index}_{slot_index}"
 
@@ -641,7 +680,9 @@ def _fit_words_to_slots(words: list[str], slot_count: int) -> list[str]:
 
 
 def _slot_count_for_units(klon_type: int, unit_count: int) -> int:
-    """Use the canonical slot count until a supported extra syllable appears."""
+    """Keep blank rows canonical and fit supported populated line lengths."""
+    if klon_type == 8 and unit_count == 7:
+        return 7
     return min(
         MAX_WORD_SLOTS[klon_type],
         max(WORD_SLOTS[klon_type], unit_count),
@@ -791,10 +832,10 @@ def sync_cell_to_text(cell_key: str, line_index: int, slot_index: int, klon_type
     clear_analysis()
 
 
-def add_baht() -> None:
+def add_stanza() -> None:
     st.session_state.editor_baht_count = max(
         2, int(st.session_state.get("editor_baht_count", 2))
-    ) + 1
+    ) + 2
     clear_analysis()
 
 
@@ -949,7 +990,7 @@ def render_poem_editor(klon_type: int) -> None:
         st.button(
             "＋",
             key="add_baht",
-            on_click=add_baht,
+            on_click=add_stanza,
         )
 
 
@@ -1280,6 +1321,16 @@ if "poem_input" not in st.session_state:
 if "editor_baht_count" not in st.session_state:
     st.session_state.editor_baht_count = 2
 
+# Streamlit keeps session_state across source-code reloads. Discard a report
+# produced by older checking rules so the UI cannot continue showing a stale
+# meter result after the backend has been updated.
+stored_report = st.session_state.get("report")
+if (
+    isinstance(stored_report, dict)
+    and stored_report.get("schema_version") != REPORT_SCHEMA_VERSION
+):
+    clear_analysis()
+
 klon_type = st.segmented_control(
     "เลือกรูปแบบคำประพันธ์",
     options=[4, 8],
@@ -1322,7 +1373,10 @@ render_poem_editor(klon_type)
 with st.container(key="input_workbench"):
     text_column, sound_column = st.columns([.9, 1.35], gap="large")
     with text_column:
-        st.markdown('<div class="workbench-title">วางหรือพิมพ์กลอน</div>', unsafe_allow_html=True)
+        st.markdown(
+            input_meter_warning_html(st.session_state.poem_input, klon_type),
+            unsafe_allow_html=True,
+        )
         poem = st.text_area(
             "ข้อความกลอน",
             key="poem_input",
