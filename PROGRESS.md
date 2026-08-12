@@ -946,6 +946,16 @@ oracle limitation that the generator's oracle-gate could not self-detect:
   มิตร~ผิด, NOT มนุษย์), arrows + Thai verse line (XeLaTeX only).
 - Verified: XeLaTeX compiles (7 pp, only benign TU/ptm warnings); algorithm, table,
   figure and Thai all confirmed in the extracted PDF text.
+- **Fig 1 now shows rX**: added the previous stanza's wak 4 as a dashed top row
+  (ที่จิตใครจะเป็นหนึ่งอย่าพึงคิด, last syllable คิด highlighted) with the dashed
+  rX arrow คิด→จิต (verified rhyme: อิ+กด). Removed the repeated verse block from
+  §2.1 (\thaistanza now unused — this also removed the "off-looking" Thai there,
+  which was a pdftotext combining-mark artifact; the verse now lives only in Fig 1).
+- **Cut to 6 pages (XeLaTeX)**: removed 3 tables (tab:augrules per-rule P/R,
+  tab:augmix composition — operator counts folded into prose, tab:corpus stats);
+  tightened abstract, related work, methodology, discussion, applications,
+  conclusion, and several verbose references. Final layout: **4 tables** (changes,
+  gold, aug, ob) + **Algorithm 1** + **Fig 1** = exactly 6 pages. PDF rebuilt.
 
 ## Session 4 — Checker runtime, parity validation, smoke test (2026-08-09)
 
