@@ -249,48 +249,59 @@ class.
 \begin{figure}[t]
 \centering
 \begin{tikzpicture}[
-  cell/.style={draw, minimum width=0.66cm, minimum height=0.36cm, inner sep=0pt, font=\tiny},
-  prev/.style={draw, dashed, minimum width=0.66cm, minimum height=0.36cm, inner sep=0pt, font=\tiny},
+  cell/.style={draw, minimum width=0.72cm, minimum height=0.45cm, inner sep=0pt, font=\scriptsize},
+  prev/.style={draw, dashed, minimum width=0.72cm, minimum height=0.45cm, inner sep=0pt, font=\scriptsize},
   lbl/.style={font=\scriptsize, anchor=east}]
+  
+  % Tighter vertical spacing adjustments
+  \def\xstep{0.75}
+  \def\ystep{-1.0}
+  \def\arrowdrop{-0.275} % Drops the arrow exactly halfway between the rows
+  
   % previous stanza, wak 4 (rX source; dashed = different stanza)
+  % ที่จิตใครจะเป็นหนึ่งอย่าพึงคิด
   \foreach \i/\s in {1/thi,2/cit,3/khrai,4/ca,5/pen,6/nueng,7/ya,8/phueng,9/khit}
-    \node[prev] (p\i) at (\i*0.68,0.78) {\s};
+    \node[prev] (p\i) at (\i*\xstep, 1.0) {\s};
   \node[prev,fill=gray!25] at (p9) {khit};
-  \node[lbl] at (0.1,0.78) {prev. wak 4};
-  % wak 1 (sadap)
+  \node[lbl] at (0.3, 1.0) {prev. wak 4};
+  
+  % wak 1 (sadap) ถึงบางพูดพูดดีเป็นศรีศักดิ์
   \foreach \i/\s in {1/thueng,2/bang,3/phut,4/phut,5/dii,6/pen,7/si,8/sak}
-    \node[cell] (w1\i) at (\i*0.68,0) {\s};
+    \node[cell] (w1\i) at (\i*\xstep, 0) {\s};
   \node[cell,fill=gray!25,line width=0.9pt] at (w18) {sak};
-  \node[lbl] at (0.1,0) {\emph{sadap}};
-  % wak 2 (rap)
+  \node[lbl] at (0.3, 0) {\emph{sadap}};
+  
+  % wak 2 (rap) มีคนรักรสถ้อยอร่อยจิต
   \foreach \i/\s in {1/mii,2/khon,3/rak,4/rot,5/thoi,6/a,7/roi,8/cit}
-    \node[cell] (w2\i) at (\i*0.68,-0.78) {\s};
+    \node[cell] (w2\i) at (\i*\xstep, \ystep) {\s};
   \node[cell,fill=gray!25,line width=0.9pt] at (w23) {rak};
   \node[cell,fill=gray!25,line width=0.9pt] at (w28) {cit};
-  \node[lbl] at (0.1,-0.85) {\emph{rap}};
-  % wak 3 (rong)
+  \node[lbl] at (0.3, \ystep) {\emph{rap}};
+  
+  % wak 3 (rong) แม้นพูดชั่วตัวตายทำลายมิตร
   \foreach \i/\s in {1/maen,2/phut,3/chua,4/tua,5/taai,6/tham,7/lai,8/mit}
-    \node[cell] (w3\i) at (\i*0.68,-1.56) {\s};
+    \node[cell] (w3\i) at (\i*\xstep, 2*\ystep) {\s};
   \node[cell,fill=gray!25,line width=0.9pt] at (w38) {mit};
-  \node[lbl] at (0.1,-1.70) {\emph{rong}};
-  % wak 4 (song)
+  \node[lbl] at (0.3, 2*\ystep) {\emph{rong}};
+  
+  % wak 4 (song) จะชอบผิดในมนุษย์เพราะพูดจา
   \foreach \i/\s in {1/ca,2/chop,3/phit,4/nai,5/ma,6/nut,7/phro,8/phut,9/caa}
-    \node[cell] (w4\i) at (\i*0.68,-2.34) {\s};
+    \node[cell] (w4\i) at (\i*\xstep, 3*\ystep) {\s};
   \node[cell,fill=gray!25,line width=0.9pt] at (w43) {phit};
-  \node[lbl] at (0.1,-2.55) {\emph{song}};
-  % rhyme arrows
-  \draw[thick,->] (w18) .. controls (4.0,-0.18) and (3.0,-0.42) .. (w23);
-  \node[font=\tiny] at (4.05,-0.42) {r1};
-  \draw[thick,->] (w28) -- (w38);
-  \node[font=\tiny] at (5.7,-1.18) {r2};
-  \draw[thick,->] (w38) .. controls (4.0,-1.88) and (3.0,-2.12) .. (w43);
-  \node[font=\tiny] at (4.05,-2.12) {r3};
-  % inter-stanza rhyme (rX): prev wak4 last -> wak2 last
-  \draw[thick,dashed,->] (p9) .. controls (5.1,0.45) and (4.4,-0.15) .. (w28);
-  \node[font=\tiny] at (5.05,0.42) {rX};
+  \node[lbl] at (0.3, 3*\ystep) {\emph{song}};
+  
+  % rhyme arrows (routed orthogonally with white background nodes to prevent crossing lines)
+  \draw[thick,->,rounded corners=2pt] (w18.south) -- ++(0,\arrowdrop) coordinate (tmp1) -- (tmp1 -| w23.north) node[midway, above, fill=white, inner sep=1.5pt, font=\scriptsize] {r1} -- (w23.north);
+  
+  \draw[thick,->] (w28.south) -- node[midway, right, fill=white, inner sep=1.5pt, font=\scriptsize] {r2} (w38.north);
+  
+  \draw[thick,->,rounded corners=2pt] (w38.south) -- ++(0,\arrowdrop) coordinate (tmp3) -- (tmp3 -| w43.north) node[midway, above, fill=white, inner sep=1.5pt, font=\scriptsize] {r3} -- (w43.north);
+  
+  % inter-stanza rhyme (rX): prev wak4 last -> wak2 last (routed around the right side)
+  \draw[thick,dashed,->,rounded corners=2pt] (p9.east) -- ++(0.5,0) coordinate (tmpx) -- (tmpx |- w28.east) node[midway, right, fill=white, inner sep=1.5pt, font=\scriptsize] {rX} -- (w28.east);
 \end{tikzpicture}
-\ifXeTeX\\[2pt]{\small\centering\thtxt{ถึงบางพูดพูดดีเป็นศรีศักดิ์ มีคนรักรสถ้อยอร่อยจิต\\
-แม้นพูดชั่วตัวตายทำลายมิตร จะชอบผิดในมนุษย์เพราะพูดจา}}\fi
+\ifXeTeX\\[2pt]{\small\centering\thtxt{... ที่จิตใครจะเป็นหนึ่งอย่าพึงคิด\\
+ถึงบางพูดพูดดีเป็นศรีศักดิ์ มีคนรักรสถ้อยอร่อยจิต\\แม้นพูดชั่วตัวตายทำลายมิตร จะชอบผิดในมนุษย์เพราะพูดจา}}\fi
 \caption{The example stanza (Section~2.1) with its rhyme positions shaded
 and linked: r1 (\emph{sadap}$\rightarrow$\emph{rap}), r2
 (\emph{rap}$\rightarrow$\emph{rong}), r3
@@ -364,7 +375,7 @@ extracted: the final syllable of every wak and the first five syllables of
 waks~2 and~4. (3)~The rhyme test \texttt{is\_sumpus} decides whether two
 syllables rhyme; a rule holds if the test succeeds for at least one
 permitted target. The eight-syllable meter is additionally reported.
-Algorithm~\ref{alg:klon} summarises this flow. The \texttt{check\_klon}
+Algorithm~\ref{alg:klonalg} summarises this flow. The \texttt{check\_klon}
 entry point splits the poem on whitespace, groups waks into stanzas of
 exactly four (rejecting incomplete stanzas), enforces the metre with
 per-wak word-count limits---ten for Klon~8 and five for Klon~4---and reports every violation as a structured
@@ -373,7 +384,7 @@ rhyme.
 
 \begin{algorithm}[t]
 \caption{Rhyme verification of a Klon-Paed poem (\texttt{check\_klon}).}
-\label{alg:klon}
+\label{alg:klonalg}
 \begin{algorithmic}[1]
 \REQUIRE poem $T$ with waks separated by whitespace; type $k\in\{4,8\}$
 \ENSURE list of rhyme errors (empty $\Leftrightarrow$ poem is valid)
@@ -398,8 +409,8 @@ misparsed the \emph{ua} diphthong and to resolve the transformed and
 reduced vowels signalled by the short-vowel mark
 \thpar{\emph{mai tai khu}}{ไม้ไต่คู้}: \emph{chet} $\rightarrow$ short
 \emph{e}, \emph{khaeng} $\rightarrow$ short \emph{ae}, \emph{ko}
-$\rightarrow$ \thpar{\emph{ao}}{เอาะ}. The \emph{ro han}
-(\thpar{\emph{ro han}}{รร}) is evaluated once, yielding \emph{am} in a
+$\rightarrow$ \thpar{\emph{ao}}{เอาะ}. The
+\thgloss{\emph{ro han}}{รร} is evaluated once, yielding \emph{am} in a
 \emph{mae kom} context (e.g., \thgloss{\emph{thamm}}{ธรรม}) and \emph{a}
 elsewhere. The three readings of \thpar{\emph{ru}}{ฤ} and
 \thpar{\emph{lue}}{ฦ} are classified from the original spelling
