@@ -36,6 +36,9 @@ class StreamlitSmokeTests(unittest.TestCase):
         self.assertIn("poem-rhyme-overlay", bridge)
         self.assertIn("getBoundingClientRect", bridge)
         self.assertIn("ResizeObserver", bridge)
+        self.assertIn("function lastSlot(cells, line)", bridge)
+        self.assertIn("point(stanzaStart, lastSlot(cells, stanzaStart))", bridge)
+        self.assertIn("point(stanzaStart + 3, lastSlot(cells, stanzaStart + 3))", bridge)
         self.assertNotIn("Intl.Segmenter", bridge)
         self.assertNotIn("segmentLine", bridge)
 
@@ -45,7 +48,7 @@ class StreamlitSmokeTests(unittest.TestCase):
 
         self.assertIn("def apply_live_preview_bridge()", source)
         self.assertIn("load_poem_into_grid(raw_text, klon_type, normalize_text=False)", source)
-        self.assertIn("words = tokenize_editor_units(wak)", source)
+        self.assertIn("words = tokenize_editor_syllable_units(wak)", source)
 
     def test_simple_flow_loads_example_and_analyzes_without_exception(self):
         app_path = Path(__file__).resolve().parents[1] / "app.py"
@@ -57,8 +60,8 @@ class StreamlitSmokeTests(unittest.TestCase):
         app.button(key="use_example").click().run(timeout=30)
         self.assertEqual(len(app.exception), 0)
         self.assertEqual(
-            [app.text_area(key=f"poem_cell_8_0_{index}").value for index in range(8)],
-            ["บาท", "หลวง", "งก", "ตก", "ประ", "หม่า", "ให้", "ล่าทัพ"],
+            [app.text_area(key=f"poem_cell_8_0_{index}").value for index in range(9)],
+            ["บาท", "หลวง", "งก", "ตก", "ประ", "หม่า", "ให้", "ล่า", "ทัพ"],
         )
         third_wak = [
             item.value
@@ -86,6 +89,21 @@ class StreamlitSmokeTests(unittest.TestCase):
         self.assertIn('class="rhyme-a">ทัพ</span>', summaries[0])
         self.assertIn('class="rhyme-a">กลับ</span>', summaries[0])
         self.assertNotIn('class="rhyme-a">ล่าทัพ</span>', summaries[0])
+
+    def test_report_from_older_checking_rules_is_cleared_on_reload(self):
+        app_path = Path(__file__).resolve().parents[1] / "app.py"
+        app = AppTest.from_file(str(app_path)).run(timeout=30)
+
+        app.button(key="use_example").click().run(timeout=30)
+        app.button(key="analyze").click().run(timeout=30)
+        stale_report = dict(app.session_state["report"])
+        stale_report["schema_version"] = "1.0"
+        app.session_state["report"] = stale_report
+
+        app.run(timeout=30)
+
+        self.assertEqual(len(app.exception), 0)
+        self.assertNotIn("report", app.session_state)
 
     def test_failed_result_shows_syllable_and_rhyme_issue_sections(self):
         app_path = Path(__file__).resolve().parents[1] / "app.py"
@@ -116,6 +134,46 @@ class StreamlitSmokeTests(unittest.TestCase):
         self.assertNotIn("เกณฑ์ 7–9 พยางค์", issues)
         self.assertLess(issues.index("จำนวนทั้งหมด 1 พยางค์"), issues.index(">สั้น</div>"))
         self.assertLess(issues.index(">สั้น</div>"), issues.index("วรรค 4 · วรรคส่ง"))
+
+    def test_seven_syllable_klon_eight_lines_do_not_show_meter_issues(self):
+        app_path = Path(__file__).resolve().parents[1] / "app.py"
+        app = AppTest.from_file(str(app_path)).run(timeout=30)
+        poem = "\n".join(["ดนตรีมีคุณที่ข้อไหน"] * 4)
+
+        app.text_area(key="poem_input").set_value(poem).run(timeout=30)
+        app.button(key="analyze").click().run(timeout=30)
+
+        self.assertEqual(len(app.exception), 0)
+        self.assertEqual(app.session_state["report"]["summary"]["meter_passed"], 4)
+        issues = "".join(
+            item.value
+            for item in app.markdown
+            if 'class="result-issue-section"' in item.value
+        )
+        self.assertNotIn("พยางค์ที่ต้องตรวจ", issues)
+
+    def test_input_meter_warning_tracks_supported_range_before_analysis(self):
+        app_path = Path(__file__).resolve().parents[1] / "app.py"
+        app = AppTest.from_file(str(app_path)).run(timeout=30)
+
+        app.text_area(key="poem_input").set_value("ดนตรีมีคุณ").run(timeout=30)
+        heading = next(
+            item.value for item in app.markdown if 'class="workbench-heading-row"' in item.value
+        )
+        self.assertIn("โปรดพิมพ์ให้ 7–9 พยางค์", heading)
+
+        app.text_area(key="poem_input").set_value("ดนตรีมีคุณที่ข้อไหน").run(timeout=30)
+        heading = next(
+            item.value for item in app.markdown if 'class="workbench-heading-row"' in item.value
+        )
+        self.assertNotIn("input-meter-warning", heading)
+
+        app.segmented_control[0].set_value(4).run(timeout=30)
+        app.text_area(key="poem_input").set_value("ฉันชื่อ").run(timeout=30)
+        heading = next(
+            item.value for item in app.markdown if 'class="workbench-heading-row"' in item.value
+        )
+        self.assertIn("โปรดพิมพ์ให้ 4–5 พยางค์", heading)
 
     def test_klon_four_can_be_selected_and_analyzed(self):
         app_path = Path(__file__).resolve().parents[1] / "app.py"
@@ -186,6 +244,113 @@ class StreamlitSmokeTests(unittest.TestCase):
         )
         self.assertEqual(klon4_top_wire.count("wire-option"), 2)
 
+    def test_each_line_adds_only_the_supported_extra_syllable_slot(self):
+        app_path = Path(__file__).resolve().parents[1] / "app.py"
+        app = AppTest.from_file(str(app_path)).run(timeout=30)
+
+        # Blank Klon 8 starts at eight cells. Nine detected editable syllables
+        # add a ninth cell only to the affected lines.
+        self.assertEqual(
+            len([item for item in app.text_area if item.key.startswith("poem_cell_8_")]),
+            32,
+        )
+        app.button(key="use_example").click().run(timeout=30)
+        first_line = [
+            item.value for item in app.text_area if item.key.startswith("poem_cell_8_0_")
+        ]
+        third_line = [
+            item.value for item in app.text_area if item.key.startswith("poem_cell_8_2_")
+        ]
+        self.assertEqual(len(first_line), 9)
+        self.assertEqual(first_line[-2:], ["ล่า", "ทัพ"])
+        self.assertEqual(len(third_line), 8)
+
+        # Klon 4 follows the same rule: four by default, five when detected.
+        app.segmented_control[0].set_value(4).run(timeout=30)
+        five_syllable_poem = """ฉันชื่อหมูกรอบนะ
+ฉันชอบกินไก่นะ
+แล้ววิ่งตามไปนะ
+ไล่หมาน้ำทองนะ"""
+        app.text_area(key="poem_input").set_value(five_syllable_poem).run(timeout=30)
+        for line_index in range(4):
+            line_cells = [
+                item
+                for item in app.text_area
+                if item.key.startswith(f"poem_cell_4_{line_index}_")
+            ]
+            self.assertEqual(len(line_cells), 5)
+            self.assertEqual(line_cells[-1].label, f"{('วรรคสดับ', 'วรรครับ', 'วรรครอง', 'วรรคส่ง')[line_index]} คำที่ 5")
+
+    def test_typing_two_syllables_in_the_last_default_cell_expands_and_shrinks(self):
+        app_path = Path(__file__).resolve().parents[1] / "app.py"
+        app = AppTest.from_file(str(app_path)).run(timeout=30)
+
+        app.text_area(key="poem_cell_8_0_7").set_value("ล่าทัพ").run(timeout=30)
+        expanded = [
+            item.value for item in app.text_area if item.key.startswith("poem_cell_8_0_")
+        ]
+        self.assertEqual(len(expanded), 9)
+        self.assertEqual(expanded[-2:], ["ล่า", "ทัพ"])
+
+        app.text_area(key="poem_cell_8_0_8").set_value("").run(timeout=30)
+        collapsed = [
+            item.value for item in app.text_area if item.key.startswith("poem_cell_8_0_")
+        ]
+        self.assertEqual(len(collapsed), 8)
+        self.assertEqual(collapsed[-1], "ล่า")
+
+    def test_klon_eight_line_with_seven_syllables_shows_seven_cells(self):
+        app_path = Path(__file__).resolve().parents[1] / "app.py"
+        app = AppTest.from_file(str(app_path)).run(timeout=30)
+        poem = """ลมพัดผ่านบ้านเราวันนี้
+ลมพัดผ่านบ้านเราวันนี้
+ลมพัดผ่านบ้านเราวันนี้
+ลมพัดผ่านบ้านเราวันนี้"""
+
+        app.text_area(key="poem_input").set_value(poem).run(timeout=30)
+
+        for line_index in range(4):
+            line_cells = [
+                item
+                for item in app.text_area
+                if item.key.startswith(f"poem_cell_8_{line_index}_")
+            ]
+            self.assertEqual(len(line_cells), 7)
+
+        blank_app = AppTest.from_file(str(app_path)).run(timeout=30)
+        blank_cells = [
+            item for item in blank_app.text_area if item.key.startswith("poem_cell_8_")
+        ]
+        self.assertEqual(len(blank_cells), 32)
+
+    def test_ssg_units_populate_without_rewriting_the_source_poem(self):
+        app_path = Path(__file__).resolve().parents[1] / "app.py"
+        app = AppTest.from_file(str(app_path)).run(timeout=30)
+        poem = """เห็นเรือรบตบตีมหาสมุทร
+ยิงพันคุดเลโอโอ้โหเอะ
+เห็นเรือรบตบตีมหาสมุทร
+ยิงพันคุดเลโอโอ้โหเอะ"""
+
+        app.text_area(key="poem_input").set_value(poem).run(timeout=30)
+        first_line = [
+            item.value for item in app.text_area if item.key.startswith("poem_cell_8_0_")
+        ]
+        second_line = [
+            item.value for item in app.text_area if item.key.startswith("poem_cell_8_1_")
+        ]
+
+        self.assertEqual(
+            first_line,
+            ["เห็น", "เรือ", "รบ", "ตบ", "ตี", "มหา", "สมุทร"],
+        )
+        self.assertEqual(second_line, ["ยิง", "พัน", "คุด", "เล", "โอ", "โอ้", "โห", "เอะ"])
+        self.assertEqual(app.session_state["poem_input"], poem)
+
+        app.button(key="analyze").click().run(timeout=30)
+        self.assertEqual(app.session_state["report"]["lines"][0]["text"], "เห็นเรือรบตบตีมหาสมุทร")
+        self.assertEqual(app.session_state["report"]["lines"][0]["syllable_count"], 7)
+        self.assertEqual(app.session_state["report"]["lines"][1]["syllable_count"], 8)
+
     def test_text_box_normalizes_punctuation_and_populates_the_grid(self):
         app_path = Path(__file__).resolve().parents[1] / "app.py"
         app = AppTest.from_file(str(app_path)).run(timeout=30)
@@ -214,8 +379,8 @@ class StreamlitSmokeTests(unittest.TestCase):
 
         self.assertEqual(len(app.exception), 0)
         self.assertEqual(
-            [app.text_area(key=f"poem_cell_8_0_{index}").value for index in range(8)],
-            ["บาท", "หลวง", "งก", "ตก", "ประ", "หม่า", "ให้", "ล่าทัพ"],
+            [app.text_area(key=f"poem_cell_8_0_{index}").value for index in range(9)],
+            ["บาท", "หลวง", "งก", "ตก", "ประ", "หม่า", "ให้", "ล่า", "ทัพ"],
         )
         self.assertNotIn("report", app.session_state)
 
@@ -298,16 +463,16 @@ class StreamlitSmokeTests(unittest.TestCase):
             "ดอกไม้บานผ่านฝนบนทางฝัน",
         )
 
-    def test_add_button_adds_one_baht_with_two_waks(self):
+    def test_add_button_adds_one_stanza_with_four_waks(self):
         app_path = Path(__file__).resolve().parents[1] / "app.py"
         app = AppTest.from_file(str(app_path)).run(timeout=30)
 
         app.button(key="add_baht").click().run(timeout=30)
 
         self.assertEqual(len(app.exception), 0)
-        self.assertEqual(app.session_state["editor_baht_count"], 3)
+        self.assertEqual(app.session_state["editor_baht_count"], 4)
         cells = [item for item in app.text_area if item.key.startswith("poem_cell_8_")]
-        self.assertEqual(len(cells), 48)
+        self.assertEqual(len(cells), 64)
         wire_routes = [
             item.value for item in app.markdown if 'class="rhyme-wire ' in item.value
         ]
@@ -320,9 +485,9 @@ class StreamlitSmokeTests(unittest.TestCase):
         ]
         self.assertEqual(len(stanza_brackets), 2)
         self.assertTrue(any("บทที่ 2" in bracket for bracket in stanza_brackets))
-        self.assertEqual(len(baht_labels), 3)
+        self.assertEqual(len(baht_labels), 4)
         self.assertEqual(sum("บาทเอก" in label for label in baht_labels), 2)
-        self.assertEqual(sum("บาทโท" in label for label in baht_labels), 1)
+        self.assertEqual(sum("บาทโท" in label for label in baht_labels), 2)
 
     def test_rhyme_research_tool_explains_a_pair(self):
         app_path = Path(__file__).resolve().parents[1] / "app.py"

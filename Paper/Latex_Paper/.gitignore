@@ -10,4 +10,8 @@
 *.lof
 *.lot
 *.synctex.gz
+*.xdv
 texput.log
+
+# Local backup of the paper source (kept as a safety copy, not for git)
+iSAI-Klon-Checker.backup.tex

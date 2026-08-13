@@ -23,6 +23,7 @@ from checker import (  # noqa: E402
     compare_rhyme,
     parse_waks,
     pronounce_word,
+    tokenize_editor_syllable_units,
     tokenize_editor_units,
 )
 
@@ -46,7 +47,9 @@ EXAMPLE_POEMS = {
 KLON_NAMES = {4: "กลอนสี่", 8: "กลอนแปด"}
 WAK_NAMES = ("วรรคสดับ", "วรรครับ", "วรรครอง", "วรรคส่ง")
 WORD_SLOTS = {4: 4, 8: 8}
-EDITOR_SCHEMA_VERSION = 10
+MAX_WORD_SLOTS = {4: 5, 8: 9}
+EDITOR_SCHEMA_VERSION = 12
+REPORT_SCHEMA_VERSION = "1.2"
 MAX_PREVIEW_TEXT_LENGTH = 100_000
 EDITOR_LINE_SEPARATOR = re.compile(r"\r\n?|\n")
 
@@ -298,6 +301,12 @@ h1,h2,h3 { color:var(--ink); letter-spacing:-.02em; }
 }
 [class*="st-key-poem_cell_"] textarea::-webkit-scrollbar { display:none; }
 [class*="st-key-poem_cell_"] textarea::placeholder { color:#a8998e; opacity:1; }
+.st-key-add_baht {
+  display:flex !important;
+  justify-content:center !important;
+  width:100% !important;
+  max-width:none !important;
+}
 .st-key-add_baht button {
   display:flex; align-items:center; justify-content:center;
   box-sizing:border-box !important; flex:0 0 2.75rem !important;
@@ -309,11 +318,18 @@ h1,h2,h3 { color:var(--ink); letter-spacing:-.02em; }
   background:#fffdf8 !important; color:var(--vermilion) !important;
   font-size:1.45rem !important; box-shadow:none !important;
 }
-.st-key-add_baht [data-testid="stButton"] { display:flex; justify-content:center; width:100%; min-width:2.75rem; overflow:visible; }
+.st-key-add_baht [data-testid="stButton"] { display:flex; justify-content:center; width:100% !important; min-width:2.75rem; overflow:visible; }
 .st-key-add_baht button:hover { border-color:var(--vermilion) !important; background:#fff7ef !important; transform:none !important; }
 .st-key-add_baht button p { color:var(--vermilion) !important; font-size:1.45rem !important; line-height:1 !important; }
+@media (min-width:641px) {
+  .st-key-add_baht { transform:translateX(.4rem); }
+}
 .input-workbench { margin-top:.2rem; }
 .workbench-title { margin:0 0 .48rem; color:var(--vermilion); font-size:1.08rem; font-weight:700; line-height:1.45; }
+.workbench-heading-row { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.22rem clamp(.35rem,1vw,.8rem); margin:0 0 .48rem; }
+.workbench-heading-row .workbench-title { flex:0 0 auto; margin:0; font-size:clamp(.86rem,1.25vw,1.08rem); white-space:nowrap; }
+.input-meter-warning { display:inline-flex; flex:0 0 auto; align-items:center; justify-content:flex-end; gap:.42rem; color:#f5a019; font-size:clamp(.7rem,1vw,.84rem); font-weight:700; line-height:1.28; text-align:left; white-space:nowrap; }
+.input-meter-warning svg { width:1.55rem; height:1.55rem; flex:0 0 1.55rem; stroke:currentColor; }
 .rhyme-lab-result { display:grid; grid-template-columns:minmax(8.4rem,.72fr) minmax(0,1.55fr); gap:.65rem; margin-top:.65rem; }
 .rhyme-verdict { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:7rem; padding:.72rem; border:1px solid var(--line); border-radius:10px; background:#fffdf9; text-align:center; }
 .rhyme-verdict.pass { border-color:#b9dccb; background:#f3fbf6; color:#176443; }
@@ -403,10 +419,18 @@ div[data-testid="stDialog"] div[role="dialog"] { background:#fffdf9 !important; 
 [data-testid="stTextArea"] textarea { font-size:1rem; line-height:1.65; }
 [data-testid="stButtonGroup"] { width:min(100%,650px); margin:.25rem 0 .35rem; }
 [data-testid="stButtonGroup"] > label {
-  color:var(--ink);
-  font-size:.96rem;
+  color:var(--vermilion);
+  font-size:.92rem;
   font-weight:700;
+  letter-spacing:.025em;
   margin-bottom:.45rem;
+}
+[data-testid="stButtonGroup"] > label p {
+  color:var(--vermilion) !important;
+  font-size:.92rem !important;
+  font-weight:700 !important;
+  letter-spacing:.025em !important;
+  line-height:1.4 !important;
 }
 [data-testid="stButtonGroup"] div[role="radiogroup"] {
   display:grid;
@@ -489,6 +513,10 @@ div[data-testid="stDialog"] div[role="dialog"] { background:#fffdf9 !important; 
   .block-container { padding-top:1rem; }
   .hero { padding:1.15rem 1rem 1.05rem; }
   .hero .project-link { letter-spacing:.025em; }
+  .workbench-heading-row { flex-wrap:wrap; gap:.22rem .38rem; }
+  .workbench-heading-row .workbench-title { flex:0 0 100%; font-size:.92rem; }
+  .input-meter-warning { flex:0 0 100%; justify-content:flex-start; font-size:.74rem; }
+  .input-meter-warning svg { width:1.25rem; height:1.25rem; flex-basis:1.25rem; }
   .result-heading-row { gap:.5rem; }
   .result-heading-row h2 { width:100%; font-size:1.55rem; }
   .result-status-pill { flex:1; justify-content:center; min-width:8.5rem; font-size:.84rem; }
@@ -515,9 +543,40 @@ div[data-testid="stDialog"] div[role="dialog"] { background:#fffdf9 !important; 
   .summary-tile-label { font-size:clamp(.68rem,2.2vw,.78rem); }
   .summary-tile-value { margin-top:.38rem; font-size:1.55rem; }
   .line-card { grid-column:auto; height:auto; }
-  .st-key-poem_grid { padding:.8rem; }
+  .st-key-poem_grid {
+    overflow-x:clip;
+    padding:.7rem .35rem .8rem;
+  }
+  .st-key-poem_grid [data-testid="stHorizontalBlock"] {
+    flex-direction:row !important;
+    flex-wrap:nowrap !important;
+    gap:.18rem !important;
+  }
+  .st-key-poem_grid [data-testid="stColumn"] {
+    flex:1 1 0 !important;
+    width:0 !important;
+    min-width:0 !important;
+  }
+  .st-key-poem_grid [class*="st-key-poem_cell_"] {
+    min-width:0 !important;
+  }
+  .st-key-poem_grid [class*="st-key-poem_cell_"] [data-testid="stTextAreaRootElement"] {
+    min-height:clamp(1.05rem,4.7vw,1.55rem) !important;
+    height:clamp(1.05rem,4.7vw,1.55rem) !important;
+  }
+  .st-key-poem_grid [class*="st-key-poem_cell_"] textarea {
+    min-height:clamp(1.05rem,4.7vw,1.55rem) !important;
+    height:clamp(1.05rem,4.7vw,1.55rem) !important;
+    padding:.18rem .02rem !important;
+    font-size:clamp(.43rem,1.65vw,.62rem) !important;
+    line-height:1.15 !important;
+  }
+  .st-key-poem_grid [class*="st-key-baht_row_"] { min-height:4.15rem; }
+  .st-key-poem_grid .wak-label { margin:.16rem 0 .1rem; font-size:clamp(.52rem,1.8vw,.68rem); }
+  .st-key-poem_grid .wak-label.baht-ek { transform:translateY(1.15rem); }
+  .st-key-poem_grid .baht-label { font-size:clamp(.5rem,1.7vw,.64rem); }
   .stanza-bracket { position:relative; left:auto; top:auto; bottom:auto; width:auto; height:1.25rem; margin:0 0 .15rem; }
-  .stanza-bracket span { position:static; display:block; width:auto; transform:none; color:var(--vermilion); text-align:left; }
+  .stanza-bracket span { position:static; display:block; width:auto; transform:none; color:#574a42; text-align:left; }
   .stanza-bracket i { display:none; }
   .baht-label { position:relative; left:auto; bottom:auto; display:table; transform:none; margin:.15rem auto 0; color:var(--muted); }
   .rhyme-lab-result { grid-template-columns:1fr; }
@@ -526,6 +585,8 @@ div[data-testid="stDialog"] div[role="dialog"] { background:#fffdf9 !important; 
 @media (max-width:480px) {
   .line-card { grid-template-columns:1fr; min-height:0; }
   .beats { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .st-key-poem_grid { padding-left:.22rem; padding-right:.22rem; }
+  .st-key-poem_grid [data-testid="stHorizontalBlock"] { gap:.1rem !important; }
 }
 </style>
 """.replace("__FONT_FACE__", decorative_font_css()),
@@ -540,14 +601,60 @@ def clear_analysis() -> None:
     st.session_state.pop("analysis_error", None)
 
 
+def input_meter_warning_html(poem_text: str, klon_type: int) -> str:
+    """Show a compact live warning when a written wak is outside its range."""
+    limits = {4: (4, 5), 8: (7, 9)}
+    minimum, maximum = limits[klon_type]
+    out_of_range = False
+    for wak in parse_waks(poem_text):
+        count = len(tokenize_editor_syllable_units(wak))
+        if count < minimum or count > maximum:
+            out_of_range = True
+            break
+
+    warning = ""
+    if out_of_range:
+        warning = (
+            '<span class="input-meter-warning" role="status">'
+            '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">'
+            '<path d="M12 3 22 21H2L12 3Z" stroke-width="1.7" stroke-linejoin="round"/>'
+            '<path d="M12 8v6" stroke-width="1.7" stroke-linecap="round"/>'
+            '<circle cx="12" cy="17.5" r="1" fill="currentColor" stroke="none"/>'
+            '</svg>'
+            f'<span>โปรดพิมพ์ให้ {minimum}–{maximum} พยางค์</span>'
+            '</span>'
+        )
+    return (
+        '<div class="workbench-heading-row">'
+        '<div class="workbench-title">วางหรือพิมพ์กลอน</div>'
+        f'{warning}</div>'
+    )
+
+
 def poem_cell_key(klon_type: int, line_index: int, slot_index: int) -> str:
     return f"poem_cell_{klon_type}_{line_index}_{slot_index}"
 
 
+def poem_line_source_key(klon_type: int, line_index: int) -> str:
+    return f"poem_line_source_{klon_type}_{line_index}"
+
+
+def poem_line_snapshot_key(klon_type: int, line_index: int) -> str:
+    return f"poem_line_snapshot_{klon_type}_{line_index}"
+
+
 def _clear_poem_cells(klon_type: int | None = None) -> None:
-    prefix = "poem_cell_" if klon_type is None else f"poem_cell_{klon_type}_"
+    prefixes = (
+        ("poem_cell_", "poem_line_source_", "poem_line_snapshot_")
+        if klon_type is None
+        else (
+            f"poem_cell_{klon_type}_",
+            f"poem_line_source_{klon_type}_",
+            f"poem_line_snapshot_{klon_type}_",
+        )
+    )
     for key in list(st.session_state):
-        if key.startswith(prefix):
+        if key.startswith(prefixes):
             del st.session_state[key]
 
 
@@ -572,16 +679,48 @@ def _fit_words_to_slots(words: list[str], slot_count: int) -> list[str]:
     return words[: slot_count - 1] + ["".join(words[slot_count - 1 :])]
 
 
+def _slot_count_for_units(klon_type: int, unit_count: int) -> int:
+    """Keep blank rows canonical and fit supported populated line lengths."""
+    if klon_type == 8 and unit_count == 7:
+        return 7
+    return min(
+        MAX_WORD_SLOTS[klon_type],
+        max(WORD_SLOTS[klon_type], unit_count),
+    )
+
+
+def editor_line_slot_count(klon_type: int, line_index: int) -> int:
+    """Return this line's visible slot count from its current editable values."""
+    maximum = MAX_WORD_SLOTS[klon_type]
+    populated = [
+        slot_index + 1
+        for slot_index in range(maximum)
+        if str(
+            st.session_state.get(
+                poem_cell_key(klon_type, line_index, slot_index), ""
+            )
+        ).strip()
+    ]
+    return _slot_count_for_units(klon_type, max(populated, default=0))
+
+
 def poem_from_grid(klon_type: int) -> str:
-    slot_count = WORD_SLOTS[klon_type]
     baht_count = max(2, int(st.session_state.get("editor_baht_count", 2)))
     rows = []
     for line_index in range(baht_count * 2):
+        slot_count = editor_line_slot_count(klon_type, line_index)
         words = [
             st.session_state.get(poem_cell_key(klon_type, line_index, slot_index), "").strip()
             for slot_index in range(slot_count)
         ]
-        rows.append("".join(word for word in words if word))
+        snapshot = st.session_state.get(
+            poem_line_snapshot_key(klon_type, line_index)
+        )
+        source = st.session_state.get(poem_line_source_key(klon_type, line_index))
+        if isinstance(snapshot, list) and words == snapshot[:slot_count] and isinstance(source, str):
+            rows.append(source)
+        else:
+            rows.append("".join(word for word in words if word))
     return "\n".join(rows).rstrip()
 
 
@@ -598,16 +737,20 @@ def load_poem_into_grid(
     # The text box is the canonical poem.  Remove both klon layouts so an old
     # inactive grid can never reappear after the user changes poem type.
     _clear_poem_cells()
-    slot_count = WORD_SLOTS[klon_type]
     normalized_waks: list[str] = []
     for line_index in range(baht_count * 2):
         wak = waks[line_index] if line_index < len(waks) else ""
-        words = tokenize_editor_units(wak)
+        source_units = tokenize_editor_units(wak)
+        source_wak = "".join(source_units) or wak.strip()
+        words = tokenize_editor_syllable_units(wak)
+        slot_count = _slot_count_for_units(klon_type, len(words))
         fitted = _fit_words_to_slots(words, slot_count)
         for slot_index, word in enumerate(fitted):
             st.session_state[poem_cell_key(klon_type, line_index, slot_index)] = word
+        st.session_state[poem_line_source_key(klon_type, line_index)] = source_wak
+        st.session_state[poem_line_snapshot_key(klon_type, line_index)] = list(fitted)
         if wak:
-            normalized_waks.append("".join(words) or wak.strip())
+            normalized_waks.append(source_wak)
     if normalize_text:
         st.session_state.poem_input = "\n".join(normalized_waks)
     st.session_state.editor_klon_type = klon_type
@@ -658,22 +801,41 @@ def sync_cell_to_text(cell_key: str, line_index: int, slot_index: int, klon_type
         clear_analysis()
         return
 
-    words = tokenize_editor_units(raw_value)
-    slot_count = WORD_SLOTS[klon_type]
+    words = tokenize_editor_syllable_units(raw_value)
     if len(words) > 1:
-        fitted = _fit_words_to_slots(words, slot_count - slot_index)
+        # Keep the user's exact written line as canonical text while expanding
+        # this cell in place into the spoken syllables used by the checker.
+        raw_poem = poem_from_grid(klon_type)
+        raw_rows = raw_poem.splitlines()
+        available = MAX_WORD_SLOTS[klon_type] - slot_index
+        fitted = _fit_words_to_slots(words, available)
         for offset, word in enumerate(fitted):
-            st.session_state[poem_cell_key(klon_type, line_index, slot_index + offset)] = word
+            st.session_state[
+                poem_cell_key(klon_type, line_index, slot_index + offset)
+            ] = word
+        visible_slots = editor_line_slot_count(klon_type, line_index)
+        st.session_state[poem_line_source_key(klon_type, line_index)] = (
+            raw_rows[line_index] if line_index < len(raw_rows) else raw_value
+        )
+        st.session_state[poem_line_snapshot_key(klon_type, line_index)] = [
+            st.session_state.get(
+                poem_cell_key(klon_type, line_index, current_slot), ""
+            ).strip()
+            for current_slot in range(visible_slots)
+        ]
+        st.session_state.poem_input = raw_poem
+        clear_analysis()
+        return
     else:
         st.session_state[cell_key] = words[0] if words else ""
     st.session_state.poem_input = poem_from_grid(klon_type)
     clear_analysis()
 
 
-def add_baht() -> None:
+def add_stanza() -> None:
     st.session_state.editor_baht_count = max(
         2, int(st.session_state.get("editor_baht_count", 2))
-    ) + 1
+    ) + 2
     clear_analysis()
 
 
@@ -751,7 +913,6 @@ def rhyme_wire_html(kind: str, klon_type: int) -> str:
 
 
 def render_poem_editor(klon_type: int) -> None:
-    slot_count = WORD_SLOTS[klon_type]
     baht_count = max(2, int(st.session_state.get("editor_baht_count", 2)))
     with st.container(border=True, key="poem_grid"):
         stanza_count = math.ceil(baht_count / 2)
@@ -790,6 +951,7 @@ def render_poem_editor(klon_type: int) -> None:
                             line_index = baht_index * 2 + column_offset
                             wak_name = WAK_NAMES[line_index % 4]
                             with wak_column:
+                                slot_count = editor_line_slot_count(klon_type, line_index)
                                 for slot_index in range(slot_count):
                                     key = poem_cell_key(klon_type, line_index, slot_index)
                                     if key not in st.session_state:
@@ -803,7 +965,7 @@ def render_poem_editor(klon_type: int) -> None:
                                         f"{wak_name} คำที่ {slot_index + 1}",
                                         key=key,
                                         height=38,
-                                        placeholder=f"คำ{slot_index + 1}",
+                                        placeholder=str(slot_index + 1),
                                         help=(f"อ่านว่า {'-'.join(spoken)}" if len(spoken) > 1 else None),
                                         label_visibility="collapsed",
                                         on_change=sync_cell_to_text,
@@ -825,11 +987,10 @@ def render_poem_editor(klon_type: int) -> None:
                     rhyme_wire_html("inter-stanza", klon_type),
                     unsafe_allow_html=True,
                 )
-        add_left, add_center, add_right = st.columns([1, .13, 1])
-        add_center.button(
+        st.button(
             "＋",
             key="add_baht",
-            on_click=add_baht,
+            on_click=add_stanza,
         )
 
 
@@ -1160,6 +1321,16 @@ if "poem_input" not in st.session_state:
 if "editor_baht_count" not in st.session_state:
     st.session_state.editor_baht_count = 2
 
+# Streamlit keeps session_state across source-code reloads. Discard a report
+# produced by older checking rules so the UI cannot continue showing a stale
+# meter result after the backend has been updated.
+stored_report = st.session_state.get("report")
+if (
+    isinstance(stored_report, dict)
+    and stored_report.get("schema_version") != REPORT_SCHEMA_VERSION
+):
+    clear_analysis()
+
 klon_type = st.segmented_control(
     "เลือกรูปแบบคำประพันธ์",
     options=[4, 8],
@@ -1202,7 +1373,10 @@ render_poem_editor(klon_type)
 with st.container(key="input_workbench"):
     text_column, sound_column = st.columns([.9, 1.35], gap="large")
     with text_column:
-        st.markdown('<div class="workbench-title">วางหรือพิมพ์กลอน</div>', unsafe_allow_html=True)
+        st.markdown(
+            input_meter_warning_html(st.session_state.poem_input, klon_type),
+            unsafe_allow_html=True,
+        )
         poem = st.text_area(
             "ข้อความกลอน",
             key="poem_input",

@@ -19,9 +19,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from core import KhaveeVerifier  # noqa: E402
-from poetry_overrides import POETRY_OVERRIDES  # noqa: E402
-from pythainlp.tokenize import subword_tokenize, syllable_tokenize, word_dict_trie, word_tokenize  # noqa: E402
-from pythainlp.transliterate import pronunciate  # noqa: E402
+from pythainlp.tokenize import subword_tokenize, syllable_tokenize  # noqa: E402
 
 
 THAI_RE = re.compile(r"[ก-ฮฤฦ]")
@@ -35,6 +33,7 @@ TONE_MARKS = "่้๊๋"
 WAK_NAMES = ("วรรคสดับ", "วรรครับ", "วรรครอง", "วรรคส่ง")
 SUPPORTED_KLON_TYPES = {4, 8}
 KLON_NAMES = {4: "กลอนสี่", 8: "กลอนแปด"}
+REPORT_SCHEMA_VERSION = "1.2"
 
 
 @lru_cache(maxsize=1)
@@ -43,82 +42,37 @@ def verifier() -> KhaveeVerifier:
     return KhaveeVerifier()
 
 
-@lru_cache(maxsize=1)
-def poetry_trie():
-    """Keep curated words whole during tokenization when possible."""
-    trie = word_dict_trie()
-    for word in POETRY_OVERRIDES:
-        if len(word) > 1:
-            trie.add(word)
-    return trie
-
-
 def _clean_token(token: str) -> str:
     return "".join(ch for ch in token.strip() if THAI_RE.search(ch) or ch in TONE_MARKS or ch in "ะาิีึืุูเแโใไัำ็์ฺๅๆ")
 
 
 def tokenize_written_words(text: str) -> list[str]:
-    """Split written Thai into editable word cells without keeping punctuation.
-
-    The editor and the analyzer deliberately share the same curated dictionary,
-    so text pasted into the grid is arranged in the same word units that the
-    report later explains.
-    """
-    words: list[str] = []
-    for raw in word_tokenize(text, engine="newmm", custom_dict=poetry_trie()):
-        word = _clean_token(raw)
-        if word and THAI_RE.search(word):
-            words.append(word)
-    return words
+    """Return SSG units while discarding spaces and punctuation."""
+    cleaned = _clean_token(text)
+    if not cleaned:
+        return []
+    return [unit.strip() for unit in syllable_tokenize(cleaned, engine="ssg") if unit.strip()]
 
 
 def tokenize_editor_units(text: str) -> list[str]:
-    """Return readable editable units while preserving the exact source text.
+    """Return the exact units produced by PyThaiNLP SSG."""
+    return tokenize_written_words(text)
 
-    Curated/project pronunciations give better Thai boundaries (for example
-    ``หมู|กรอบ`` instead of ``หมูก|รอบ``). They are used only when joining the
-    syllables recreates the written word exactly. Otherwise a lossless written
-    split is accepted only when it does not create one-letter fragments. Words
-    such as ``พหล`` therefore remain whole instead of becoming ``พ|หล``;
-    joining the editor cells always recreates the original poem exactly.
-    """
-    units: list[str] = []
-    for word in tokenize_written_words(text):
-        spoken, _ = pronounce_word(word)
-        spoken_units = [unit.replace("ฺ", "").strip() for unit in spoken if unit.strip()]
-        if spoken_units and "".join(spoken_units) == word:
-            units.extend(spoken_units)
-            continue
-        written_units = [unit.strip() for unit in syllable_tokenize(word, engine="ssg") if unit.strip()]
-        if (
-            len(written_units) > 1
-            and "".join(written_units) == word
-            and all(len(unit) >= 2 for unit in written_units)
-        ):
-            units.extend(written_units)
-        else:
-            units.append(word)
-    return units
+
+def tokenize_editor_syllable_units(text: str) -> list[str]:
+    """Return one visible unit per SSG result; no w2p or overrides are used."""
+    return tokenize_written_words(text)
 
 
 @lru_cache(maxsize=20_000)
 def pronounce_word(word: str) -> tuple[tuple[str, ...], str]:
-    """Return spoken syllables and provenance for one written token."""
-    if word in POETRY_OVERRIDES:
-        return tuple(POETRY_OVERRIDES[word]), "POETRY_OVERRIDES"
-
-    if len(word) <= 2:
-        result = tuple(s for s in syllable_tokenize(word, engine="ssg") if s.strip())
-        return result or (word,), "ssg"
-
-    spoken = pronunciate(word, engine="w2p")
-    if spoken:
-        result = tuple(s.replace("ฺ", "").strip() for s in spoken.split("-") if s.strip())
-        if result:
-            return result, "w2p"
-
-    result = tuple(s for s in syllable_tokenize(word, engine="ssg") if s.strip())
-    return result or (word,), "ssg-fallback"
+    """Return syllables from PyThaiNLP SSG without generative pronunciation."""
+    result = tuple(
+        syllable.replace("ฺ", "").strip()
+        for syllable in syllable_tokenize(word, engine="ssg")
+        if syllable.strip()
+    )
+    return result or (word,), "ssg"
 
 
 def _validate_klon_type(k_type: int) -> None:
@@ -169,7 +123,7 @@ def _rhythm_for(total: int, k_type: int = 8) -> tuple[list[int] | None, str]:
     if total == 9:
         return [3, 3, 3], "ผ่าน"
     if total == 7:
-        return [3, 2, 2], "ควรตรวจ"
+        return [3, 2, 2], "ผ่าน"
     return None, "ไม่ผ่าน"
 
 
@@ -187,19 +141,20 @@ def _group_syllables(syllables: list[str], rhythm: list[int] | None) -> list[str
 
 
 def analyze_wak(text: str, index: int = 0, k_type: int = 8) -> dict[str, Any]:
-    """Analyze one written wak using curated pronunciation before w2p."""
+    """Analyze one written wak using deterministic SSG syllabification."""
     _validate_klon_type(k_type)
     words: list[dict[str, Any]] = []
     spoken_syllables: list[str] = []
 
-    for word in tokenize_written_words(text):
-        syllables, source = pronounce_word(word)
-        spoken_syllables.extend(syllables)
+    for syllable in tokenize_written_words(text):
+        syllables = (syllable,)
+        source = "ssg"
+        spoken_syllables.append(syllable)
         words.append(
             {
-                "word": word,
-                "pronunciation": "-".join(syllables),
-                "syllables": len(syllables),
+                "word": syllable,
+                "pronunciation": syllable,
+                "syllables": 1,
                 "source": source,
                 "sound_details": [analyze_sound(syllable) for syllable in syllables],
             }
@@ -217,9 +172,7 @@ def analyze_wak(text: str, index: int = 0, k_type: int = 8) -> dict[str, Any]:
 
     rhythm, status = _rhythm_for(len(spoken_syllables), k_type)
     notes: list[str] = []
-    if k_type == 8 and status == "ควรตรวจ":
-        notes.append("พบ 7 พยางค์ จังหวะ 3–2–2 เป็นเพียงข้อเสนอและควรให้ผู้เชี่ยวชาญยืนยัน")
-    elif status == "ไม่ผ่าน":
+    if status == "ไม่ผ่าน":
         expected = "4–5" if k_type == 4 else "7–9"
         notes.append(
             f"พบ {len(spoken_syllables)} พยางค์ ซึ่งอยู่นอกช่วง {expected} พยางค์ที่ระบบรองรับสำหรับ{KLON_NAMES[k_type]}"
@@ -487,8 +440,6 @@ def check_klon(poem_text: str, k_type: int = 8) -> dict[str, Any]:
     warnings: list[str] = []
     if not complete:
         warnings.append("กลอนหนึ่งบทต้องมี 4 วรรค กรุณาใส่หนึ่งวรรคต่อหนึ่งบรรทัด")
-    if k_type == 8 and any(line["meter_status"] == "ควรตรวจ" for line in lines):
-        warnings.append("มีวรรค 7 พยางค์ที่ระบบเสนอจังหวะให้ แต่ยังต้องตรวจด้วยมนุษย์")
     for check in rhyme_checks:
         if k_type == 8 and check["passed"] and not check["preferred_position"]:
             warnings.append(
@@ -505,16 +456,16 @@ def check_klon(poem_text: str, k_type: int = 8) -> dict[str, Any]:
         or any(not check["passed"] for check in rhyme_checks)
         or core_validation["passed"] is False
     )
-    needs_review = bool(warnings) or any(line["meter_status"] == "ควรตรวจ" for line in lines)
+    needs_review = bool(warnings)
     verdict = "ไม่ผ่าน" if failed else ("ควรตรวจ" if needs_review else "ผ่าน")
 
     return {
-        "schema_version": "1.0",
+        "schema_version": REPORT_SCHEMA_VERSION,
         "klon_type": k_type,
         "klon_name": KLON_NAMES[k_type],
         "engine": {
             "rhyme": f"core.KhaveeVerifier (project version, k_type={k_type})",
-            "pronunciation": "POETRY_OVERRIDES → w2p → ssg fallback",
+            "pronunciation": "PyThaiNLP syllable_tokenize (ssg only)",
         },
         "input": poem_text,
         "line_count": len(lines),
@@ -538,7 +489,7 @@ def check_klon(poem_text: str, k_type: int = 8) -> dict[str, Any]:
         "warnings": list(dict.fromkeys(warnings)),
         "limitations": [
             "คะแนนเป็นสัดส่วนกฎโครงสร้างที่ผ่าน ไม่ใช่คะแนนความไพเราะหรือความหมาย",
-            "คำอ่านที่ไม่อยู่ในพจนานุกรมอาศัยโมเดล w2p และอาจต้องให้มนุษย์ยืนยัน",
+            "การแยกพยางค์ใช้ PyThaiNLP SSG เท่านั้น และคำที่ SSG แยกไม่แน่ชัดควรให้มนุษย์ยืนยัน",
             (
                 "กลอนสี่ตรวจสัมผัสใน 2 พยางค์แรก หรือ 3 พยางค์แรกเมื่อวรรคนั้นมี 5 พยางค์"
                 if k_type == 4
