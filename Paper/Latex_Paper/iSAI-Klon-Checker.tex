@@ -121,8 +121,9 @@ five checker configurations on a gold corpus of 36{,}475 classical stanzas
 instances including 10{,}000 adversarial negatives and 423 oracle-blind
 rhymes. The best configuration reaches 88.5\% gold recall and 86.9\% F1 on
 the augmentation, 100\% precision on curated negatives, and 95.7\% of the
-oracle-blind rhymes. The verifier serves as both an explainable
-educational tool and a deterministic reward model for RL-based generation.
+oracle-blind rhymes. The verifier is released as an explainable
+educational tool and provides a deterministic reward signal for RL-based
+Klon-Paed generation.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -194,8 +195,8 @@ and 423 oracle-blind positives.
 \item \textbf{A systematic comparison.} Five configurations (A, B, C,
 D\_w2p, D\_ssg) are compared on precision, recall, F1, and coverage, with
 per-rule and per-operator error analyses.
-\item \textbf{Two deployments.} An explainable educational web tool and a
-deterministic reward environment for RL-based Klon-Paed generation.
+\item \textbf{Educational tool and RL-ready reward.} An explainable web
+tool plus a deterministic reward signal for RL-based Klon-Paed generation.
 \end{itemize}
 
 \section{Background and Related Work}
@@ -213,7 +214,7 @@ when they share the same vowel sound \thpar{sara}{สระ} and the same final-
 The mattra classes \thpar{\emph{mae}}{แม่}, consisting of ka, kong, kok,
 kot, kon, kop, kom, koey, and koew, group the final consonants of Thai
 syllables by their phonetic outcome (the velar, dental, labial, nasal,
-semivowel, and \emph{\thpar{w}}{ว} finals). The four waks are called the
+semivowel, and \thpar{\emph{w}}{ว} finals). The four waks are called the
 \thpar{\emph{sadap}}{สดับ},
 \thpar{\emph{rap}}{รับ}, \thpar{\emph{rong}}{รอง}, and
 \thpar{\emph{song}}{ส่ง} respectively. Four canonical
@@ -705,12 +706,13 @@ A's on the old-accept trap (C9: 1{,}774 of 1{,}950).
 oracle-blind).}
 \label{tab:ob}
 \centering
-\footnotesize
+\setlength{\tabcolsep}{4pt} % Shrinks the padding between columns
+\scriptsize % Slightly smaller font to guarantee it fits the column width
 \begin{tabular}{lcccccc}
 \toprule
  & \multicolumn{2}{c}{recall (\%)} & \multicolumn{2}{c}{FN-pos} & \multicolumn{2}{c}{FP} \\
 \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
-System & tricky & oracle-blind & total & $=$ob & total & C3/C9 \\
+System & tricky & \begin{tabular}{@{}c@{}}oracle-\\blind\end{tabular} & total & $=$ob & total & C3/C9 \\
 \midrule
 A & 57.0 & 21.5 & 848 & 332 & 1,950 & 162/1,774 \\
 B & \textbf{100} & 0.0 & 423 & 423 & \textbf{0} & 0/0 \\
@@ -753,14 +755,14 @@ evaluations and pronunciation guidance for irregular words.
 
 \subsection{Foundation for Generative AI}
 
-The same determinism makes the verifier an ideal reward model for small,
-locally run LLMs: an exact, immediate reward signal free of the noise of a
-learned reward model. This mirrors the RL step of the KlonSuphap-LM
-pipeline~\cite{klonsuphap}, but with a grader (Model~B or~D)
+The same determinism makes the verifier a suitable reward signal for
+fine-tuning small, locally run LLMs: exact, immediate, and free of the
+noise of a learned reward model. This mirrors the RL step of the
+KlonSuphap-LM pipeline~\cite{klonsuphap}, but with a grader (Model~B or~D)
 substantially more precise than the G2P-based grader used there (Model~C),
-particularly on vowel length. Future work includes scaling the override
-dictionary, context-sensitive pronunciations for heteronyms, and
-integrating the verifier into decoding-time constrained
+particularly on vowel length. Fine-tuning a generator with this reward,
+scaling the override dictionary, and context-sensitive pronunciations are
+future work, alongside decoding-time constrained
 sampling~\cite{geng2023}.
 
 \section{Conclusion}
@@ -776,9 +778,9 @@ dictionary and recovers 95.7\% of the oracle's own blind spots. On
 family raises stanza recall from 73.4\% to 88.5\% (D\_ssg) with
 near-perfect precision, exposing the blind spots of both the
 G2P-romanization checker and the rule-based oracle. The verifier is
-released as an explainable educational tool and a deterministic reward
-environment, and its integration into PyThaiNLP makes the improvement
-available to the entire Thai NLP ecosystem.
+released as an explainable educational tool and provides a deterministic
+reward signal for RL-based generation; its integration into PyThaiNLP
+makes the improvement available to the entire Thai NLP ecosystem.
 
 \section*{Acknowledgment}
 We thank the Vajirayana Digital Library~\cite{vajirayana}, the PyThaiNLP
