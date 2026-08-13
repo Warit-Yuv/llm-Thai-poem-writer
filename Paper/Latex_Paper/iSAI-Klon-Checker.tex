@@ -221,13 +221,13 @@ rhyme rules are checked in this work, following the \emph{klon} canon and
 the implementation of the PyThaiNLP \texttt{KhaveeVerifier}:
 \begin{itemize}
 \item r1 (\emph{sadap} $\rightarrow$ \emph{rap}): the final syllable of
-wak~1 rhymes with one of the first five syllables of wak~2 (syllables 3
-and 5 obligatory; 1, 2, 4 permissible);
-\item r2 (\emph{rap} $\rightarrow$ \emph{rong}): the final syllables of
-wak~2 and wak~3 rhyme;
+wak~1 must rhyme with one of the first five syllables of wak~2 (syllables
+3 and 5 are obligatory, 1, 2, and 4 are permissible);
+\item r2 (\emph{rap} $\rightarrow$ \emph{rong}): the final syllable of
+wak~2 must rhyme with the final syllable of wak~3;
 \item r3 (\emph{rong} $\rightarrow$ \emph{song}): the final syllable of
-wak~3 rhymes with one of the first five syllables of wak~4 (3 and 5
-obligatory; 1, 2, 4 permissible);
+wak~3 must rhyme with one of the first five syllables of wak~4 (syllables
+3 and 5 are obligatory, 1, 2, and 4 are permissible);
 \item rX (inter-stanza): the final syllable of wak~4 of the previous
 stanza rhymes with the final syllable of wak~2 of the current stanza.
 \end{itemize}
@@ -327,12 +327,14 @@ alliteration using internal-rhyme rules~\cite{suksanguan2021}. On the
 generation side, the dominant line of work fine-tunes language models on
 corpora of classical verse: the Phra Aphai Mani LM~\cite{phraaphai} and its
 successor KlonSuphap-LM~\cite{klonsuphap} fine-tune a GPT-2 Thai base
-model, then use \emph{rhyme tagging}, attention masking, and finally
-reinforcement learning in which a rule-based \emph{klon grader} supplies
-the reward. That grader is the \texttt{word\_check} module evaluated here
-as Model~C. More broadly, RLHF has established reward models as essential
-for aligning LLMs~\cite{ouyang2022}, and grammar-constrained decoding has
-been proposed to enforce structural constraints at inference
+model, then use \emph{rhyme tagging} (annotating the tokens that must
+rhyme), attention masking, and finally reinforcement learning in which a
+rule-based \emph{klon grader} supplies the reward. That grader is the
+\texttt{word\_check} module evaluated here as Model~C, making our
+evaluation directly relevant to the RL step of that pipeline. More
+broadly, RLHF has established reward models as essential for aligning LLMs
+to follow strict requirements~\cite{ouyang2022}, and grammar-constrained
+decoding has been proposed to enforce structural constraints at inference
 time~\cite{geng2023}; recent benchmarks report that even strong LLMs
 struggle with classical Thai vocabulary and verse~\cite{triyason2026},
 motivating dedicated deterministic tools.
@@ -364,8 +366,8 @@ syllables rhyme; a rule holds if the test succeeds for at least one
 permitted target. The eight-syllable meter is additionally reported.
 Algorithm~\ref{alg:klon} summarises this flow. The \texttt{check\_klon}
 entry point splits the poem on whitespace, groups waks into stanzas of
-exactly four, enforces the metre with per-wak word-count limits---ten for
-Klon~8 and five for Klon~4---and reports every violation as a structured
+exactly four (rejecting incomplete stanzas), enforces the metre with
+per-wak word-count limits---ten for Klon~8 and five for Klon~4---and reports every violation as a structured
 message naming the stanza, the wak, and the two syllables that failed to
 rhyme.
 
@@ -559,12 +561,13 @@ candidate words the oracle misreads---karun clusters it fails to silence
 and multi-syllable Pali words SSG keeps as single tokens.
 
 \paragraph{Negatives (precision probes).} The 10{,}000 negatives are drawn
-from eight corruption operators: different-vowel-and-mattra swaps (C6,
-300), same-mattra swaps (C0, 500), same-vowel swaps (C1, 500), short/long
-vowel swaps (C3, 3{,}100), liquid-final swaps (C4, 1{,}200), an old-accept
-trap in which 5.0.1 reads the candidate as rhyming while 5.3.5 does not
-(C9, 2{,}800), leading-consonant words (C5, 600), and
-karun/\thgloss{\emph{ru}}{ฤ}/cluster traps (C2, 1{,}000); C3 and C9 best
+from eight corruption operators: trivial different-vowel-and-mattra swaps
+(C6, 300), same-mattra swaps (C0, 500), same-vowel swaps (C1, 500),
+short/long vowel swaps (C3, 3{,}100), liquid-final swaps (C4, 1{,}200), a
+systematic trap in which the 5.0.1 checker reads the candidate as rhyming
+with the target while 5.3.5 does not (C9, 2{,}800), leading-consonant words
+(C5, 600), and karun/\thgloss{\emph{ru}}{ฤ}/cluster traps (C2, 1{,}000).
+C3 and C9 dominate the mix because they are the operators that best
 discriminate the checkers.
 
 \paragraph{Positives (recall probes).} The 1{,}200 \emph{tricky}
@@ -745,8 +748,9 @@ learned reward model. This mirrors the RL step of the KlonSuphap-LM
 pipeline~\cite{klonsuphap}, but with a grader (Model~B or~D)
 substantially more precise than the G2P-based grader used there (Model~C),
 particularly on vowel length. Future work includes scaling the override
-dictionary, context-sensitive pronunciations, and decoding-time
-constrained sampling~\cite{geng2023}.
+dictionary, context-sensitive pronunciations for heteronyms, and
+integrating the verifier into decoding-time constrained
+sampling~\cite{geng2023}.
 
 \section{Conclusion}
 
