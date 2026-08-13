@@ -193,8 +193,8 @@ rhyme checks) from five classical Thai works, plus 11{,}623 targeted
 augmentation instances: 10{,}000 oracle-verified negatives, 1{,}200 tricky
 positives, and 423 oracle-blind positives.
 \item \textbf{A systematic comparison.} Five configurations (A, B, C,
-D\_w2p, D\_ssg) are compared on precision, recall, F1, coverage, and
-confidence intervals, with per-rule and per-operator error analyses.
+D\_w2p, D\_ssg) are compared on precision, recall, F1, and coverage, with
+per-rule and per-operator error analyses.
 \item \textbf{Two deployments.} An explainable educational web tool and a
 deterministic reward environment for RL-based Klon-Paed generation.
 \end{itemize}
@@ -289,15 +289,14 @@ and final class.
   \draw[thick,dashed,->] (p9) .. controls (5.1,0.45) and (4.4,-0.15) .. (w28);
   \node[font=\tiny] at (5.05,0.42) {rX};
 \end{tikzpicture}
-\ifXeTeX\\[2pt]{\small\centering\thtxt{ถึงบางพูดพูดดีเป็นศรีศักดิ์ มีคนรักรสถ้อยอร่อยจิต
+\ifXeTeX\\[2pt]{\small\centering\thtxt{ถึงบางพูดพูดดีเป็นศรีศักดิ์ มีคนรักรสถ้อยอร่อยจิต\\
 แม้นพูดชั่วตัวตายทำลายมิตร จะชอบผิดในมนุษย์เพราะพูดจา}}\fi
 \caption{The example stanza (Section~2.1) with its rhyme positions shaded
 and linked: r1 (\emph{sadap}$\rightarrow$\emph{rap}), r2
 (\emph{rap}$\rightarrow$\emph{rong}), r3
 (\emph{rong}$\rightarrow$\emph{song}); the dashed rX arrow links the final
 syllable (\emph{khit}) of the previous stanza's wak~4 (top row, dashed) to
-wak~2's final syllable (\emph{cit}). Syllables are romanized; the original
-Thai verse is shown below in the XeLaTeX build.}
+wak~2's final syllable (\emph{cit}).}
 \label{fig:klon}
 \end{figure}
 
@@ -312,10 +311,9 @@ AttaCut~\cite{attacut}, syllable-based neural
 segmentation~\cite{chormai2020syllable}, and the SSG syllable segmenter
 shipped in PyThaiNLP~5.x, which the present work uses throughout. G2P
 conversion maps surface orthography to pronunciation; Thai G2P has been
-addressed with rule-based systems such as TLTK~\cite{tltk},
-example-based methods~\cite{charoenpornsawat2006}, CRF-based joint-sequence
-models~\cite{saychum2016}, and two-stage sequence
-models~\cite{rugchatjaroen2019}. G2P is directly relevant to rhyme
+addressed with rule-based (TLTK~\cite{tltk}), example-based~\cite{charoenpornsawat2006},
+CRF joint-sequence~\cite{saychum2016}, and two-stage
+sequence~\cite{rugchatjaroen2019} models. G2P is directly relevant to rhyme
 verification because rhyme is a property of \emph{sound}, not of spelling:
 Model~C in this study performs its comparison in the romanized space
 produced by the TLTK G2P model.
@@ -352,7 +350,7 @@ of KlonSuphap-LM (Model~C) has not been validated for precision; and no
 open verifier covers all four rhyme rules while providing dictionary
 support for irregular pronunciations. We fill this gap with improved
 rule-based verification (Model~B), a dictionary-enhanced variant
-(Model~D), and a large gold-plus-augmentation evaluation that quantifies
+(Model~D), and a large gold-with-augmentation evaluation that quantifies
 precision and recall, including a novel \emph{oracle-blind} probe that
 holds the verifier itself accountable for rhymes its own oracle cannot
 see.
@@ -362,8 +360,9 @@ see.
 \subsection{Core Rule-Based Verification (Model B)}
 
 Model~B is the \texttt{KhaveeVerifier} of PyThaiNLP 5.3.5. It verifies a
-poem in three stages. (1)~Each wak is tokenized into syllables with the
-SSG segmenter. (2)~For each canonical rule the relevant syllables are
+poem in three stages. (1)~Each wak is tokenised into syllables directly
+with the SSG CRF segmenter, applied to the wak text itself (no word
+pre-segmentation). (2)~For each canonical rule the relevant syllables are
 extracted: the final syllable of every wak, and the first five syllables of
 waks~2 and~4. (3)~The rhyme test \texttt{is\_sumpus} decides whether two
 syllables rhyme; a rule holds if the test succeeds for at least one
@@ -472,9 +471,10 @@ built from the frequent vocabulary of the Phra Aphai Mani corpus with
 manual supervision, and every entry is checked by a four-guard pipeline
 that rejects pronunciations hallucinated by the Word2Phrase (w2p) neural
 G2P model; w2p-derived candidates are kept only as labelled hints and are
-never trusted on their own. At inference time each syllable is first looked
-up in the override dictionary; if absent, a fallback segmenter supplies the
-pronunciation. We report two configurations: \texttt{D\_w2p}, which falls
+never trusted on their own. At inference time Klonpad segments the wak
+into words with an override-augmented newmm dictionary, looks each up in
+the override dictionary, and syllabifies unmatched words with the fallback
+segmenter. We report two configurations: \texttt{D\_w2p}, which falls
 back to the w2p neural G2P model, and \texttt{D\_ssg}, which falls back to
 plain SSG segmentation without w2p. As Section~\ref{sec:results} shows,
 the w2p fallback introduces pronunciation hallucinations on short or
@@ -577,8 +577,7 @@ Table~\ref{tab:gold} reports stanza-level and per-rule recall over the
 36{,}475 gold stanzas. The proposed family dominates the baseline:
 D\_ssg reaches 88.5\% stanza recall and B 87.5\%, versus 73.4\% for
 Model~A. Model~C reaches 84.8\% but evaluates only 95.7\% of the corpus
-(tltk failures concentrate in the archaic Khun Chang Khun Phaen); its
-figures use the coverage-corrected denominator.
+(tltk failures concentrate in the archaic Khun Chang Khun Phaen).
 
 \begin{table}[t]
 \caption{Gold recall (stanza level and per rule), 36{,}475 stanzas.
@@ -707,8 +706,8 @@ Overall, D\_ssg is the best configuration on the gold corpus (88.5\%
 recall) and D\_w2p the best on the augmentation (87.5\% F1). On the merged
 gold+augmentation set, the F1 favours D\_ssg (93.4\%), followed by D\_w2p
 (92.9\%) and B (92.8\%), with C (88.0\%) and A (82.3\%) behind; the merged
-precision is gold-dominated (all checkers $\geq$ 92\%), so the precision
-that discriminates the systems lives in the augmentation-only tables.
+precision is gold-dominated (all checkers $\geq$ 92\%), so the
+discriminating precision lives in the augmentation-only tables.
 
 \section{Applications and Future Work}
 
@@ -725,9 +724,9 @@ pronunciation guidance for irregular words.
 
 \subsection{Foundation for Generative AI}
 
-The same determinism makes the verifier an ideal reward model for training
-small, locally run LLMs to compose Klon-Paed: it provides an exact,
-immediate reward signal, free of the noise of a learned reward model. This
+The same determinism makes the verifier an ideal reward model for small,
+locally run LLMs: it provides an exact, immediate reward signal, free of
+the noise of a learned reward model. This
 mirrors the RL step of the KlonSuphap-LM pipeline~\cite{klonsuphap}, but
 with a grader (Model~B or~D) that our evaluation shows to be substantially
 more precise than the G2P-based grader used there (Model~C), particularly
