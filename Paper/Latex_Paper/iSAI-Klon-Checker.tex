@@ -16,14 +16,22 @@
 \usepackage{url}
 \usepackage{iftex}
 
-% ---- Thai script support (dual-engine) ----
-% Thai renders ONLY with XeLaTeX. Build with:
-%   xelatex iSAI-Klon-Checker.tex   -> Thai script shown next to romanization
-%   pdflatex iSAI-Klon-Checker.tex  -> romanization only (Thai omitted; see log)
+% ---- Thai script + IPA support (dual-engine) ----
+% Thai and IPA render ONLY with XeLaTeX. Build with:
+%   xelatex iSAI-Klon-Checker.tex   -> Thai + IPA shown next to romanization
+%   pdflatex iSAI-Klon-Checker.tex  -> romanization only (Thai/IPA omitted)
 % On Overleaf: Menu -> Compiler -> XeLaTeX (the .latexmkrc in this folder also
-% forces XeLaTeX automatically). Thai fonts are auto-selected: TH Sarabun New
-% (Overleaf), else Angsana New, else Tahoma (Windows). To add a Thai gloss
-% around any term, use \thgloss{roman}{thai} or \thpar{roman}{thai}.
+% forces XeLaTeX automatically). Thai fonts auto-selected: TH Sarabun New
+% (Overleaf), else Angsana New, else Tahoma (Windows). IPA font auto-selected:
+% Charis SIL, Gentium Plus, Doulos SIL, DejaVu Sans, FreeSerif, else Segoe UI.
+%
+% Gloss-macro convention:
+%   \thtxt{thai}           bare Thai text (e.g., verse lines)
+%   \thgloss{roman}{thai}  named term + Thai gloss:   term (ไทย)
+%   \thpar{roman}{thai}    parenthetical gloss:       (term ไทย)
+%   \ipatxt{ipa}           bare IPA transcription (IPA font)
+% Use \thgloss for terms/concepts, \thpar for inline parenthetical glosses,
+% and \ipatxt for phonetic transcriptions.
 \ifXeTeX
   \usepackage{fontspec}
   \IfFontExistsTF{TH Sarabun New}
@@ -35,9 +43,23 @@
   \setmonofont{TeX Gyre Cursor}[NFSSFamily=ttm]
   \XeTeXlinebreaklocale "th"
   \XeTeXlinebreakskip = 0pt plus 1pt
+  % IPA font (phonetic transcription); first installed font with full IPA
+  % coverage (ː ʔ ɯ ɛ ɔ ŋ ʰ and combining tone marks).
+  \IfFontExistsTF{Charis SIL}
+    {\newfontfamily\ipafont{Charis SIL}}
+    {\IfFontExistsTF{Gentium Plus}
+      {\newfontfamily\ipafont{Gentium Plus}}
+      {\IfFontExistsTF{Doulos SIL}
+        {\newfontfamily\ipafont{Doulos SIL}}
+        {\IfFontExistsTF{DejaVu Sans}
+          {\newfontfamily\ipafont{DejaVu Sans}}
+          {\IfFontExistsTF{FreeSerif}
+            {\newfontfamily\ipafont{FreeSerif}}
+            {\newfontfamily\ipafont{Segoe UI}}}}}}
   \newcommand{\thtxt}[1]{{\thaifont #1}}      % bare Thai text
-  \newcommand{\thgloss}[2]{#1 (\thtxt{#2})}   % roman (thai)
-  \newcommand{\thpar}[2]{(#1 \thtxt{#2})}     % (roman thai)
+  \newcommand{\thgloss}[2]{#1 (\thtxt{#2})}   % roman (thai)  [named term + gloss]
+  \newcommand{\thpar}[2]{(#1 \thtxt{#2})}     % (roman thai)  [parenthetical gloss]
+  \newcommand{\ipatxt}[1]{{\ipafont #1}}      % bare IPA transcription
   \newcommand{\thaistanza}[2]{\par\small\noindent #1\par\thtxt{#2}\par\normalsize} % verse + Thai
 \else
   \typeout{==============================================================}
@@ -48,6 +70,7 @@
   \newcommand{\thtxt}[1]{}
   \newcommand{\thgloss}[2]{#1}
   \newcommand{\thpar}[2]{(#1)}
+  \newcommand{\ipatxt}[1]{#1}
   \newcommand{\thaistanza}[2]{\par\small\noindent #1\par\normalsize}
 \fi
 
@@ -137,7 +160,7 @@ Thai orthography does not map straightforwardly onto pronunciation, and
 this gap becomes especially apparent in the classical register used by Thai
 poetry. The script is written without explicit word boundaries; vowels are
 frequently implicit; consonants or entire clusters can be silenced by the
-\thgloss{thanthakhat}{ทัณฑฆาต} (karun) diacritic; and irregular words whose pronunciations do
+karun diacritic \thpar{thanthakhat}{ทัณฑฆาต}; and irregular words whose pronunciations do
 not follow the standard phonetic rules are common. Complex phonological
 structures, such as consonant blending \thpar{\emph{kham khuap klam}}{คำควบกล้ำ} and leading
 consonants \thpar{\emph{aksorn nam}}{อักษรนำ}, further obscure syllable boundaries, vowel
@@ -240,7 +263,7 @@ inter-stanza (rX) link to the preceding stanza.
 Three orthographic phenomena make these rules hard to apply automatically.
 First, compound, transformed, and reduced vowels \thpar{\emph{sara prasom}}{สระประสม},
 \thpar{\emph{sara plianrup}}{สระเปลี่ยนรูป}, \thpar{\emph{sara lotrup}}{สระลดรูป} let several spellings map to one
-vowel sound. Second, the thanthakhat (karun) diacritic silences a letter
+vowel sound. Second, the karun diacritic silences a letter
 or a whole cluster, leaving unpronounced letters in the written form.
 Third, a trailing \thgloss{y, l, w}{ย, ล, ว} may be a genuine final
 consonant or merely part of a vowel digraph or an initial cluster. Any
@@ -250,45 +273,45 @@ class.
 \begin{figure}[t]
 \centering
 \begin{tikzpicture}[
-  cell/.style={draw, minimum width=0.72cm, minimum height=0.45cm, inner sep=0pt, font=\scriptsize},
-  prev/.style={draw, dashed, minimum width=0.72cm, minimum height=0.45cm, inner sep=0pt, font=\scriptsize},
+  cell/.style={draw, minimum width=0.72cm, minimum height=0.50cm, align=center, inner sep=0.5pt, font=\tiny},
+  prev/.style={draw, dashed, minimum width=0.72cm, minimum height=0.50cm, align=center, inner sep=0.5pt, font=\tiny},
   lbl/.style={font=\scriptsize, anchor=east}]
   
   % Tighter vertical spacing adjustments
   \def\xstep{0.75}
   \def\ystep{-1.0}
-  \def\arrowdrop{-0.275} % Drops the arrow exactly halfway between the rows
+  \def\arrowdrop{-0.23} % Drops the arrow exactly halfway between the rows
   
+  % Each cell shows the Thai written form (line 1) and its IPA (line 2).
   % previous stanza, wak 4 (rX source; dashed = different stanza)
-  % ที่จิตใครจะเป็นหนึ่งอย่าพึงคิด
-  \foreach \i/\s in {1/thi,2/cit,3/khrai,4/ca,5/pen,6/nueng,7/ya,8/phueng,9/khit}
-    \node[prev] (p\i) at (\i*\xstep, 1.0) {\s};
-  \node[prev,fill=gray!25] at (p9) {khit};
+  \foreach \i/\syl/\ipa in {1/ที่/tʰîː,2/จิต/tɕìt,3/ใคร/kʰraj,4/จะ/tɕàʔ,5/เป็น/pen,6/หนึ่ง/nɯ̀ŋ,7/อย่า/jâː,8/พึง/pʰɯŋ,9/คิด/kʰít}
+    \node[prev] (p\i) at (\i*\xstep, 1.0) {{\thtxt{\syl}}\\{\ipatxt{\ipa}}};
+  \node[prev,fill=gray!25] at (p9) {{\thtxt{คิด}}\\{\ipatxt{kʰít}}};
   \node[lbl] at (0.3, 1.0) {prev. wak 4};
   
-  % wak 1 (sadap) ถึงบางพูดพูดดีเป็นศรีศักดิ์
-  \foreach \i/\s in {1/thueng,2/bang,3/phut,4/phut,5/dii,6/pen,7/si,8/sak}
-    \node[cell] (w1\i) at (\i*\xstep, 0) {\s};
-  \node[cell,fill=gray!25,line width=0.9pt] at (w18) {sak};
+  % wak 1 (sadap) ถึง บาง พูด พูด ดี เป็น ศรี ศักดิ์
+  \foreach \i/\syl/\ipa in {1/ถึง/tʰɯ̌ŋ,2/บาง/baːŋ,3/พูด/pʰûːt,4/พูด/pʰûːt,5/ดี/diː,6/เป็น/pen,7/ศรี/sǐː,8/ศักดิ์/sàk}
+    \node[cell] (w1\i) at (\i*\xstep, 0) {{\thtxt{\syl}}\\{\ipatxt{\ipa}}};
+  \node[cell,fill=gray!25,line width=0.9pt] at (w18) {{\thtxt{ศักดิ์}}\\{\ipatxt{sàk}}};
   \node[lbl] at (0.3, 0) {\emph{sadap}};
   
-  % wak 2 (rap) มีคนรักรสถ้อยอร่อยจิต
-  \foreach \i/\s in {1/mii,2/khon,3/rak,4/rot,5/thoi,6/a,7/roi,8/cit}
-    \node[cell] (w2\i) at (\i*\xstep, \ystep) {\s};
-  \node[cell,fill=gray!25,line width=0.9pt] at (w23) {rak};
-  \node[cell,fill=gray!25,line width=0.9pt] at (w28) {cit};
+  % wak 2 (rap) มี คน รัก รส ถ้อย อะ ร่อย จิต
+  \foreach \i/\syl/\ipa in {1/มี/miː,2/คน/kʰon,3/รัก/rák,4/รส/rót,5/ถ้อย/tʰɔ̂ːj,6/อะ/ʔà,7/ร่อย/rɔ̂ːj,8/จิต/tɕìt}
+    \node[cell] (w2\i) at (\i*\xstep, \ystep) {{\thtxt{\syl}}\\{\ipatxt{\ipa}}};
+  \node[cell,fill=gray!25,line width=0.9pt] at (w23) {{\thtxt{รัก}}\\{\ipatxt{rák}}};
+  \node[cell,fill=gray!25,line width=0.9pt] at (w28) {{\thtxt{จิต}}\\{\ipatxt{tɕìt}}};
   \node[lbl] at (0.3, \ystep) {\emph{rap}};
   
-  % wak 3 (rong) แม้นพูดชั่วตัวตายทำลายมิตร
-  \foreach \i/\s in {1/maen,2/phut,3/chua,4/tua,5/taai,6/tham,7/lai,8/mit}
-    \node[cell] (w3\i) at (\i*\xstep, 2*\ystep) {\s};
-  \node[cell,fill=gray!25,line width=0.9pt] at (w38) {mit};
+  % wak 3 (rong) แม้น พูด ชั่ว ตัว ตาย ทำ ลาย มิตร
+  \foreach \i/\syl/\ipa in {1/แม้น/mɛ́ːn,2/พูด/pʰûːt,3/ชั่ว/tɕʰûːa,4/ตัว/tuːa,5/ตาย/taːj,6/ทำ/tʰam,7/ลาย/laːj,8/มิตร/mít}
+    \node[cell] (w3\i) at (\i*\xstep, 2*\ystep) {{\thtxt{\syl}}\\{\ipatxt{\ipa}}};
+  \node[cell,fill=gray!25,line width=0.9pt] at (w38) {{\thtxt{มิตร}}\\{\ipatxt{mít}}};
   \node[lbl] at (0.3, 2*\ystep) {\emph{rong}};
   
-  % wak 4 (song) จะชอบผิดในมนุษย์เพราะพูดจา
-  \foreach \i/\s in {1/ca,2/chop,3/phit,4/nai,5/ma,6/nut,7/phro,8/phut,9/caa}
-    \node[cell] (w4\i) at (\i*\xstep, 3*\ystep) {\s};
-  \node[cell,fill=gray!25,line width=0.9pt] at (w43) {phit};
+  % wak 4 (song) จะ ชอบ ผิด ใน มนุ ษ เพราะ พูด จา
+  \foreach \i/\syl/\ipa in {1/จะ/tɕàʔ,2/ชอบ/tɕʰɔ̂ːp,3/ผิด/pʰìt,4/ใน/naj,5/มนุ/má,6/ษ/nút,7/เพราะ/pʰrɔ́ʔ,8/พูด/pʰûːt,9/จา/tɕaː}
+    \node[cell] (w4\i) at (\i*\xstep, 3*\ystep) {{\thtxt{\syl}}\\{\ipatxt{\ipa}}};
+  \node[cell,fill=gray!25,line width=0.9pt] at (w43) {{\thtxt{ผิด}}\\{\ipatxt{pʰìt}}};
   \node[lbl] at (0.3, 3*\ystep) {\emph{song}};
   
   % rhyme arrows (routed orthogonally with white background nodes to prevent crossing lines)
@@ -301,14 +324,12 @@ class.
   % inter-stanza rhyme (rX): prev wak4 last -> wak2 last (routed around the right side)
   \draw[thick,dashed,->,rounded corners=2pt] (p9.east) -- ++(0.5,0) coordinate (tmpx) -- (tmpx |- w28.east) node[midway, right, fill=white, inner sep=1.5pt, font=\scriptsize] {rX} -- (w28.east);
 \end{tikzpicture}
-\ifXeTeX\\[2pt]{\small\centering\thtxt{... ที่จิตใครจะเป็นหนึ่งอย่าพึงคิด\\
-ถึงบางพูดพูดดีเป็นศรีศักดิ์ มีคนรักรสถ้อยอร่อยจิต\\แม้นพูดชั่วตัวตายทำลายมิตร จะชอบผิดในมนุษย์เพราะพูดจา}}\fi
 \caption{The example stanza (Section~2.1) with its rhyme positions shaded
 and linked: r1 (\emph{sadap}$\rightarrow$\emph{rap}), r2
 (\emph{rap}$\rightarrow$\emph{rong}), r3
 (\emph{rong}$\rightarrow$\emph{song}); the dashed rX arrow links the final
-syllable (\emph{khit}) of the previous stanza's wak~4 (top row, dashed) to
-wak~2's final syllable (\emph{cit}).}
+syllable (\ipatxt{kʰít}) of the previous stanza's wak~4 (top row, dashed)
+to wak~2's final syllable (\ipatxt{tɕìt}).}
 \label{fig:klon}
 \end{figure}
 
@@ -442,7 +463,7 @@ mattra of the two syllables are equal.
 
 Two further mechanisms account for most of the improvement over the 5.0.1
 baseline. \texttt{handle\_karun\_sound\_silence} strips characters silenced
-by the thanthakhat, no longer by a fixed truncation: it recognises
+by the karun, no longer by a fixed truncation: it recognises
 multi-letter silent suffixes such as \thgloss{\emph{phra lak}}{พระลักษมณ์}
 (strips the silent \emph{km} cluster to expose the true \emph{mae kok}
 final) and \thgloss{\emph{kasat}}{กษัตริย์} (strips the silent \emph{triy}
@@ -748,21 +769,19 @@ The verifier is deployed as an interactive web tool for Klon 4/8 teachers
 and students: it segments a poem into syllables, highlights rhyme
 positions, spells out the sara and mattra of every syllable, and explains
 each error in terms of the four rhyme rules. Because it is rule-based, the
-feedback is reproducible and free of hallucination---properties
-general-purpose LLMs cannot guarantee. Future work includes classroom
-evaluations and pronunciation guidance for irregular words.
+feedback is reproducible and free of hallucination. Future work includes
+classroom evaluations and pronunciation guidance for irregular words.
 
 \subsection{Foundation for Generative AI}
 
 The same determinism makes the verifier a suitable reward signal for
 fine-tuning small, locally run LLMs: exact, immediate, and free of the
-noise of a learned reward model. This mirrors the RL step of the
+noise of a learned reward model. It mirrors the RL step of the
 KlonSuphap-LM pipeline~\cite{klonsuphap}, but with a grader (Model~B or~D)
 substantially more precise than the G2P-based grader used there (Model~C),
 particularly on vowel length. Fine-tuning a generator with this reward,
-scaling the override dictionary, and context-sensitive pronunciations are
-future work, alongside decoding-time constrained
-sampling~\cite{geng2023}.
+scaling the override dictionary, and handling heteronyms are future work,
+alongside decoding-time constrained sampling~\cite{geng2023}.
 
 \section{Conclusion}
 
