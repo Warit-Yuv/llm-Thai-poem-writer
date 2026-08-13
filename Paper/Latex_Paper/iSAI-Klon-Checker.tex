@@ -206,7 +206,7 @@ deterministic reward environment for RL-based Klon-Paed generation.
 
 A Klon-Paed stanza has four waks of eight syllables each. Thai syllables
 are written without delimiters and a word may consist of one or more
-syllables, so the metre must be recovered by syllabification rather than by
+syllables, so the meter must be recovered by syllabification rather than by
 counting words. Within this skeleton the verse follows a fixed rhyme scheme.
 As defined by the Royal Institute of Thailand, two syllables rhyme \thpar{\emph{sumpus}}{สัมผัส}
 when they share the same vowel sound \thpar{sara}{สระ} and the same final-consonant class
@@ -361,12 +361,12 @@ see.
 
 Model~B is the \texttt{KhaveeVerifier} of PyThaiNLP 5.3.5. It verifies a
 poem in three stages. (1)~Each wak is tokenised into syllables directly
-with the SSG CRF segmenter, applied to the wak text itself (no word
-pre-segmentation). (2)~For each canonical rule the relevant syllables are
+with the SSG CRF segmenter, applied to the wak text itself without 
+pre-segmentating the word. (2)~For each canonical rule the relevant syllables are
 extracted: the final syllable of every wak, and the first five syllables of
 waks~2 and~4. (3)~The rhyme test \texttt{is\_sumpus} decides whether two
 syllables rhyme; a rule holds if the test succeeds for at least one
-permitted target. The eight-syllable metre is additionally reported.
+permitted target. The eight-syllable meter is additionally reported.
 Algorithm~\ref{alg:klon} summarises this flow.
 
 \begin{algorithm}[t]
