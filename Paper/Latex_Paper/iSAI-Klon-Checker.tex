@@ -81,47 +81,47 @@
 
 \title{Thai Poetry Rhyme Verification using a Hybrid Rule-Based Approach for Education and GenAI}
 
-\author{\IEEEauthorblockN{1\textsuperscript{st} Warit Yuvaniyama}
-\IEEEauthorblockA{
-\textit{School of Information, Computer,} \\
-\textit{and Communication Technology} \\
-\textit{Sirindhorn International Institute} \\
-\textit{of Technology, Thammasat University}\\
-Pathum Thani 12120, Thailand \\
-https://orcid.org/0009-0007-1630-4286}
-\and
-\IEEEauthorblockN{2\textsuperscript{nd} Athit Phinyachok}
-\IEEEauthorblockA{\textit{School of Information, Computer,} \\
-\textit{and Communication Technology} \\
-\textit{Sirindhorn International Institute} \\
-\textit{of Technology, Thammasat University}\\
-Pathum Thani 12120, Thailand \\
-https://orcid.org/0009-0000-3783-8104}
-\and
-\IEEEauthorblockN{3\textsuperscript{rd} Gunn Sanguankittipun}
-\IEEEauthorblockA{\textit{School of Information, Computer,} \\
-\textit{and Communication Technology} \\
-\textit{Sirindhorn International Institute} \\
-\textit{of Technology, Thammasat University}\\
-Pathum Thani 12120, Thailand \\
-https://orcid.org/0009-0005-8812-4992}
-\and
-\IEEEauthorblockN{4\textsuperscript{th} Leo Colombo}
-\IEEEauthorblockA{\textit{School of Information, Computer,} \\
-\textit{and Communication Technology} \\
-\textit{Sirindhorn International Institute} \\
-\textit{of Technology, Thammasat University}\\
-Pathum Thani 12120, Thailand \\
-https://orcid.org/0009-0004-9133-5398}
-\and
-\IEEEauthorblockN{5\textsuperscript{th} Prachya Boonkwan*}
-\IEEEauthorblockA{\textit{School of Information, Computer,} \\
-\textit{and Communication Technology} \\
-\textit{Sirindhorn International Institute} \\
-\textit{of Technology, Thammasat University}\\
-Pathum Thani 12120, Thailand \\
-https://orcid.org/0000-0003-1405-1071*}
-}
+% \author{\IEEEauthorblockN{1\textsuperscript{st} Warit Yuvaniyama}
+% \IEEEauthorblockA{
+% \textit{School of Information, Computer,} \\
+% \textit{and Communication Technology} \\
+% \textit{Sirindhorn International Institute} \\
+% \textit{of Technology, Thammasat University}\\
+% Pathum Thani 12120, Thailand \\
+% https://orcid.org/0009-0007-1630-4286}
+% \and
+% \IEEEauthorblockN{2\textsuperscript{nd} Athit Phinyachok}
+% \IEEEauthorblockA{\textit{School of Information, Computer,} \\
+% \textit{and Communication Technology} \\
+% \textit{Sirindhorn International Institute} \\
+% \textit{of Technology, Thammasat University}\\
+% Pathum Thani 12120, Thailand \\
+% https://orcid.org/0009-0000-3783-8104}
+% \and
+% \IEEEauthorblockN{3\textsuperscript{rd} Gunn Sanguankittipun}
+% \IEEEauthorblockA{\textit{School of Information, Computer,} \\
+% \textit{and Communication Technology} \\
+% \textit{Sirindhorn International Institute} \\
+% \textit{of Technology, Thammasat University}\\
+% Pathum Thani 12120, Thailand \\
+% https://orcid.org/0009-0005-8812-4992}
+% \and
+% \IEEEauthorblockN{4\textsuperscript{th} Leo Colombo}
+% \IEEEauthorblockA{\textit{School of Information, Computer,} \\
+% \textit{and Communication Technology} \\
+% \textit{Sirindhorn International Institute} \\
+% \textit{of Technology, Thammasat University}\\
+% Pathum Thani 12120, Thailand \\
+% https://orcid.org/0009-0004-9133-5398}
+% \and
+% \IEEEauthorblockN{5\textsuperscript{th} Prachya Boonkwan*}
+% \IEEEauthorblockA{\textit{School of Information, Computer,} \\
+% \textit{and Communication Technology} \\
+% \textit{Sirindhorn International Institute} \\
+% \textit{of Technology, Thammasat University}\\
+% Pathum Thani 12120, Thailand \\
+% https://orcid.org/0000-0003-1405-1071*}
+% }
 
 \maketitle
 
@@ -308,8 +308,8 @@ class.
   \node[cell,fill=gray!25,line width=0.9pt] at (w38) {{\thtxt{มิตร}}\\{\ipatxt{mít}}};
   \node[lbl] at (0.3, 2*\ystep) {\emph{rong}};
   
-  % wak 4 (song) จะ ชอบ ผิด ใน มนุ ษ เพราะ พูด จา
-  \foreach \i/\syl/\ipa in {1/จะ/tɕàʔ,2/ชอบ/tɕʰɔ̂ːp,3/ผิด/pʰìt,4/ใน/naj,5/มนุ/má,6/ษ/nút,7/เพราะ/pʰrɔ́ʔ,8/พูด/pʰûːt,9/จา/tɕaː}
+  % wak 4 (song) จะ ชอบ ผิด ใน ม นุษ เพราะ พูด จา
+  \foreach \i/\syl/\ipa in {1/จะ/tɕàʔ,2/ชอบ/tɕʰɔ̂ːp,3/ผิด/pʰìt,4/ใน/naj,5/ม/má,6/นุษ/nút,7/เพราะ/pʰrɔ́ʔ,8/พูด/pʰûːt,9/จา/tɕaː}
     \node[cell] (w4\i) at (\i*\xstep, 3*\ystep) {{\thtxt{\syl}}\\{\ipatxt{\ipa}}};
   \node[cell,fill=gray!25,line width=0.9pt] at (w43) {{\thtxt{ผิด}}\\{\ipatxt{pʰìt}}};
   \node[lbl] at (0.3, 3*\ystep) {\emph{song}};
@@ -744,6 +744,10 @@ C & 85.3 & 78.7 & 266 & 90 & 3,107 & 2,702/267 \\
 \end{table}
 
 \subsection{Discussion}
+
+% น่าใส่เรื่อง G2P dict https://github.com/PyThaiNLP/thai-g2p-wiktionary-corpus
+% กับเรื่องคำเดี๋ยวกันแต่มันอ่านได้หลายแบบ (heteronyms?) แล้วก็พยางค์ด้วยว่าตอนเราออกเสียง
+% บางทีก็สามารถรวบคำให้มันลงสัมผัสได้ ซึ่ง dictionary overrides ตอนนี้เรา force ให้มันเป็นแบบเดียวกันหมด
 
 The experiment supports four findings. (1)~\textbf{The proposed rules are
 precise.} B never false-accepts on oracle-verified negatives, and B,
