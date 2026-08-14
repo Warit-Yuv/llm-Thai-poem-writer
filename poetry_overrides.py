@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 # POETRY_OVERRIDES - gold-standard pronunciation overrides for Klon-8.
 # THIS IS THE ONLY FILE YOU EDIT.
-# Merged 2026-08-05: MAIN (curated) + GOLD (bulk-verified draft),
-# with author fixes (พหล, บาทบงกช, เฉยเมย, ระหกระเหิน, ตรอมตรม)
-# and orthography/tone fixes applied. Re-run build_overrides.py
-# after any edit; suspicious entries appear in the review file.
 POETRY_OVERRIDES = {
-    # ---- MAIN (curated) ----
     "ก": ["กะ"], "ข": ["ขะ"], "ค": ["คะ"], "ฆ": ["คะ"], "ง": ["งะ"], "จ": ["จะ"], "ฉ": ["ฉะ"],
     "ช": ["ชะ"], "ฌ": ["ชะ"], "ญ": ["ยะ"], "ฏ": ["ตะ"], "ฐ": ["ถะ"], "ฑ": ["ทะ"], "ฒ": ["ทะ"],
     "ณ": ["นะ"], "ต": ["ตะ"], "ถ": ["ถะ"], "ท": ["ทะ"], "ธ": ["ทะ"], "น": ["นะ"], "ป": ["ปะ"],
@@ -415,9 +410,6 @@ POETRY_OVERRIDES = {
     "ฮ้าเฮ้ย": ["ฮ้า", "เฮ้ย"],
     "ปัจถรณ์": ["ปัด", "จะ", "ถอน"],
     "โอฬารึก": ["โอ", "รา", "รึก"],
-    
-    # ---- GOLD (merged from the draft) ----
-    #### <<<<
     "กฎหมาย": ["กด", "หมาย"],
     "กนิษฐา": ["กะ", "นิด", "ถา"],
     "กบิลพัสดุ์": ["กะ", "บิน", "พัด"],
@@ -1035,7 +1027,6 @@ POETRY_OVERRIDES = {
     "บังคมทูล": ["บัง", "คม", "ทูล"],
     "บ้ากาม": ["บ้า", "กาม"],
     "ปรึกษา": ["ปรึก", "สา"],
-    #### <<<<
     "ตก": ["ตก"],
     "ตกลง": ["ตก", "ลง"],
     "ตกแต่ง": ["ตก", "แต่ง"],
@@ -2481,8 +2472,6 @@ POETRY_OVERRIDES = {
     "ส่งเสียง": ["ส่ง", "เสียง"],
     "ส่วน": ["ส่วน"],
     "ส่อง": ["ส่อง"],
-    
-    #### <<<<
     "หก": ["หก"],
     "หงส์": ["หง"],
     "หญิง": ["หยิง"],
@@ -3419,10 +3408,7 @@ POETRY_OVERRIDES = {
     "ไสยาสน์": ["ไส", "ยาด"],
     "ไหว้": ["ไหว้"],
     "ห่วงใย": ["ห่วง", "ไย"],
-    # No linking ทะ: the meter says so. All 18 corpus วรรค carrying this word
-    # scan to 8 with [3,2,3] at 3 syllables (ถวายบาท | บงกช | บทศรี) and to a
-    # straddled 9 at 4. Overrides the earlier KNOWN_FIX, which read บาด-ทะ-บง-กด.
-    "บาทบงกช": ["บาด", "บง", "กด"],
+    "บาทบงกช": ["บาด", "บง", "กด"],  # Could also be read as ["บาด", "ทะ", "บง", "กด"] 
     "ผู้กำกับ": ["ผู้", "กำ", "กับ"],  # FIXED: tone changed @1 (ผู้ vs พู่)
     "ผู้เดียว": ["ผู้", "เดียว"],  # FIXED: tone changed @1 (ผู้ vs พู่)
     "พหล": ["พะ", "หน"],  # FIXED: KNOWN_FIX
@@ -4283,10 +4269,6 @@ POETRY_OVERRIDES = {
     "โสร่ง": ["สะ", "โหร่ง"],
     "ใส่จริต": ["ใส่", "จะ", "หริด"],
     "ได้เงิน": ["ได้", "เงิน"],
-    # ---- migrated 2026-08-10 from Noto_tokenizer.POETRY_OVERRIDES ----
-    # The only 3 of its 22 keys absent here. w2p swallows the linking syllable
-    # in these Sanskrit/Pali compounds and Wiktionary has no entry, so without
-    # them อัปยศอดสูเสนาใน scans 7 instead of 8.
     "กิตติมศักดิ์": ["กิด", "ติ", "มะ", "สัก"],
     "ไสยศาสตร์": ["ไส", "ยะ", "สาด"],
     "อัปยศอดสู": ["อับ", "ปะ", "ยด", "อด", "สู"],
