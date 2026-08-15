@@ -15,6 +15,7 @@
 \usepackage{tikz}
 \usepackage{url}
 \usepackage{iftex}
+\usepackage{tipa}
 
 % ---- Thai script + IPA support (dual-engine) ----
 % Thai and IPA render ONLY with XeLaTeX. Build with:
@@ -32,10 +33,6 @@
 %   \ipatxt{ipa}           bare IPA transcription (IPA font)
 % Use \thgloss for terms/concepts, \thpar for inline parenthetical glosses,
 % and \ipatxt for phonetic transcriptions.
-% Convention: the romanized/transliterated form is emphasized with \emph
-% INSIDE the gloss, e.g. \thgloss{\emph{term}}{ไทย} or
-% \thpar{\emph{term}}{ไทย}; an IPA reading inside a gloss is wrapped in
-% \ipatxt, e.g. \thgloss{\emph{\ipatxt{ipa}}}{ไทย}.
 \ifXeTeX
   \usepackage{fontspec}
   \IfFontExistsTF{TH Sarabun New}
@@ -61,8 +58,8 @@
             {\newfontfamily\ipafont{FreeSerif}}
             {\newfontfamily\ipafont{Segoe UI}}}}}}
   \newcommand{\thtxt}[1]{{\thaifont #1}}      % bare Thai text
-  \newcommand{\thgloss}[2]{#1 (\thtxt{#2})}   % roman (thai)  [named term + gloss]
-  \newcommand{\thpar}[2]{(#1 \thtxt{#2})}     % (roman thai)  [parenthetical gloss]
+  \newcommand{\thgloss}[2]{\textipa{#1} (\thtxt{#2})}   % roman (thai)  [named term + gloss]
+  \newcommand{\thpar}[2]{(\textipa{#1} \thtxt{#2})}     % (roman thai)  [parenthetical gloss]
   \newcommand{\ipatxt}[1]{{\ipafont #1}}      % bare IPA transcription
   \newcommand{\thaistanza}[2]{\par\small\noindent #1\par\thtxt{#2}\par\normalsize} % verse + Thai
 \else
@@ -87,65 +84,64 @@
 
 % Double-anonymous submission: author block is commented out for review.
 % Uncomment for the camera-ready version.
-% \author{\IEEEauthorblockN{1\textsuperscript{st} Warit Yuvaniyama}
-% \IEEEauthorblockA{
-% \textit{School of Information, Computer,} \\
-% \textit{and Communication Technology} \\
-% \textit{Sirindhorn International Institute} \\
-% \textit{of Technology, Thammasat University}\\
-% Pathum Thani 12120, Thailand \\
-% https://orcid.org/0009-0007-1630-4286}
-% \and
-% \IEEEauthorblockN{2\textsuperscript{nd} Athit Phinyachok}
-% \IEEEauthorblockA{\textit{School of Information, Computer,} \\
-% \textit{and Communication Technology} \\
-% \textit{Sirindhorn International Institute} \\
-% \textit{of Technology, Thammasat University}\\
-% Pathum Thani 12120, Thailand \\
-% https://orcid.org/0009-0000-3783-8104}
-% \and
-% \IEEEauthorblockN{3\textsuperscript{rd} Gunn Sanguankittipun}
-% \IEEEauthorblockA{\textit{School of Information, Computer,} \\
-% \textit{and Communication Technology} \\
-% \textit{Sirindhorn International Institute} \\
-% \textit{of Technology, Thammasat University}\\
-% Pathum Thani 12120, Thailand \\
-% https://orcid.org/0009-0005-8812-4992}
-% \and
-% \IEEEauthorblockN{4\textsuperscript{th} Leo Colombo}
-% \IEEEauthorblockA{\textit{School of Information, Computer,} \\
-% \textit{and Communication Technology} \\
-% \textit{Sirindhorn International Institute} \\
-% \textit{of Technology, Thammasat University}\\
-% Pathum Thani 12120, Thailand \\
-% https://orcid.org/0009-0004-9133-5398}
-% \and
-% \IEEEauthorblockN{5\textsuperscript{th} Prachya Boonkwan*}
-% \IEEEauthorblockA{\textit{School of Information, Computer,} \\
-% \textit{and Communication Technology} \\
-% \textit{Sirindhorn International Institute} \\
-% \textit{of Technology, Thammasat University}\\
-% Pathum Thani 12120, Thailand \\
-% https://orcid.org/0000-0003-1405-1071*}
-% }
+%\author{\IEEEauthorblockN{1\textsuperscript{st} Warit Yuvaniyama}
+%\IEEEauthorblockA{
+%\textit{School of Information, Computer,} \\
+%\textit{and Communication Technology} \\
+%\textit{Sirindhorn International Institute} \\
+%\textit{of Technology, Thammasat University}\\
+%Pathum Thani 12120, Thailand \\
+%https://orcid.org/0009-0007-1630-4286}
+%\and
+%\IEEEauthorblockN{2\textsuperscript{nd} Athit Phinyachok}
+%\IEEEauthorblockA{\textit{School of Information, Computer,} \\
+%\textit{and Communication Technology} \\
+%\textit{Sirindhorn International Institute} \\
+%\textit{of Technology, Thammasat University}\\
+%Pathum Thani 12120, Thailand \\
+%https://orcid.org/0009-0000-3783-8104}
+%\and
+%\IEEEauthorblockN{3\textsuperscript{rd} Gunn Sanguankittipun}
+%\IEEEauthorblockA{\textit{School of Information, Computer,} \\
+%\textit{and Communication Technology} \\
+%\textit{Sirindhorn International Institute} \\
+%\textit{of Technology, Thammasat University}\\
+%Pathum Thani 12120, Thailand \\
+%https://orcid.org/0009-0005-8812-4992}
+%\and
+%\IEEEauthorblockN{4\textsuperscript{th} Leo Colombo}
+%\IEEEauthorblockA{\textit{School of Information, Computer,} \\
+%\textit{and Communication Technology} \\
+%\textit{Sirindhorn International Institute} \\
+%\textit{of Technology, Thammasat University}\\
+%Pathum Thani 12120, Thailand \\
+%https://orcid.org/0009-0004-9133-5398}
+%\and
+%\IEEEauthorblockN{5\textsuperscript{th} Prachya Boonkwan*}
+%\IEEEauthorblockA{\textit{School of Information, Computer,} \\
+%\textit{and Communication Technology} \\
+%\textit{Sirindhorn International Institute} \\
+%\textit{of Technology, Thammasat University}\\
+%Pathum Thani 12120, Thailand \\
+%https://orcid.org/0000-0003-1405-1071*}
+%}
 
-% New shorter author block here
-% \author{\IEEEauthorblockN{Warit Yuvaniyama, Athit Phinyachok, Gunn Sanguankittipun, Leo Colombo, and Prachya Boonkwan}
-% \IEEEauthorblockA{
-%     \textit{School of Information, Computer and Communication Technology} \\
-%     \textit{Sirindhorn International Institute of Technology, Thammasat University}\\
-%     Pathum Thani 12120, Thailand \\
-%     ORCID: \{ 0009-0007-1630-4286, 0009-0000-3783-8104, 0009-0005-8812-4992, 0009-0004-9133-5398, 0000-0003-1405-1071 \}
-%     Email: \{ 6622770459@g.siit.tu.ac.th, 6622780474@g.siit.tu.ac.th, 6622780540@g.siit.tu.ac.th, 6622780136@g.siit.tu.ac.th, prachya@siit.tu.ac.th \}
-%     }
-% }
+\author{\IEEEauthorblockN{Warit Yuvaniyama, Athit Phinyachok, Gunn Sanguankittipun, Leo Colombo, and Prachya Boonkwan}
+    \IEEEauthorblockA{
+        \textit{School of Information, Computer and Communication Technology} \\
+        \textit{Sirindhorn International Institute of Technology, Thammasat University}\\
+        Pathum Thani 12120, Thailand \\
+        % ORCID: \{ 0009-0007-1630-4286, 0009-0000-3783-8104, 0009-0005-8812-4992, 0009-0004-9133-5398, 0000-0003-1405-1071 \}
+        Email: \{ 6622770459@g.siit.tu.ac.th, 6622780474@g.siit.tu.ac.th, 6622780136@g.siit.tu.ac.th,\\ 6622780540@g.siit.tu.ac.th, prachya@siit.tu.ac.th \}
+    }
+}
 
 \maketitle
 
 \begin{abstract}
-In Thai \thgloss{\emph{Klon-Paed}}{กลอนแปด} poetry (the eight-syllable verse form) each four-line stanza must satisfy an interlocking rhyming pattern
-where each rhyming syllables must share both a vowel sound \thpar{\emph{sara}}{สระ} and a final-consonant
-class \thpar{\emph{mattra}}{มาตราตัวสะกด}. Because Thai is written without word
+In Thai Klon Paed \thtxt{กลอนแปด} poetry (the eight-syllable verse form) each four-line stanza must satisfy an interlocking rhyming pattern
+where each rhyming syllables must share both a vowel sound \thpar{s\`ar\`a}{สระ} and a final-consonant
+class \thpar{m\^a:ttra:}{มาตราตัวสะกด}. Because Thai is written without word
 boundaries and its orthography conceals vowels and silenced letters,
 automatic rhyme verification is non-trivial: neither classical rule-based
 checkers nor G2P-romanization checkers handle the resulting edge cases
@@ -177,23 +173,23 @@ Thai orthography does not map straightforwardly onto pronunciation, and
 this gap becomes especially apparent in the classical register used by Thai
 poetry. The script is written without explicit word boundaries; vowels are
 frequently implicit; consonants or entire clusters can be silenced by the
-karun diacritic \thpar{\emph{thanthakhat}}{ทัณฑฆาต}; and irregular words whose pronunciations do
+karun diacritic \thpar{t\super{h}ant\super{h}\'ak\super{h}\^a:t}{ทัณฑฆาต}; and irregular words whose pronunciations do
 not follow the standard phonetic rules are common. Complex phonological
-structures, such as consonant blending \thpar{\emph{kham khuap klam}}{คำควบกล้ำ} and leading
-consonants \thpar{\emph{aksorn nam}}{อักษรนำ}, further obscure syllable boundaries, vowel
+structures, such as consonant blending \thpar{\emph{k\super{h}am k\super{h}u\^ap kl\^am}}{คำควบกล้ำ} and leading
+consonants \thpar{\emph{P\`aks\v{O}n nam}}{อักษรนำ}, further obscure syllable boundaries, vowel
 classification, and tone. As a result, syllabification and pronunciation
 are particularly difficult for computational algorithms and machine
 learning models.
 
 Klon-Paed is a Thai verse form that depends on these
-phonetic properties. Each stanza \thpar{\emph{bot}}{บท} consists of four
-sets of seven-to-nine-syllable lines \thpar{\emph{wak}}{วรรค}. A valid rhyme
-requires two syllables to share both the vowel sound \thpar{\emph{sara}}{สระ} and
-the final-consonant class \thpar{\emph{mattra}}{มาตราตัวสะกด}. Four canonical rhyme
+phonetic properties. Each stanza \thpar{\emph{b\`ot}}{บท} consists of four
+sets of seven-to-nine-syllable lines \thpar{\emph{V\'ak}}{วรรค}. A valid rhyme
+requires two syllables to share both the vowel sound \thpar{s\`ar\`a}{สระ} and
+the final-consonant class \thpar{m\^a:ttra:}{มาตราตัวสะกด}. Four canonical rhyme
 rules must hold within (r1, r2, r3) and across (rX) stanzas
 (Section~\ref{sec:bg}), and the final syllable of every wak must participate.
-A single silent letter, e.g.\ the silent \thpar{\emph{r}}{ร} of
-\thgloss{\emph{phet}}{เพชร} (`diamond'), or a short-long vowel-length
+A single silent letter, e.g.\ the silent \emph{\thpar{r}{ร}} of
+\emph{\thgloss{phet}{เพชร}} (`diamond'), or a short-long vowel-length
 error is enough to break a rhyme. These constraints are strict and
 deterministic, which is difficult for statistical systems.
 
@@ -248,19 +244,19 @@ are written without delimiters and a word may consist of one or more
 syllables, so the meter must be recovered by syllabification rather than by
 counting words. Within this skeleton the verse follows a fixed rhyme scheme.
 As defined by the Royal Institute of Thailand, two syllables rhyme \thpar{\emph{sumpus}}{สัมผัส}
-when they share the same vowel sound \thpar{\emph{sara}}{สระ} and the same final-consonant class
-\thpar{\emph{mattra}}{มาตราตัวสะกด}. Additionally, tone is not part of the rhyme.
-The mattra classes \thpar{\emph{mae}}{แม่}, consisting of ka, kong, kok,
+when they share the same vowel sound \thpar{s\`ar\`a}{สระ} and the same final-consonant class
+\thpar{m\^a:ttra:}{มาตราตัวสะกด}. Additionally, tone is not part of the rhyme.
+The mattra classes \thpar{\emph{m\^{E}:}}{แม่}, consisting of ka, kong, kok,
 kot, kon, kop, kom, koey, and koew, group the final consonants of Thai
 syllables by their phonetic outcome (the velar, dental, labial, nasal,
-semivowel, and \thpar{\emph{w}}{ว} finals). The four waks are called the
-\thpar{\emph{sadap}}{สดับ},
-\thpar{\emph{rap}}{รับ}, \thpar{\emph{rong}}{รอง}, and
-\thpar{\emph{song}}{ส่ง} respectively. Four canonical
+semivowel, and \thpar{\emph{V}}{ว} finals). The four waks are called the
+\thpar{\emph{s\`ad\`ap}}{สดับ},
+\thpar{\emph{r\'ap}}{รับ}, \thpar{\emph{rO:ng}}{รอง}, and
+\thpar{\emph{s\`ong}}{ส่ง} respectively. Four canonical
 rhyme rules are checked in this work, following the \emph{klon} canon and
 the implementation of the PyThaiNLP \texttt{KhaveeVerifier}:
 \begin{itemize}
-\item r1 (\emph{sadap} $\rightarrow$ \emph{rap}): the final syllable of
+\item r1 (\emph{s\`ad\`ap} $\rightarrow$ \emph{r\'ap}): the final syllable of
 wak~1 must rhyme with one of the first five syllables of wak~2 (syllables
 3 and 5 are obligatory, 1, 2, and 4 are permissible);
 \item r2 (\emph{rap} $\rightarrow$ \emph{rong}): the final syllable of
@@ -277,11 +273,11 @@ satisfies r1--r3; Figure~\ref{fig:klon} shows its rhyme positions and the
 inter-stanza (rX) link to the preceding stanza.
 
 Three orthographic phenomena make these rules hard to apply automatically.
-First, compound, transformed, and reduced vowels \thpar{\emph{sara prasom}}{สระประสม},
-\thpar{\emph{sara plianrup}}{สระเปลี่ยนรูป}, \thpar{\emph{sara lotrup}}{สระลดรูป} let several spellings map to one
+First, compound, transformed, and reduced vowels \thpar{\emph{s\`ar\`a pr\`as\v{o}m}}{สระประสม},
+\thpar{\emph{s\`ar\`a pli\`an.r\^u:p}}{สระเปลี่ยนรูป}, \thpar{\emph{s\`ar\`a l\'ot.r\^u:p}}{สระลดรูป} let several spellings map to one
 vowel sound. Second, the karun diacritic silences a letter
 or a whole cluster, leaving unpronounced letters in the written form.
-Third, a trailing \thgloss{\emph{y, l, w}}{ย, ล, ว} may be a genuine final
+Third, a trailing \thgloss{y, l, w}{ย, ล, ว} may be a genuine final
 consonant or merely part of a vowel digraph or an initial cluster. Any
 verifier must resolve all three before it can compare vowel and final
 class.
@@ -442,31 +438,30 @@ The accuracy of the verifier rests on three functions.
 per-character loop was rewritten to remove the shadowed conditions that
 misparsed the \emph{ua} diphthong and to resolve the transformed and
 reduced vowels signalled by the short-vowel mark
-\thpar{\emph{mai tai khu}}{ไม้ไต่คู้}: \emph{cet} $\rightarrow$ short
-\emph{e}, \emph{khaeng} $\rightarrow$ short \emph{ae}, \emph{ko}
-$\rightarrow$ \thpar{\emph{ao}}{เอาะ}. The
-\thgloss{\emph{ro han}}{รร} is evaluated once, yielding \emph{am} in a
-\emph{mae kom} context (e.g., \thgloss{\emph{tham}}{ธรรม}) and \emph{a}
-elsewhere. The three readings of \thpar{\emph{ru}}{ฤ} and
-\thpar{\emph{lue}}{ฦ} are classified from the original spelling
+\thpar{\emph{m\'a:I t\`aI k\super{h}\'u:}}{ไม้ไต่คู้}: \textipa{tC\`et} $\rightarrow$ short
+\textipa{\`e}, \textipa{k\super{h}\v{E}N} $\rightarrow$ short \textipa{E}, \textipa{k\`O}
+$\rightarrow$ \thpar{\textipa{\`O}}{เอาะ}. The
+\thgloss{\emph{rO: h\v{a}n}}{รร} is evaluated once, yielding \textipa{Pam} in a
+\textipa{m\^E: kom} context (e.g., \thgloss{\emph{t\super{h}am}}{ธรรม}) and \emph{a}
+elsewhere. The three readings of \thpar{\emph{r\'W}}{ฤ} and
+\thpar{\emph{l\'W}}{ฦ} are classified from the original spelling
 \emph{before} karun stripping, so silent suffixes cannot hide them:
-\emph{roek} in \thgloss{\emph{roek}}{ฤกษ์}, \emph{rit} in
-\thgloss{\emph{rit}}{ฤทธิ์} and \thgloss{\emph{angkit}}{อังกฤษ}, and
-\emph{rue-du} in \thgloss{\emph{ruedu}}{ฤดู}. Pali/Sanskrit words with a
-silent terminal vowel (e.g., \thgloss{\emph{kiet}}{เกียรติ},
-\thgloss{\emph{chat}}{ชาติ}, \thgloss{\emph{thammachat}}{ธรรมชาติ}) have it
+\emph{r\^@:k} in \thgloss{\emph{r\^@:k}}{ฤกษ์}, \textipa{r\'it} in
+\thgloss{\emph{r\'it}}{ฤทธิ์} and \thgloss{\emph{PaNkr\`it}}{อังกฤษ}, and
+\emph{r\'Wdu:} in \thgloss{\emph{r\'Wdu:}}{ฤดู}. Pali/Sanskrit words with a
+silent terminal vowel (e.g., \thgloss{\emph{ki\`a:t}}{เกียรติ},
+\thgloss{\emph{tC\super{h}\^a:t}}{ชาติ}, \thgloss{\emph{t\super{h}amm\'atC\super{h}\^a:t}}{ธรรมชาติ}) have it
 stripped, and an empty result falls back to the implied short \emph{a}.
 \texttt{check\_marttra} returns the Royal-Institute final-consonant class
 of a syllable, strictly by orthography. It resolves karun first, strips
 silent terminal vowels, then strips a silent \emph{r} in loanword
 clusters---always in \emph{tr}/\emph{chr}/\emph{pr} (e.g., \emph{but},
-\emph{net}, \thgloss{\emph{phet}}{เพชร}) but in \emph{kr}, \emph{kh-r},
+\emph{net}, \thgloss{\emph{p\super{h}\'et}}{เพชร}) but in \emph{kr}, \emph{kh-r},
 and \emph{th-r} only when the preceding vowel is short, so
-\thgloss{\emph{cak}}{จักร} loses its \emph{r} while
-\thgloss{\emph{mangkon}}{มังกร} does not. Standalone characters
-(\thgloss{\emph{na}}{ณ}, \thgloss{\emph{tha}}{ธ},
-\thgloss{\emph{phona}}{พณ}, \thgloss{\emph{bo}}{บ}) and the \emph{sara
-koen} are classed as \emph{mae ka}. Finally, \texttt{is\_sumpus}
+\thgloss{\emph{tC\`ak}}{จักร} loses its \emph{r} while
+\thgloss{\emph{maNkO:n}}{มังกร} does not. Standalone characters
+(\thgloss{\emph{n\'a}}{ณ}, \thgloss{\emph{t\super{h}\'a}}{ธ},
+\thgloss{\emph{ph\'an\'a}}{พณ}, \thgloss{\emph{bO:}}{บ}) and the \textipa{s\`ar\`a k@:n} are classed as \textipa{m\^E: ka:}. Finally, \texttt{is\_sumpus}
 normalizes both arguments independently, since the old conditional chain
 short-circuited when only one word needed normalization:
 \emph{a+koey} $\rightarrow$ \emph{ai+ka} (so \emph{chai} rhymes with
@@ -476,25 +471,25 @@ mattra of the two syllables are equal.
 
 Two further mechanisms account for most of the improvement over the 5.0.1
 baseline. \texttt{handle\_karun\_sound\_silence} strips characters silenced
-by the karun, no longer by a fixed truncation: it recognises
-multi-letter silent suffixes such as \thgloss{\emph{phra lak}}{พระลักษมณ์}
-(strips the silent \emph{km} cluster to expose the true \emph{mae kok}
-final) and \thgloss{\emph{kasat}}{กษัตริย์} (strips the silent \emph{triy}
-suffix, leaving a \emph{mae kot} final), two-consonant suffixes such as
-\emph{-tr} in \thgloss{\emph{sat}}{ศาสตร์} and \emph{-nthr} in
-\thgloss{\emph{can}}{จันทร์}, and the consonant-plus-vowel patterns of
-\thgloss{\emph{sit}}{สิทธิ์} and \thgloss{\emph{phan}}{พันธุ์}, while leaving
-an internal karun (e.g., \thgloss{\emph{ohm}}{โอห์ม}) untouched.
+by the \emph{karun}, no longer by a fixed truncation: it recognises
+multi-letter silent suffixes such as \thgloss{\emph{p\super{h}r\'a l\'ak}}{พระลักษมณ์}
+(strips the silent \emph{km} cluster to expose the true \textipa{\emph{m\^E: k\`ok}}
+final) and \thgloss{\emph{k\`as\`at}}{กษัตริย์} (strips the silent \emph{triy}
+suffix, leaving a \textipa{\emph{m\^E: k\`ot}} final), two-consonant suffixes such as
+\emph{-tr} in \thgloss{\emph{s\`a:t}}{ศาสตร์} and \textipa{\emph{-nt\super{h}r}} in
+\thgloss{\emph{tCan}}{จันทร์}, and the consonant-plus-vowel patterns of
+\thgloss{\emph{s\`it}}{สิทธิ์} and \thgloss{\emph{p\super{h}an}}{พันธุ์}, while leaving
+an internal karun (e.g., \thgloss{\emph{Po:m}}{โอห์ม}) untouched.
 \texttt{\_is\_true\_final} decides whether a trailing \emph{y}, \emph{l},
 or \emph{w} is a genuine final rather than part of a vowel digraph or
 initial cluster. It strips karun and tone marks first---so
-\thgloss{\emph{klai}}{ใกล้}, which ends in a tone mark, is still seen as
+\thgloss{\emph{kl\^aI}}{ใกล้}, which ends in a tone mark, is still seen as
 ending in \emph{l}---requires at least two consonants, and consults
 hand-built cluster tables for \emph{l}, \emph{r}, and \emph{w} under the
-pre-posed vowels \thpar{\emph{e-}, \emph{ae-}, \emph{o-}, \emph{ai-}}{เ- แ- โ- ไ- ใ-}:
-the \emph{y} of \thgloss{\emph{thai}}{ไทย} is silent, the \emph{l} of
-\thgloss{\emph{plae}}{เปล} belongs to the cluster, and the \emph{l} of
-\thgloss{\emph{chon}}{ชล} is a true final.
+pre-posed vowels \thpar{\emph{e:}, \emph{E:}, \emph{o:}, \emph{aI}, \emph{aI}}{เ- แ- โ- ไ- ใ-}:
+the \emph{y} of \thgloss{\emph{t\super{h}aI}}{ไทย} is silent, the \emph{l} of
+\thgloss{\emph{ple:}}{เปล} belongs to the cluster, and the \emph{l} of
+\thgloss{\emph{tC\super{h}on}}{ชล} is a true final.
 
 Table~\ref{tab:changes} summarises the principal changes of the 5.3.5
 verifier relative to the 5.0.1 baseline; they were developed and merged in
@@ -516,17 +511,17 @@ Together they raise per-rule gold recall from 86--89\% to 95--97\%
 \textbf{Aspect} & \textbf{5.0.1 $\rightarrow$ 5.3.5 (example)} \\
 \midrule
 Segmentation & dict subword $\rightarrow$ SSG syllable segmentation \\
-Karun \thpar{\emph{thanthakhat}}{ทัณฑฆาต} & ignored $\rightarrow$ silenced (\thgloss{\emph{ohm}}{โอห์ม}$\rightarrow$\thgloss{\emph{o}}{โอ}) \\
-True finals \thgloss{\emph{y/l/w}}{ย/ล/ว} & naive $\rightarrow$ cluster-aware (\thgloss{\emph{thai}}{ไทย}, \thgloss{\emph{klai}}{ใกล้}$\rightarrow$\thgloss{\emph{mae ka}}{แม่ กา}) \\
-Special-vowel norm. & one-sided $\rightarrow$ both-sided (\thgloss{\emph{cam}}{จำ}$\sim$\thgloss{\emph{kam}}{กำ}) \\
+Karun (thanthakhat) & ignored $\rightarrow$ silenced (\emph{ohm}$\rightarrow$\emph{o}) \\
+True finals y/l/w & naive $\rightarrow$ cluster-aware (\emph{thai}, \emph{klai}$\rightarrow$mae ka) \\
+Special-vowel norm. & one-sided $\rightarrow$ both-sided (\emph{cam}$\sim$\emph{kam}) \\
 Compound/reduced vowels & misread $\rightarrow$ compound-vowel classifier,
-short-vowel mark, and \thgloss{\emph{ua}}{อัว} diphthong (\thgloss{\emph{cet}}{เจ็ด}$\rightarrow$short \thgloss{\emph{e}}{เอะ};
-\thgloss{\emph{tua}}{ตัว}$\sim$\thgloss{\emph{chua}}{ชั่ว}) \\
-\thgloss{\emph{ru}}{ฤ} & one sound $\rightarrow$ three sounds (\thgloss{\emph{roek}}{ฤกษ์}, \thgloss{\emph{rit}}{ฤทธิ์}, \thgloss{\emph{rue-du}}{ฤดู}) \\
+short-vowel mark, and \emph{ua} diphthong (\emph{cet}$\rightarrow$short \emph{e};
+\emph{tua}$\sim$\emph{chua}) \\
+\emph{ru} & one sound $\rightarrow$ three sounds (\emph{roek}, \emph{rit}, \emph{rue-du}) \\
 r3 rule & absent $\rightarrow$ implemented (all four rules) \\
-Silent \thgloss{\emph{r}}{ร} & misread $\rightarrow$ stripped in \texttt{check\_marttra} (\thgloss{\emph{but}}{บุตร}, \thgloss{\emph{phet}}{เพชร}) \\
-Single-char words & crash $\rightarrow$ guarded (\thgloss{\emph{na}}{ณ}, \thgloss{\emph{tha}}{ธ}$\rightarrow$\thgloss{\emph{a}}{อะ}) \\
-Silent terminal vowels & misread $\rightarrow$ stripped (\thgloss{\emph{kiet}}{เกียรติ}, \thgloss{\emph{chat}}{ชาติ}) \\
+Silent \emph{r} & misread $\rightarrow$ stripped in \texttt{check\_marttra} (\emph{but}, \emph{phet}) \\
+Single-char words & crash $\rightarrow$ guarded (\emph{na}, \emph{tha}$\rightarrow$a) \\
+Silent terminal vowels & misread $\rightarrow$ stripped (\emph{kiet}, \emph{chat}) \\
 Stanza processing & flat $\rightarrow$ stanza-based, word counts, structured errors \\
 \bottomrule
 \end{tabular}
@@ -544,8 +539,8 @@ rules.
 
 The dictionary, \texttt{POETRY\_OVERRIDES}, contains over 4{,}000
 hand-verified entries mapping a surface form to its syllable sequence (e.g.,
-\thgloss{\emph{\ipatxt{pʰet̚}}}{เพชร} $\rightarrow$ \thgloss{\emph{\ipatxt{pʰet̚}}}{เพ็ด}; \thgloss{\emph{\ipatxt{sat̚ truː}}}{ศัตรู} $\rightarrow$
-\thgloss{\emph{\ipatxt{sat̚-truː}}}{สัด-ตรู}; \thgloss{\emph{\ipatxt{ka sat̚ riː}}}{กษัตรี} $\rightarrow$ \thgloss{\emph{\ipatxt{ka-sat̚-riː}}}{กะ-สัด-ตรี}). It was
+\thgloss{\emph{p\super{h}\'et}}{เพชร} $\rightarrow$ \textipa{p\super{h}\'et}; \thgloss{\emph{s\`attru:}}{ศัตรู} $\rightarrow$
+\textipa{s\`at-tru:}; \thgloss{\emph{k\`as\`atri:}}{กษัตรี} $\rightarrow$ \textipa{k\`a-s\`at-tri:}). It was
 built from the frequent vocabulary of the Phra Aphai Mani corpus with
 manual supervision, and every entry is checked by a four-guard pipeline
 that rejects pronunciations hallucinated by the Word2Phrase (w2p) neural
@@ -577,12 +572,11 @@ reduce coverage.
 \subsection{Gold-Standard Corpus Compilation}
 
 We collected five classical Thai narrative poems from the Vajirayana
-digital library~\cite{vajirayana}: \thgloss{\emph{Khobut}}{โคบุตร},
-\thgloss{\emph{Khun Chang Khun Phaen}}{ขุนช้างขุนแผน}, \thgloss{\emph{Phra Aphai Mani}}{พระอภัยมณี},
-\thgloss{\emph{Phukao Tong}}{ภูเขาทอง}, and \thgloss{\emph{Suphasaet Son
-Ying}}{สุภาษิตสอนหญิง}. A cleaning pipeline normalised the text and split it
+digital library~\cite{vajirayana}: \thgloss{\emph{k\super{h}o:.b\`ut}}{โคบุตร},
+\thgloss{\emph{k\super{h}\v{u}n tC\super{h}\'a:N k\super{h}\v{u}n p\super{h}\v{E}:n}}{ขุนช้างขุนแผน}, \thgloss{\emph{p\super{h}r\'a P\`ap\super{h}aI m\'ani:}}{พระอภัยมณี},
+\thgloss{\emph{n\'ir\^a:t p\super{h}u:k\super{h}\v{a}o t\super{h}O:N}}{นิราศภูเขาทอง}, and \thgloss{\emph{s\`up\super{h}a:s\`it s\v{O}:n j\v{i}N}}{สุภาษิตสอนหญิง}. A cleaning pipeline normalised the text and split it
 into stanzas of four waks, discarding only chapter-opening fragments and
-scribal \thtxt{๏} marks. Crucially, waks with ten or more syllables were
+scribal \emph{o} marks. Crucially, waks with ten or more syllables were
 retained: dropping them severs inter-stanza rhyme chains and made an early
 corpus version appear to violate rX at a ~72\% rate, whereas on the
 complete corpus rX holds at ~96--97\%. The final corpus comprises 191
@@ -611,20 +605,20 @@ from eight corruption operators: trivial different-vowel-and-mattra swaps
 short/long vowel swaps (C3, 3{,}100), liquid-final swaps (C4, 1{,}200), a
 systematic trap in which the 5.0.1 checker reads the candidate as rhyming
 with the target while 5.3.5 does not (C9, 2{,}800), leading-consonant words
-(C5, 600), and karun/\thgloss{\emph{\ipatxt{rɯ}}}{ฤ}/cluster traps (C2, 1{,}000).
+(C5, 600), and karun/\thgloss{\emph{ru}}{ฤ}/cluster traps (C2, 1{,}000).
 C3 and C9 dominate the mix because they are the operators that best
 discriminate the checkers.
 
 \paragraph{Positives (recall probes).} The 1{,}200 \emph{tricky}
 positives swap the target syllable with a rhyming candidate that exercises
-normalization \thpar{\emph{sara plianrup/lotrup}}{สระเปลี่ยนรูป/ลดรูป}, \thgloss{\emph{\ipatxt{rɯ}}}{ฤ}, karun, and
+normalization \thpar{\emph{s\`ar\`a pli\`an.r\^u:p/l\'ot.r\^up}}{สระเปลี่ยนรูป/ลดรูป}, \thgloss{\emph{r\'W}}{ฤ}, karun, and
 true-final cases; all are oracle-confirmed rhymes. A further 423
 \emph{oracle-blind} positives are genuine rhymes the oracle labels as
-non-rhymes: the silent-\emph{r} \thgloss{\emph{phet}}{เพชร} (true
-\emph{eh}+kot, which the oracle reads with the long \emph{ae} because the
+non-rhymes: the silent-\emph{r} \thgloss{\emph{p\super{h}\'et}}{เพชร} (true
+\textipa{\emph{e:}}+\textipa{k\`ot}, which the oracle reads with the long \emph{ae} because the
 dead final carries no short-vowel mark), and the first-sara words
-\thgloss{\emph{sattruu}}{ศัตรู}, \thgloss{\emph{kasatrii}}{กษัตรี}, and
-\thgloss{\emph{kasatriiya}}{กษัตรีย์} (SSG keeps each as one token, so
+\thgloss{\emph{s\`attru:}}{ศัตรู}, \thgloss{\emph{k\`as\`attri:}}{กษัตรี}, and
+\thgloss{\emph{k\`as\`attri:}}{กษัตรีย์} (SSG keeps each as one token, so
 \texttt{check\_sara} hears only the first vowel). For these the gold label
 is the \emph{linguistic} truth, not the oracle verdict: a checker that
 hears the real rhyme receives credit, while the oracle itself (Model~B) is
@@ -766,7 +760,7 @@ D\_w2p, and D\_ssg all exceed 99.5\% merged precision (A 95\%, C 92\%).
 (2)~\textbf{The override dictionary recovers the oracle's blind spots.}
 The D\_w2p-versus-D\_ssg gap on oracle-blind recall (95.7\% versus 68.1\%)
 is the pronunciation-knowledge contribution: the overrides read
-\emph{phet} as \ipatxt{/phet/} and split \emph{sattruu} and \emph{kasatrii} into
+\emph{phet} as /phet/ and split \emph{sattruu} and \emph{kasatrii} into
 their true syllables. One limitation is that each entry forces a single
 canonical pronunciation, although many surface forms are heteronyms whose
 reading depends on context, and in natural delivery adjacent syllables are
