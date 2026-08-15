@@ -139,8 +139,8 @@
 \maketitle
 
 \begin{abstract}
-In Thai Klon Paed (\thtxt{กลอนแปด}) poetry (the eight-syllable verse form) each four-line stanza must satisfy an interlocking rhyming pattern
-where each rhyming syllables must share both a vowel sound \thpar{s\`ar\`a}{สระ} and a final-consonant
+In Thai Klon-Paed (\thtxt{กลอนแปด}) poetry (the eight-syllable verse form) each four-line stanza must satisfy an interlocking rhyming pattern
+where the rhyming syllables must share both a vowel sound \thpar{s\`ar\`a}{สระ} and a final-consonant
 class \thpar{m\^a:ttra:}{มาตราตัวสะกด}. Because Thai is written without word
 boundaries and its orthography conceals vowels and silenced letters,
 automatic rhyme verification is non-trivial: neither classical rule-based
@@ -154,9 +154,10 @@ gold-standard G2P override dictionary of over 4{,}000 entries and a
 fallback segmenter, recovering phonetic blind spots of the base oracle. We evaluate
 five checker configurations on a gold corpus of 36{,}475 classical stanzas
 (145{,}709 rhyme checks) and on a targeted augmentation of 11{,}623
-instances including 10{,}000 adversarial negatives and 423 oracle-blind
-rhymes. The best configuration reaches 88.5\% gold recall and 86.9\% F1 on
-the augmentation, 100\% precision on curated negatives, and 95.7\% of the
+instances: 10{,}000 adversarial negatives, 1{,}200 tricky positives, and
+423 oracle-blind rhymes. The best configuration (D\_ssg) reaches 88.5\%
+gold recall and 86.9\% F1 on the augmentation, Model~B attains 100\%
+precision on curated negatives, and D\_w2p recovers 95.7\% of the
 oracle-blind rhymes. The verifier is released as an explainable
 educational tool and provides a deterministic reward signal for RL-based
 Klon-Paed generation.
@@ -756,7 +757,7 @@ C & 85.3 & 78.7 & 266 & 90 & 3,107 & 2,702/267 \\
 
 The experiment supports four findings. (1)~\textbf{The proposed rules are
 precise.} B never false-accepts on oracle-verified negatives, and B,
-D\_w2p, and D\_ssg all exceed 99.5\% merged precision (A 95\%, C 92\%).
+D\_w2p, and D\_ssg all exceed 99\% merged precision (A 93\%, C 91\%).
 (2)~\textbf{The override dictionary recovers the oracle's blind spots.}
 The D\_w2p-versus-D\_ssg gap on oracle-blind recall (95.7\% versus 68.1\%)
 is the pronunciation-knowledge contribution: the overrides read
@@ -774,8 +775,8 @@ the vowel-length distinction} the rule-based family enforces (78.7\%
 oracle-blind recall, but 30.4\% precision). (4)~\textbf{The oracle itself has a blind spot} that
 only the oracle-blind probe exposes: a purely oracle-supervised evaluation
 would report B as flawless. On the merged gold+augmentation set, F1
-favours D\_ssg (93.4\%), D\_w2p (92.9\%), and B (92.8\%), with C (88.0\%)
-and A (82.3\%) behind. The discriminating precision lives in the
+favours D\_ssg (93.6\%), D\_w2p (93.0\%), and B (93.0\%), with C (87.8\%)
+and A (82.0\%) behind. The discriminating precision lives in the
 augmentation-only tables.
 
 \section{Applications and Future Work}
