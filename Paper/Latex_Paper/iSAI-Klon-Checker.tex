@@ -32,6 +32,10 @@
 %   \ipatxt{ipa}           bare IPA transcription (IPA font)
 % Use \thgloss for terms/concepts, \thpar for inline parenthetical glosses,
 % and \ipatxt for phonetic transcriptions.
+% Convention: the romanized/transliterated form is emphasized with \emph
+% INSIDE the gloss, e.g. \thgloss{\emph{term}}{ไทย} or
+% \thpar{\emph{term}}{ไทย}; an IPA reading inside a gloss is wrapped in
+% \ipatxt, e.g. \thgloss{\emph{\ipatxt{ipa}}}{ไทย}.
 \ifXeTeX
   \usepackage{fontspec}
   \IfFontExistsTF{TH Sarabun New}
@@ -139,9 +143,9 @@
 \maketitle
 
 \begin{abstract}
-In Thai \thgloss{Klon-Paed}{กลอนแปด} poetry (the eight-syllable verse form) each four-line stanza must satisfy an interlocking rhyming pattern
-where each rhyming syllables must share both a vowel sound \thpar{sara}{สระ} and a final-consonant
-class \thpar{mattra}{มาตราตัวสะกด}. Because Thai is written without word
+In Thai \thgloss{\emph{Klon-Paed}}{กลอนแปด} poetry (the eight-syllable verse form) each four-line stanza must satisfy an interlocking rhyming pattern
+where each rhyming syllables must share both a vowel sound \thpar{\emph{sara}}{สระ} and a final-consonant
+class \thpar{\emph{mattra}}{มาตราตัวสะกด}. Because Thai is written without word
 boundaries and its orthography conceals vowels and silenced letters,
 automatic rhyme verification is non-trivial: neither classical rule-based
 checkers nor G2P-romanization checkers handle the resulting edge cases
@@ -173,7 +177,7 @@ Thai orthography does not map straightforwardly onto pronunciation, and
 this gap becomes especially apparent in the classical register used by Thai
 poetry. The script is written without explicit word boundaries; vowels are
 frequently implicit; consonants or entire clusters can be silenced by the
-karun diacritic \thpar{thanthakhat}{ทัณฑฆาต}; and irregular words whose pronunciations do
+karun diacritic \thpar{\emph{thanthakhat}}{ทัณฑฆาต}; and irregular words whose pronunciations do
 not follow the standard phonetic rules are common. Complex phonological
 structures, such as consonant blending \thpar{\emph{kham khuap klam}}{คำควบกล้ำ} and leading
 consonants \thpar{\emph{aksorn nam}}{อักษรนำ}, further obscure syllable boundaries, vowel
@@ -184,12 +188,12 @@ learning models.
 Klon-Paed is a Thai verse form that depends on these
 phonetic properties. Each stanza \thpar{\emph{bot}}{บท} consists of four
 sets of seven-to-nine-syllable lines \thpar{\emph{wak}}{วรรค}. A valid rhyme
-requires two syllables to share both the vowel sound \thpar{sara}{สระ} and
-the final-consonant class \thpar{mattra}{มาตราตัวสะกด}. Four canonical rhyme
+requires two syllables to share both the vowel sound \thpar{\emph{sara}}{สระ} and
+the final-consonant class \thpar{\emph{mattra}}{มาตราตัวสะกด}. Four canonical rhyme
 rules must hold within (r1, r2, r3) and across (rX) stanzas
 (Section~\ref{sec:bg}), and the final syllable of every wak must participate.
-A single silent letter, e.g.\ the silent \emph{\thpar{r}{ร}} of
-\emph{\thgloss{phet}{เพชร}} (`diamond'), or a short-long vowel-length
+A single silent letter, e.g.\ the silent \thpar{\emph{r}}{ร} of
+\thgloss{\emph{phet}}{เพชร} (`diamond'), or a short-long vowel-length
 error is enough to break a rhyme. These constraints are strict and
 deterministic, which is difficult for statistical systems.
 
@@ -244,8 +248,8 @@ are written without delimiters and a word may consist of one or more
 syllables, so the meter must be recovered by syllabification rather than by
 counting words. Within this skeleton the verse follows a fixed rhyme scheme.
 As defined by the Royal Institute of Thailand, two syllables rhyme \thpar{\emph{sumpus}}{สัมผัส}
-when they share the same vowel sound \thpar{sara}{สระ} and the same final-consonant class
-\thpar{mattra}{มาตราตัวสะกด}. Additionally, tone is not part of the rhyme.
+when they share the same vowel sound \thpar{\emph{sara}}{สระ} and the same final-consonant class
+\thpar{\emph{mattra}}{มาตราตัวสะกด}. Additionally, tone is not part of the rhyme.
 The mattra classes \thpar{\emph{mae}}{แม่}, consisting of ka, kong, kok,
 kot, kon, kop, kom, koey, and koew, group the final consonants of Thai
 syllables by their phonetic outcome (the velar, dental, labial, nasal,
@@ -277,7 +281,7 @@ First, compound, transformed, and reduced vowels \thpar{\emph{sara prasom}}{ส�
 \thpar{\emph{sara plianrup}}{สระเปลี่ยนรูป}, \thpar{\emph{sara lotrup}}{สระลดรูป} let several spellings map to one
 vowel sound. Second, the karun diacritic silences a letter
 or a whole cluster, leaving unpronounced letters in the written form.
-Third, a trailing \thgloss{y, l, w}{ย, ล, ว} may be a genuine final
+Third, a trailing \thgloss{\emph{y, l, w}}{ย, ล, ว} may be a genuine final
 consonant or merely part of a vowel digraph or an initial cluster. Any
 verifier must resolve all three before it can compare vowel and final
 class.
@@ -512,17 +516,17 @@ Together they raise per-rule gold recall from 86--89\% to 95--97\%
 \textbf{Aspect} & \textbf{5.0.1 $\rightarrow$ 5.3.5 (example)} \\
 \midrule
 Segmentation & dict subword $\rightarrow$ SSG syllable segmentation \\
-Karun (thanthakhat) & ignored $\rightarrow$ silenced (\emph{ohm}$\rightarrow$\emph{o}) \\
-True finals y/l/w & naive $\rightarrow$ cluster-aware (\emph{thai}, \emph{klai}$\rightarrow$mae ka) \\
-Special-vowel norm. & one-sided $\rightarrow$ both-sided (\emph{cam}$\sim$\emph{kam}) \\
+Karun \thpar{\emph{thanthakhat}}{ทัณฑฆาต} & ignored $\rightarrow$ silenced (\thgloss{\emph{ohm}}{โอห์ม}$\rightarrow$\thgloss{\emph{o}}{โอ}) \\
+True finals \thgloss{\emph{y/l/w}}{ย/ล/ว} & naive $\rightarrow$ cluster-aware (\thgloss{\emph{thai}}{ไทย}, \thgloss{\emph{klai}}{ใกล้}$\rightarrow$\thgloss{\emph{mae ka}}{แม่ กา}) \\
+Special-vowel norm. & one-sided $\rightarrow$ both-sided (\thgloss{\emph{cam}}{จำ}$\sim$\thgloss{\emph{kam}}{กำ}) \\
 Compound/reduced vowels & misread $\rightarrow$ compound-vowel classifier,
-short-vowel mark, and \emph{ua} diphthong (\emph{cet}$\rightarrow$short \emph{e};
-\emph{tua}$\sim$\emph{chua}) \\
-\emph{ru} & one sound $\rightarrow$ three sounds (\emph{roek}, \emph{rit}, \emph{rue-du}) \\
+short-vowel mark, and \thgloss{\emph{ua}}{อัว} diphthong (\thgloss{\emph{cet}}{เจ็ด}$\rightarrow$short \thgloss{\emph{e}}{เอะ};
+\thgloss{\emph{tua}}{ตัว}$\sim$\thgloss{\emph{chua}}{ชั่ว}) \\
+\thgloss{\emph{ru}}{ฤ} & one sound $\rightarrow$ three sounds (\thgloss{\emph{roek}}{ฤกษ์}, \thgloss{\emph{rit}}{ฤทธิ์}, \thgloss{\emph{rue-du}}{ฤดู}) \\
 r3 rule & absent $\rightarrow$ implemented (all four rules) \\
-Silent \emph{r} & misread $\rightarrow$ stripped in \texttt{check\_marttra} (\emph{but}, \emph{phet}) \\
-Single-char words & crash $\rightarrow$ guarded (\emph{na}, \emph{tha}$\rightarrow$a) \\
-Silent terminal vowels & misread $\rightarrow$ stripped (\emph{kiet}, \emph{chat}) \\
+Silent \thgloss{\emph{r}}{ร} & misread $\rightarrow$ stripped in \texttt{check\_marttra} (\thgloss{\emph{but}}{บุตร}, \thgloss{\emph{phet}}{เพชร}) \\
+Single-char words & crash $\rightarrow$ guarded (\thgloss{\emph{na}}{ณ}, \thgloss{\emph{tha}}{ธ}$\rightarrow$\thgloss{\emph{a}}{อะ}) \\
+Silent terminal vowels & misread $\rightarrow$ stripped (\thgloss{\emph{kiet}}{เกียรติ}, \thgloss{\emph{chat}}{ชาติ}) \\
 Stanza processing & flat $\rightarrow$ stanza-based, word counts, structured errors \\
 \bottomrule
 \end{tabular}
@@ -540,8 +544,8 @@ rules.
 
 The dictionary, \texttt{POETRY\_OVERRIDES}, contains over 4{,}000
 hand-verified entries mapping a surface form to its syllable sequence (e.g.,
-\thgloss{\emph{pʰet̚}}{เพชร} $\rightarrow$ \thgloss{\emph{pʰet̚}}{เพ็ด}; \thgloss{\emph{sat̚ truː}}{ศัตรู} $\rightarrow$
-\thgloss{\emph{sat̚-truː}}{สัด-ตรู}; \thgloss{\emph{ka sat̚ riː}}{กษัตรี} $\rightarrow$ \thgloss{\emph{ka-sat̚-riː}}{กะ-สัด-ตรี}). It was
+\thgloss{\emph{\ipatxt{pʰet̚}}}{เพชร} $\rightarrow$ \thgloss{\emph{\ipatxt{pʰet̚}}}{เพ็ด}; \thgloss{\emph{\ipatxt{sat̚ truː}}}{ศัตรู} $\rightarrow$
+\thgloss{\emph{\ipatxt{sat̚-truː}}}{สัด-ตรู}; \thgloss{\emph{\ipatxt{ka sat̚ riː}}}{กษัตรี} $\rightarrow$ \thgloss{\emph{\ipatxt{ka-sat̚-riː}}}{กะ-สัด-ตรี}). It was
 built from the frequent vocabulary of the Phra Aphai Mani corpus with
 manual supervision, and every entry is checked by a four-guard pipeline
 that rejects pronunciations hallucinated by the Word2Phrase (w2p) neural
@@ -578,7 +582,7 @@ digital library~\cite{vajirayana}: \thgloss{\emph{Khobut}}{โคบุตร},
 \thgloss{\emph{Phukao Tong}}{ภูเขาทอง}, and \thgloss{\emph{Suphasaet Son
 Ying}}{สุภาษิตสอนหญิง}. A cleaning pipeline normalised the text and split it
 into stanzas of four waks, discarding only chapter-opening fragments and
-scribal \emph{o} marks. Crucially, waks with ten or more syllables were
+scribal \thtxt{๏} marks. Crucially, waks with ten or more syllables were
 retained: dropping them severs inter-stanza rhyme chains and made an early
 corpus version appear to violate rX at a ~72\% rate, whereas on the
 complete corpus rX holds at ~96--97\%. The final corpus comprises 191
@@ -607,13 +611,13 @@ from eight corruption operators: trivial different-vowel-and-mattra swaps
 short/long vowel swaps (C3, 3{,}100), liquid-final swaps (C4, 1{,}200), a
 systematic trap in which the 5.0.1 checker reads the candidate as rhyming
 with the target while 5.3.5 does not (C9, 2{,}800), leading-consonant words
-(C5, 600), and karun/\thgloss{\emph{ru}}{ฤ}/cluster traps (C2, 1{,}000).
+(C5, 600), and karun/\thgloss{\emph{\ipatxt{rɯ}}}{ฤ}/cluster traps (C2, 1{,}000).
 C3 and C9 dominate the mix because they are the operators that best
 discriminate the checkers.
 
 \paragraph{Positives (recall probes).} The 1{,}200 \emph{tricky}
 positives swap the target syllable with a rhyming candidate that exercises
-normalization \thpar{\emph{sara plianrup/lotrup}}{สระเปลี่ยนรูป/ลดรูป}, \thgloss{\emph{ru}}{ฤ}, karun, and
+normalization \thpar{\emph{sara plianrup/lotrup}}{สระเปลี่ยนรูป/ลดรูป}, \thgloss{\emph{\ipatxt{rɯ}}}{ฤ}, karun, and
 true-final cases; all are oracle-confirmed rhymes. A further 423
 \emph{oracle-blind} positives are genuine rhymes the oracle labels as
 non-rhymes: the silent-\emph{r} \thgloss{\emph{phet}}{เพชร} (true
@@ -762,7 +766,7 @@ D\_w2p, and D\_ssg all exceed 99.5\% merged precision (A 95\%, C 92\%).
 (2)~\textbf{The override dictionary recovers the oracle's blind spots.}
 The D\_w2p-versus-D\_ssg gap on oracle-blind recall (95.7\% versus 68.1\%)
 is the pronunciation-knowledge contribution: the overrides read
-\emph{phet} as /phet/ and split \emph{sattruu} and \emph{kasatrii} into
+\emph{phet} as \ipatxt{/phet/} and split \emph{sattruu} and \emph{kasatrii} into
 their true syllables. One limitation is that each entry forces a single
 canonical pronunciation, although many surface forms are heteronyms whose
 reading depends on context, and in natural delivery adjacent syllables are
