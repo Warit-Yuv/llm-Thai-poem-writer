@@ -1,0 +1,116 @@
+[1mdiff --git a/Paper/Latex_Paper/iSAI-Klon-Checker.tex b/Paper/Latex_Paper/iSAI-Klon-Checker.tex[m
+[1mindex 14848f2..c94dac1 100644[m
+[1m--- a/Paper/Latex_Paper/iSAI-Klon-Checker.tex[m
+[1m+++ b/Paper/Latex_Paper/iSAI-Klon-Checker.tex[m
+[36m@@ -81,6 +81,8 @@[m
+ [m
+ \title{Thai Poetry Rhyme Verification using a Hybrid Rule-Based Approach for Education and GenAI}[m
+ [m
+[32m+[m[32m% Double-anonymous submission: author block is commented out for review.[m
+[32m+[m[32m% Uncomment for the camera-ready version.[m
+ \author{\IEEEauthorblockN{1\textsuperscript{st} Warit Yuvaniyama}[m
+ \IEEEauthorblockA{[m
+ \textit{School of Information, Computer,} \\[m
+[36m@@ -137,8 +139,8 @@[m [mimprove the KhaveeVerifier algorithm---vowel analysis,[m
+ final-consonant-class analysis, the rhyme test, karun silencing, and[m
+ true-final detection---and ship it in PyThaiNLP 5.3.5 (Model~B); second,[m
+ we introduce Klonpad (Model~D), which augments these rules with a[m
+[31m-gold-standard G2P override dictionary of 4{,}292 entries and a fallback[m
+[31m-segmenter, recovering phonetic blind spots of the base oracle. We evaluate[m
+[32m+[m[32mgold-standard G2P override dictionary of over 4{,}000 entries and a[m
+[32m+[m[32mfallback segmenter, recovering phonetic blind spots of the base oracle. We evaluate[m
+ five checker configurations on a gold corpus of 36{,}475 classical stanzas[m
+ (145{,}709 rhyme checks) and on a targeted augmentation of 11{,}623[m
+ instances including 10{,}000 adversarial negatives and 423 oracle-blind[m
+[36m@@ -187,8 +189,8 @@[m [mnot be used in a classroom. In \emph{NLP research}, training a language[m
+ model to compose Klon-Paed, e.g.\ via reinforcement learning (RL),[m
+ requires a programmatic reward that scores rhyme correctness. Because[m
+ LLMs are probabilistic, they are unreliable at strict constraints such as[m
+[31m-syllable counts and rhymes; a rule-based verifier supplies the ground[m
+[31m-truth that such generative pipelines require.[m
+[32m+[m[32msyllable counts and rhymes, which a rule-based verifier supplies[m
+[32m+[m[32mdeterministically.[m
+ [m
+ Existing verification systems fall short of this standard. The prior[m
+ KhaveeVerifier in PyThaiNLP 5.0.1 (Model~A) relies on dictionary subword[m
+[36m@@ -196,8 +198,7 @@[m [mtokenization, omits one canonical rhyme rule, and reaches only 73.4\%[m
+ recall on our gold corpus. G2P romanization-based checkers, such as the[m
+ \texttt{word\_check} grader of KlonSuphap-LM~\cite{klonsuphap} (Model~C),[m
+ collapse long/short vowel distinctions and produce thousands of false[m
+[31m-positives on adversarial negatives. Neither family handles the phonetic[m
+[31m-blind spots of Thai orthography in a principled way. In this paper we[m
+[32m+[m[32mpositives on adversarial negatives. In this paper we[m
+ address these limitations with a hybrid rule-based approach and a[m
+ rigorous, adversarial evaluation. Our contributions are:[m
+ [m
+[36m@@ -209,8 +210,8 @@[m [msilencing, and true-final detection, and implement all four canonical rhyme[m
+ rules. The result is merged into PyThaiNLP 5.3.5 as the default[m
+ \texttt{KhaveeVerifier}.[m
+ \item \textbf{A dictionary-enhanced variant (Klonpad, Model~D).} We augment[m
+[31m-the rules with a gold-standard 4{,}292-entry G2P override dictionary and a[m
+[31m-fallback segmenter, recovering the oracle's blind spots.[m
+[32m+[m[32mthe rules with a gold-standard G2P override dictionary of over 4{,}000[m
+[32m+[m[32mentries and a fallback segmenter, recovering the oracle's blind spots.[m
+ \item \textbf{A large evaluation corpus.} 36{,}475 gold stanzas (145{,}709[m
+ rhyme checks) from five classical works, plus 11{,}623 augmentation[m
+ instances: 10{,}000 oracle-verified negatives, 1{,}200 tricky positives,[m
+[36m@@ -308,8 +309,8 @@[m [mclass.[m
+   \node[cell,fill=gray!25,line width=0.9pt] at (w38) {{\thtxt{มิตร}}\\{\ipatxt{mít}}};[m
+   \node[lbl] at (0.3, 2*\ystep) {\emph{rong}};[m
+   [m
+[31m-  % wak 4 (song) จะ ชอบ ผิด ใน มนุ ษ เพราะ พูด จา[m
+[31m-  \foreach \i/\syl/\ipa in {1/จะ/tɕàʔ,2/ชอบ/tɕʰɔ̂ːp,3/ผิด/pʰìt,4/ใน/naj,5/มนุ/má,6/ษ/nút,7/เพราะ/pʰrɔ́ʔ,8/พูด/pʰûːt,9/จา/tɕaː}[m
+[32m+[m[32m  % wak 4 (song) จะ ชอบ ผิด ใน ม นุษย์ เพราะ พูด จา[m
+[32m+[m[32m  \foreach \i/\syl/\ipa in {1/จะ/tɕàʔ,2/ชอบ/tɕʰɔ̂ːp,3/ผิด/pʰìt,4/ใน/naj,5/ม/má,6/นุษย์/nút,7/เพราะ/pʰrɔ́ʔ,8/พูด/pʰûːt,9/จา/tɕaː}[m
+     \node[cell] (w4\i) at (\i*\xstep, 3*\ystep) {{\thtxt{\syl}}\\{\ipatxt{\ipa}}};[m
+   \node[cell,fill=gray!25,line width=0.9pt] at (w43) {{\thtxt{ผิด}}\\{\ipatxt{pʰìt}}};[m
+   \node[lbl] at (0.3, 3*\ystep) {\emph{song}};[m
+[36m@@ -324,12 +325,12 @@[m [mclass.[m
+   % inter-stanza rhyme (rX): prev wak4 last -> wak2 last (routed around the right side)[m
+   \draw[thick,dashed,->,rounded corners=2pt] (p9.east) -- ++(0.5,0) coordinate (tmpx) -- (tmpx |- w28.east) node[midway, right, fill=white, inner sep=1.5pt, font=\scriptsize] {rX} -- (w28.east);[m
+ \end{tikzpicture}[m
+[31m-\caption{The example stanza (Section~2.1) with its rhyme positions shaded[m
+[32m+[m[32m\caption{The example stanza with its rhyme positions shaded[m
+ and linked: r1 (\emph{sadap}$\rightarrow$\emph{rap}), r2[m
+ (\emph{rap}$\rightarrow$\emph{rong}), r3[m
+ (\emph{rong}$\rightarrow$\emph{song}); the dashed rX arrow links the final[m
+[31m-syllable (\ipatxt{kʰít}) of the previous stanza's wak~4 (top row, dashed)[m
+[31m-to wak~2's final syllable (\ipatxt{tɕìt}).}[m
+[32m+[m[32msyllable (\ipatxt{kʰít}) of the previous stanza's wak~4 to wak~2's final[m
+[32m+[m[32msyllable (\ipatxt{tɕìt}).}[m
+ \label{fig:klon}[m
+ \end{figure}[m
+ [m
+[36m@@ -343,13 +344,11 @@[m [mneural segmenters such as DeepCut~\cite{deepcut} and[m
+ AttaCut~\cite{attacut}, syllable-based neural[m
+ segmentation~\cite{chormai2020syllable}, and the SSG syllable segmenter[m
+ shipped in PyThaiNLP~5.x, used throughout this work. G2P conversion maps[m
+[31m-surface orthography to pronunciation; Thai G2P has been addressed with[m
+[32m+[m[32msurface orthography to pronunciation. Thai G2P has been addressed with[m
+ rule-based (TLTK~\cite{tltk}), example-based~\cite{charoenpornsawat2006},[m
+ CRF joint-sequence~\cite{saychum2016}, and two-stage[m
+ sequence~\cite{rugchatjaroen2019} models. G2P is directly relevant to rhyme[m
+[31m-verification because rhyme is a property of \emph{sound}, not of spelling:[m
+[31m-Model~C performs its comparison in the romanized space of the TLTK G2P[m
+[31m-model.[m
+[32m+[m[32mverification because rhyme is a property of \emph{sound}, not of spelling.[m
+ [m
+ \subsection{Computational Poetry Analysis and Generation}[m
+ [m
+[36m@@ -366,11 +365,10 @@[m [mrule-based \emph{klon grader} supplies the reward. That grader is the[m
+ \texttt{word\_check} module evaluated here as Model~C, making our[m
+ evaluation directly relevant to the RL step of that pipeline. More[m
+ broadly, RLHF has established reward models as essential for aligning LLMs[m
+[31m-to follow strict requirements~\cite{ouyang2022}, and grammar-constrained[m
+[31m-decoding has been proposed to enforce structural constraints at inference[m
+[31m-time~\cite{geng2023}; recent benchmarks report that even strong LLMs[m
+[31m-struggle with classical Thai vocabulary and verse~\cite{triyason2026},[m
+[31m-motivating dedicated deterministic tools.[m
+[32m+[m[32mto follow strict requirements~\cite{ouyang2022}, and grammar-constrained decoding[m
+[32m+[m[32menforces structural constraints at inference time~\cite{geng2023}; recent[m
+[32m+[m[32mbenchmarks show that even strong LLMs struggle with classical Thai[m
+[32m+[m[32mvocabulary and verse~\cite{triyason2026}, motivating deterministic tools.[m
+ [m
+ \subsection{Positioning of This Work}[m
+ [m
+[36m@@ -382,8 +380,8 @@[m [mfor precision, and no open verifier covers all four rhyme rules
