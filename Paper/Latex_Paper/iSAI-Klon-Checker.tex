@@ -139,7 +139,7 @@
 \maketitle
 
 \begin{abstract}
-In Thai Klon Paed \thtxt{กลอนแปด} poetry (the eight-syllable verse form) each four-line stanza must satisfy an interlocking rhyming pattern
+In Thai Klon Paed (\thtxt{กลอนแปด}) poetry (the eight-syllable verse form) each four-line stanza must satisfy an interlocking rhyming pattern
 where each rhyming syllables must share both a vowel sound \thpar{s\`ar\`a}{สระ} and a final-consonant
 class \thpar{m\^a:ttra:}{มาตราตัวสะกด}. Because Thai is written without word
 boundaries and its orthography conceals vowels and silenced letters,
@@ -149,7 +149,7 @@ reliably. We present a hybrid rule-based verification approach: first, we
 improve the KhaveeVerifier algorithm---vowel analysis,
 final-consonant-class analysis, the rhyme test, karun silencing, and
 true-final detection---and ship it in PyThaiNLP 5.3.5 (Model~B); second,
-we introduce Klonpad (Model~D), which augments these rules with a
+we introduce Klon8Checker (Model~D), which augments these rules with a
 gold-standard G2P override dictionary of over 4{,}000 entries and a
 fallback segmenter, recovering phonetic blind spots of the base oracle. We evaluate
 five checker configurations on a gold corpus of 36{,}475 classical stanzas
@@ -220,7 +220,7 @@ vowel analysis (\texttt{check\_sara}), the final-consonant-class analysis
 silencing, and true-final detection, and implement all four canonical rhyme
 rules. The result is merged into PyThaiNLP 5.3.5 as the default
 \texttt{KhaveeVerifier}.
-\item \textbf{A dictionary-enhanced variant (Klonpad, Model~D).} We augment
+\item \textbf{A dictionary-enhanced variant (Klon8Checker, Model~D).} We augment
 the rules with a gold-standard G2P override dictionary of over 4{,}000
 entries and a fallback segmenter, recovering the oracle's blind spots.
 \item \textbf{A large evaluation corpus.} 36{,}475 gold stanzas (145{,}709
@@ -307,8 +307,8 @@ class.
   \node[cell,fill=gray!25,line width=0.9pt] at (w18) {{\thtxt{ศักดิ์}}\\{\ipatxt{sàk}}};
   \node[lbl] at (0.3, 0) {\emph{sadap}};
   
-  % wak 2 (rap) มี คน รัก รส ถ้อย อะ ร่อย จิต
-  \foreach \i/\syl/\ipa in {1/มี/miː,2/คน/kʰon,3/รัก/rák,4/รส/rót,5/ถ้อย/tʰɔ̂ːj,6/อะ/ʔà,7/ร่อย/rɔ̂ːj,8/จิต/tɕìt}
+  % wak 2 (rap) มี คน รัก รส ถ้อย อะ หร่อย จิต
+  \foreach \i/\syl/\ipa in {1/มี/miː,2/คน/kʰon,3/รัก/rák,4/รส/rót,5/ถ้อย/tʰɔ̂ːj,6/อะ/ʔà,7/หร่อย/rɔ̂ːj,8/จิต/tɕìt}
     \node[cell] (w2\i) at (\i*\xstep, \ystep) {{\thtxt{\syl}}\\{\ipatxt{\ipa}}};
   \node[cell,fill=gray!25,line width=0.9pt] at (w23) {{\thtxt{รัก}}\\{\ipatxt{rák}}};
   \node[cell,fill=gray!25,line width=0.9pt] at (w28) {{\thtxt{จิต}}\\{\ipatxt{tɕìt}}};
@@ -320,8 +320,8 @@ class.
   \node[cell,fill=gray!25,line width=0.9pt] at (w38) {{\thtxt{มิตร}}\\{\ipatxt{mít}}};
   \node[lbl] at (0.3, 2*\ystep) {\emph{rong}};
   
-  % wak 4 (song) จะ ชอบ ผิด ใน ม นุษย์ เพราะ พูด จา
-  \foreach \i/\syl/\ipa in {1/จะ/tɕàʔ,2/ชอบ/tɕʰɔ̂ːp,3/ผิด/pʰìt,4/ใน/naj,5/ม/má,6/นุษย์/nút,7/เพราะ/pʰrɔ́ʔ,8/พูด/pʰûːt,9/จา/tɕaː}
+  % wak 4 (song) จะ ชอบ ผิด ใน มะ นุษย์ เพราะ พูด จา
+  \foreach \i/\syl/\ipa in {1/จะ/tɕàʔ,2/ชอบ/tɕʰɔ̂ːp,3/ผิด/pʰìt,4/ใน/naj,5/มะ/má,6/นุษย์/nút,7/เพราะ/pʰrɔ́ʔ,8/พูด/pʰûːt,9/จา/tɕaː}
     \node[cell] (w4\i) at (\i*\xstep, 3*\ystep) {{\thtxt{\syl}}\\{\ipatxt{\ipa}}};
   \node[cell,fill=gray!25,line width=0.9pt] at (w43) {{\thtxt{ผิด}}\\{\ipatxt{pʰìt}}};
   \node[lbl] at (0.3, 3*\ystep) {\emph{song}};
@@ -359,7 +359,7 @@ surface orthography to pronunciation. Thai G2P has been addressed with
 rule-based (TLTK~\cite{tltk}), example-based~\cite{charoenpornsawat2006},
 CRF joint-sequence~\cite{saychum2016}, and two-stage
 sequence~\cite{rugchatjaroen2019} models. G2P is directly relevant to rhyme
-verification because rhyme is a property of \emph{sound}, not of spelling.
+verification because rhyme is a property of \emph{sound}, not of \emph{spelling}.
 
 \subsection{Computational Poetry Analysis and Generation}
 
@@ -436,19 +436,19 @@ offending syllables that failed to rhyme.
 The accuracy of the verifier rests on three functions.
 \texttt{check\_sara} returns the canonical vowel of a syllable. Its
 per-character loop was rewritten to remove the shadowed conditions that
-misparsed the \emph{ua} diphthong and to resolve the transformed and
+misparsed the \thgloss{ua}{อัว} diphthong and to resolve the transformed and
 reduced vowels signalled by the short-vowel mark
 \thpar{\emph{m\'a:I t\`aI k\super{h}\'u:}}{ไม้ไต่คู้}: \textipa{tC\`et} $\rightarrow$ short
 \textipa{\`e}, \textipa{k\super{h}\v{E}N} $\rightarrow$ short \textipa{E}, \textipa{k\`O}
 $\rightarrow$ \thpar{\textipa{\`O}}{เอาะ}. The
 \thgloss{\emph{rO: h\v{a}n}}{รร} is evaluated once, yielding \textipa{Pam} in a
-\textipa{m\^E: kom} context (e.g., \thgloss{\emph{t\super{h}am}}{ธรรม}) and \emph{a}
+\textipa{m\^E: kom} context (e.g., \thgloss{\emph{t\super{h}am}}{ธรรม}) and \emph{a} 
 elsewhere. The three readings of \thpar{\emph{r\'W}}{ฤ} and
 \thpar{\emph{l\'W}}{ฦ} are classified from the original spelling
 \emph{before} karun stripping, so silent suffixes cannot hide them:
-\emph{r\^@:k} in \thgloss{\emph{r\^@:k}}{ฤกษ์}, \textipa{r\'it} in
+\textipa{r\^@:k} in \thgloss{\emph{r\^@:k}}{ฤกษ์}, \textipa{r\'it} in
 \thgloss{\emph{r\'it}}{ฤทธิ์} and \thgloss{\emph{PaNkr\`it}}{อังกฤษ}, and
-\emph{r\'Wdu:} in \thgloss{\emph{r\'Wdu:}}{ฤดู}. Pali/Sanskrit words with a
+\textipa{r\'Wdu:} in \thgloss{\emph{r\'Wdu:}}{ฤดู}. Pali/Sanskrit words with a
 silent terminal vowel (e.g., \thgloss{\emph{ki\`a:t}}{เกียรติ},
 \thgloss{\emph{tC\super{h}\^a:t}}{ชาติ}, \thgloss{\emph{t\super{h}amm\'atC\super{h}\^a:t}}{ธรรมชาติ}) have it
 stripped, and an empty result falls back to the implied short \emph{a}.
@@ -456,7 +456,7 @@ stripped, and an empty result falls back to the implied short \emph{a}.
 of a syllable, strictly by orthography. It resolves karun first, strips
 silent terminal vowels, then strips a silent \emph{r} in loanword
 clusters---always in \emph{tr}/\emph{chr}/\emph{pr} (e.g., \emph{but},
-\emph{net}, \thgloss{\emph{p\super{h}\'et}}{เพชร}) but in \emph{kr}, \emph{kh-r},
+\emph{net}, \thgloss{\emph{p\super{h}\'et}}{เพชร}) but in \emph{kr}, \emph{kh-r}, 
 and \emph{th-r} only when the preceding vowel is short, so
 \thgloss{\emph{tC\`ak}}{จักร} loses its \emph{r} while
 \thgloss{\emph{maNkO:n}}{มังกร} does not. Standalone characters
@@ -511,29 +511,29 @@ Together they raise per-rule gold recall from 86--89\% to 95--97\%
 \textbf{Aspect} & \textbf{5.0.1 $\rightarrow$ 5.3.5 (example)} \\
 \midrule
 Segmentation & dict subword $\rightarrow$ SSG syllable segmentation \\
-Karun (thanthakhat) & ignored $\rightarrow$ silenced (\emph{ohm}$\rightarrow$\emph{o}) \\
+Karun (\textipa{t\super{h}ant\super{h}\'ak\super{h}\^a:t}) & ignored $\rightarrow$ silenced (\emph{ohm}$\rightarrow$\emph{o}) \\
 True finals y/l/w & naive $\rightarrow$ cluster-aware (\emph{thai}, \emph{klai}$\rightarrow$mae ka) \\
 Special-vowel norm. & one-sided $\rightarrow$ both-sided (\emph{cam}$\sim$\emph{kam}) \\
 Compound/reduced vowels & misread $\rightarrow$ compound-vowel classifier,
 short-vowel mark, and \emph{ua} diphthong (\emph{cet}$\rightarrow$short \emph{e};
 \emph{tua}$\sim$\emph{chua}) \\
-\emph{ru} & one sound $\rightarrow$ three sounds (\emph{roek}, \emph{rit}, \emph{rue-du}) \\
+\textipa{\emph{r\'W}} & one sound $\rightarrow$ three sounds (\textipa{\emph{r\^@:k}}, \textipa{\emph{r\'it}}, \textipa{\emph{r\'W.du:}}) \\
 r3 rule & absent $\rightarrow$ implemented (all four rules) \\
 Silent \emph{r} & misread $\rightarrow$ stripped in \texttt{check\_marttra} (\emph{but}, \emph{phet}) \\
 Single-char words & crash $\rightarrow$ guarded (\emph{na}, \emph{tha}$\rightarrow$a) \\
-Silent terminal vowels & misread $\rightarrow$ stripped (\emph{kiet}, \emph{chat}) \\
+Silent terminal vowels & misread $\rightarrow$ stripped (\textipa{\emph{ki\`at}}, \textipa{\emph{tC\super{h}\`at}}) \\
 Stanza processing & flat $\rightarrow$ stanza-based, word counts, structured errors \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Dictionary-Enhanced Verification (Klonpad, Model D)}
+\subsection{Dictionary-Enhanced Verification (Klon8Checker, Model D)}
 
 Model~B is linguistically principled but inherits a blind spot from its own
 design: \texttt{check\_sara} returns only the first vowel of a token, so a
 multi-syllable word that SSG keeps as one token loses the vowel of its
 final (rhyming) syllable, and silent-\emph{r} loanwords are stripped only
-in a whitelisted subset of clusters. Klonpad (Model~D) addresses this by
+in a whitelisted subset of clusters. Klon8Checker (Model~D) addresses this by
 layering a gold-standard pronunciation dictionary on top of Model~B's
 rules.
 
@@ -545,7 +545,7 @@ built from the frequent vocabulary of the Phra Aphai Mani corpus with
 manual supervision, and every entry is checked by a four-guard pipeline
 that rejects pronunciations hallucinated by the Word2Phrase (w2p) neural
 G2P model; w2p-derived candidates are kept only as labelled hints and never
-trusted on their own. At inference time Klonpad segments the wak into
+trusted on their own. At inference time Klon8Checker segments the wak into
 words with an override-augmented newmm dictionary, looks each up in the
 override dictionary, and syllabifies unmatched words with the fallback
 segmenter. We report two configurations: \texttt{D\_w2p}, which falls back
@@ -808,7 +808,7 @@ verification. An improved rule-based verifier (Model~B), now the default
 \texttt{KhaveeVerifier} of PyThaiNLP 5.3.5, implements all four canonical
 rhyme rules with robust karun, true-final, and sara handling and reaches
 100\% precision on curated negatives. A dictionary-enhanced variant
-(Klonpad, Model~D) adds a gold-standard G2P override dictionary of over
+(Klon8Checker, Model~D) adds a gold-standard G2P override dictionary of over
 4{,}000 entries and recovers 95.7\% of the oracle's own blind spots. On
 36{,}475 gold stanzas and 11{,}623 adversarial instances, the proposed
 family raises stanza recall from 73.4\% to 88.5\% (D\_ssg) with
