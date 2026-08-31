@@ -1,0 +1,36 @@
+% Standalone figure: Algorithm 1 (check_klon) of iSAI-Klon-Checker.
+% Compile with XeLaTeX or pdfLaTeX:
+%   xelatex fig_alg_klon.tex
+% Then rasterize to PNG, e.g.:
+%   pdftoppm -png -r 600 -singlefile fig_alg_klon.pdf fig_alg_klon
+\documentclass[border=6pt]{standalone}
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{algorithm}   % defines the 'algorithm' counter + caption name only
+\usepackage{caption}
+\usepackage{float}
+
+\begin{document}
+\begin{minipage}{\textwidth}
+\captionsetup{labelsep=period, font={small}}
+\captionof{algorithm}{Rhyme verification of a Klon-Paed poem
+(\texttt{check\_klon}).}
+\vspace{2pt}
+\begin{algorithmic}[1]
+\REQUIRE poem $T$ with waks separated by whitespace; type $k\in\{4,8\}$
+\ENSURE list of rhyme errors (empty $\Leftrightarrow$ poem is valid)
+\STATE $W\gets$ split $T$ into waks, grouped into stanzas of four
+\FOR{each stanza $(w_1,w_2,w_3,w_4)$}
+  \STATE $S_i\gets$ \textsc{ssg}($w_i$), $i=1,\ldots,4$ \COMMENT{syllables}
+  \FOR{each rule $\rho\in\{\mathrm{r1},\mathrm{r2},\mathrm{r3},\mathrm{rX}\}$}
+    \STATE $(a,B_\rho)\gets$ source syllable and target set of rule $\rho$
+    \IF{no $b\in B_\rho$ satisfies \textsc{is\_sumpus}($a,b$)}
+      \STATE record an error for rule $\rho$
+    \ENDIF
+  \ENDFOR
+\ENDFOR
+\RETURN the list of errors
+\end{algorithmic}
+\end{minipage}
+\end{document}

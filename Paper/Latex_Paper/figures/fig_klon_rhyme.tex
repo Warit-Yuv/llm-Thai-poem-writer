@@ -1,0 +1,89 @@
+% Standalone figure: Klon-Paed rhyme positions (Fig. 3 of iSAI-Klon-Checker).
+% Compile with XeLaTeX (Thai + IPA render only under XeLaTeX):
+%   xelatex fig_klon_rhyme.tex
+% Then rasterize to PNG, e.g.:
+%   pdftoppm -png -r 600 -singlefile fig_klon_rhyme.pdf fig_klon_rhyme
+\documentclass[border=6pt]{standalone}
+
+\usepackage{tikz}
+\usepackage{iftex}
+\usepackage{fontspec}
+
+% Thai font (auto-selected): TH Sarabun New -> Angsana New -> Tahoma
+\IfFontExistsTF{TH Sarabun New}
+  {\newfontfamily\thaifont{TH Sarabun New}[Script=Thai]}
+  {\IfFontExistsTF{Angsana New}
+    {\newfontfamily\thaifont{Angsana New}[Script=Thai]}
+    {\newfontfamily\thaifont{Tahoma}[Script=Thai]}}
+
+% IPA font (auto-selected): Charis SIL -> Gentium Plus -> Doulos SIL ->
+% DejaVu Sans -> FreeSerif -> Segoe UI
+\IfFontExistsTF{Charis SIL}
+  {\newfontfamily\ipafont{Charis SIL}}
+  {\IfFontExistsTF{Gentium Plus}
+    {\newfontfamily\ipafont{Gentium Plus}}
+    {\IfFontExistsTF{Doulos SIL}
+      {\newfontfamily\ipafont{Doulos SIL}}
+      {\IfFontExistsTF{DejaVu Sans}
+        {\newfontfamily\ipafont{DejaVu Sans}}
+        {\IfFontExistsTF{FreeSerif}
+          {\newfontfamily\ipafont{FreeSerif}}
+          {\newfontfamily\ipafont{Segoe UI}}}}}}
+
+\newcommand{\thtxt}[1]{{\thaifont #1}}      % bare Thai text
+\newcommand{\ipatxt}[1]{{\ipafont #1}}      % bare IPA transcription
+
+\begin{document}
+\begin{tikzpicture}[
+  cell/.style={draw, minimum width=0.72cm, minimum height=0.50cm, align=center, inner sep=0.5pt, font=\tiny},
+  prev/.style={draw, dashed, minimum width=0.72cm, minimum height=0.50cm, align=center, inner sep=0.5pt, font=\tiny},
+  lbl/.style={font=\scriptsize, anchor=east}]
+
+  % Tighter vertical spacing adjustments
+  \def\xstep{0.75}
+  \def\ystep{-1.0}
+  \def\arrowdrop{-0.23} % Drops the arrow exactly halfway between the rows
+
+  % Each cell shows the Thai written form (line 1) and its IPA (line 2).
+  % previous stanza, wak 4 (rX source; dashed = different stanza)
+  \foreach \i/\syl/\ipa in {1/ที่/tʰîː,2/จิต/tɕìt,3/ใคร/kʰraj,4/จะ/tɕàʔ,5/เป็น/pen,6/หนึ่ง/nɯ̀ŋ,7/อย่า/jâː,8/พึง/pʰɯŋ,9/คิด/kʰít}
+    \node[prev] (p\i) at (\i*\xstep, 1.0) {{\thtxt{\syl}}\\{\ipatxt{\ipa}}};
+  \node[prev,fill=gray!25] at (p9) {{\thtxt{คิด}}\\{\ipatxt{kʰít}}};
+  \node[lbl] at (0.3, 1.0) {prev. wak 4};
+
+  % wak 1 (sadap) ถึง บาง พูด พูด ดี เป็น ศรี ศักดิ์
+  \foreach \i/\syl/\ipa in {1/ถึง/tʰɯ̌ŋ,2/บาง/baːŋ,3/พูด/pʰûːt,4/พูด/pʰûːt,5/ดี/diː,6/เป็น/pen,7/ศรี/sǐː,8/ศักดิ์/sàk}
+    \node[cell] (w1\i) at (\i*\xstep, 0) {{\thtxt{\syl}}\\{\ipatxt{\ipa}}};
+  \node[cell,fill=gray!25,line width=0.9pt] at (w18) {{\thtxt{ศักดิ์}}\\{\ipatxt{sàk}}};
+  \node[lbl] at (0.3, 0) {\emph{sadap}};
+
+  % wak 2 (rap) มี คน รัก รส ถ้อย อะ หร่อย จิต
+  \foreach \i/\syl/\ipa in {1/มี/miː,2/คน/kʰon,3/รัก/rák,4/รส/rót,5/ถ้อย/tʰɔ̂ːj,6/อะ/ʔà,7/หร่อย/rɔ̂ːj,8/จิต/tɕìt}
+    \node[cell] (w2\i) at (\i*\xstep, \ystep) {{\thtxt{\syl}}\\{\ipatxt{\ipa}}};
+  \node[cell,fill=gray!25,line width=0.9pt] at (w23) {{\thtxt{รัก}}\\{\ipatxt{rák}}};
+  \node[cell,fill=gray!25,line width=0.9pt] at (w28) {{\thtxt{จิต}}\\{\ipatxt{tɕìt}}};
+  \node[lbl] at (0.3, \ystep) {\emph{rap}};
+
+  % wak 3 (rong) แม้น พูด ชั่ว ตัว ตาย ทำ ลาย มิตร
+  \foreach \i/\syl/\ipa in {1/แม้น/mɛ́ːn,2/พูด/pʰûːt,3/ชั่ว/tɕʰûːa,4/ตัว/tuːa,5/ตาย/taːj,6/ทำ/tʰam,7/ลาย/laːj,8/มิตร/mít}
+    \node[cell] (w3\i) at (\i*\xstep, 2*\ystep) {{\thtxt{\syl}}\\{\ipatxt{\ipa}}};
+  \node[cell,fill=gray!25,line width=0.9pt] at (w38) {{\thtxt{มิตร}}\\{\ipatxt{mít}}};
+  \node[lbl] at (0.3, 2*\ystep) {\emph{rong}};
+
+  % wak 4 (song) จะ ชอบ ผิด ใน มะ นุษย์ เพราะ พูด จา
+  \foreach \i/\syl/\ipa in {1/จะ/tɕàʔ,2/ชอบ/tɕʰɔ̂ːp,3/ผิด/pʰìt,4/ใน/naj,5/มะ/má,6/นุษย์/nút,7/เพราะ/pʰrɔ́ʔ,8/พูด/pʰûːt,9/จา/tɕaː}
+    \node[cell] (w4\i) at (\i*\xstep, 3*\ystep) {{\thtxt{\syl}}\\{\ipatxt{\ipa}}};
+  \node[cell,fill=gray!25,line width=0.9pt] at (w43) {{\thtxt{ผิด}}\\{\ipatxt{pʰìt}}};
+  \node[lbl] at (0.3, 3*\ystep) {\emph{song}};
+
+  % rhyme arrows (routed orthogonally with white background nodes to prevent crossing lines)
+  \draw[thick,->,rounded corners=2pt] (w18.south) -- ++(0,\arrowdrop) coordinate (tmp1) -- (tmp1 -| w23.north) node[midway, above, fill=white, inner sep=1.5pt, font=\scriptsize] {r1} -- (w23.north);
+
+  \draw[thick,->] (w28.south) -- node[midway, right, fill=white, inner sep=1.5pt, font=\scriptsize] {r2} (w38.north);
+
+  \draw[thick,->,rounded corners=2pt] (w38.south) -- ++(0,\arrowdrop) coordinate (tmp3) -- (tmp3 -| w43.north) node[midway, above, fill=white, inner sep=1.5pt, font=\scriptsize] {r3} -- (w43.north);
+
+  % inter-stanza rhyme (rX): prev wak4 last -> wak2 last (routed around the right side)
+  \draw[thick,dashed,->,rounded corners=2pt] (p9.east) -- ++(0.5,0) coordinate (tmpx) -- (tmpx |- w28.east) node[midway, right, fill=white, inner sep=1.5pt, font=\scriptsize] {rX} -- (w28.east);
+\end{tikzpicture}
+\end{document}
