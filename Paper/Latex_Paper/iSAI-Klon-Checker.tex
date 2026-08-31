@@ -584,7 +584,7 @@ KlonSuphap-LM~\cite{klonsuphap}: each wak is romanized using the TLTK G2P
 model, and the romanized vowels and finals are compared. Its two
 documented weaknesses are (i)~a \texttt{replace\_long\_short} step that collapses
 long and short vowels and (ii)~a mattra comparison that ignores the final
-consonant, both inflating recall at the cost of precision; tltk failures
+consonant, both inflating recall at the cost of precision; TLTK failures
 reduce coverage.
 
 \section{Dataset Construction and Augmentation}
@@ -619,7 +619,7 @@ double-checked pronunciations against the IPA. The audit removed 56
 candidate words the oracle misreads---karun clusters it fails to silence
 and multi-syllable Pali words SSG keeps as single tokens.
 
-\paragraph{Negatives (precision probes).} The 10{,}000 negatives are drawn
+\paragraph{Negatives (precision probes)} The 10{,}000 negatives are drawn
 from eight corruption operators: trivial different-vowel-and-mattra swaps
 (C6, 300), same-mattra swaps (C0, 500), same-vowel swaps (C1, 500),
 short/long vowel swaps (C3, 3{,}100), liquid-final swaps (C4, 1{,}200), a
@@ -629,7 +629,7 @@ with the target while 6.0 does not (C9, 2{,}800), leading-consonant words
 C3 and C9 dominate the mix because they are the operators that best
 discriminate the checkers.
 
-\paragraph{Positives (recall probes).} The 1{,}200 \emph{tricky}
+\paragraph{Positives (recall probes)} The 1{,}200 \emph{tricky}
 positives swap the target syllable with a rhyming candidate that exercises
 normalization \thpar{\emph{s\`ar\`a pli\`an.r\^u:p/l\'ot.r\^up}}{สระเปลี่ยนรูป/ลดรูป}, \thgloss{\emph{r\'W}}{ฤ}, karun, and
 true-final cases; all are oracle-confirmed rhymes. A further 423
@@ -656,7 +656,7 @@ per-rule prediction is the clean metric; a stanza-level aggregate over the
 augmentation is only well-defined for Model~B (the oracle). Model~A has no
 $R_3$ and is reported as N/A there. All checkers were instrumented from
 verbatim vendored sources (the 5.0.1 and 6.0 cores), with Model~C run
-under Python 3.12 through a persistent pool of ten tltk workers (the full
+under Python 3.12 through a persistent pool of ten TLTK workers (the full
 augmentation pass takes about 40 minutes; A/B/D are parallelised and finish
 in under a minute).
 
@@ -665,8 +665,8 @@ in under a minute).
 Table~\ref{tab:gold} reports stanza-level and per-rule recall over the
 36{,}475 gold stanzas. The proposed family dominates: D\_ssg reaches
 88.5\% stanza recall and B 87.5\%, versus 73.4\% for Model~A. Model~C
-reaches 84.8\% but evaluates only 95.7\% of the corpus (tltk failures
-concentrate in the archaic Khun Chang Khun Phaen).
+reaches 84.8\% but evaluates only 95.7\% of the corpus (TLTK failures
+concentrate in the archaic \emph{\textipa{k\super{h}\v{u}n tC\super{h}\'a:N k\super{h}\v{u}n p\super{h}\v{E}:n}}).
 
 \begin{table}[t]
 \caption{Gold recall (stanza level and per rule), 36{,}475 stanzas.}
