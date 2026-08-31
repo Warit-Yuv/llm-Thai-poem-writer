@@ -462,7 +462,7 @@ reduced vowels signalled by the short-vowel mark
 \textipa{\`e}, \textipa{k\super{h}\v{E}N} $\rightarrow$ short \textipa{E}, \textipa{k\`O}
 $\rightarrow$ \thpar{\textipa{\`O}}{เอาะ}. The
 \thgloss{\emph{rO: h\v{a}n}}{รร} is evaluated once, yielding \textipa{Pam} in a
-\textipa{m\^E: kom} context (e.g., \thgloss{\emph{t\super{h}am}}{ธรรม}) and \emph{a} 
+\emph{kom class} context (e.g., \thgloss{\emph{t\super{h}am}}{ธรรม}) and \emph{a} 
 elsewhere. The three readings of \thgloss{\emph{r\'W}}{ฤ} and
 \thgloss{\emph{l\'W}}{ฦ} are classified from the original spelling
 \emph{before} karun stripping, so silent suffixes cannot hide them:
@@ -481,7 +481,7 @@ and \emph{th-r} only when the preceding vowel is short, so
 \thgloss{\emph{tC\`ak}}{จักร} loses its \emph{r} while
 \thgloss{\emph{maNkO:n}}{มังกร} does not. Standalone characters
 (\thgloss{\emph{n\'a}}{ณ}, \thgloss{\emph{t\super{h}\'a}}{ธ},
-\thgloss{\emph{ph\'an\'a}}{พณ}, \thgloss{\emph{bO:}}{บ}) and the \textipa{s\`ar\`a k@:n} are classed as \textipa{m\^E: ka:}. Finally, \texttt{is\_sumpus}
+\thgloss{\emph{ph\'an\'a}}{พณ}, \thgloss{\emph{bO:}}{บ}) and the \textipa{s\`ar\`a k@:n} are classed as \emph{ka class}. Finally, \texttt{is\_sumpus}
 normalizes both arguments independently, since the old conditional chain
 short-circuited when only one word needed normalization:
 \emph{a+koey} $\rightarrow$ \emph{ai+ka} (so \emph{chai} rhymes with
@@ -493,9 +493,9 @@ Two further mechanisms account for most of the improvement over the 5.0.1
 baseline. \texttt{handle\_karun\_sound\_silence} strips characters silenced
 by the \emph{karun}, no longer by a fixed truncation: it recognises
 multi-letter silent suffixes such as \thgloss{\emph{p\super{h}r\'a l\'ak}}{พระลักษมณ์}
-(strips the silent \emph{km} cluster to expose the true \textipa{\emph{m\^E: k\`ok}}
+(strips the silent \emph{km} cluster to expose the true \emph{kok class}
 final) and \thgloss{\emph{k\`as\`at}}{กษัตริย์} (strips the silent \emph{triy}
-suffix, leaving a \textipa{\emph{m\^E: k\`ot}} final), two-consonant suffixes such as
+suffix, leaving a \emph{kot class} final), two-consonant suffixes such as
 \emph{-tr} in \thgloss{\emph{s\`a:t}}{ศาสตร์} and \textipa{\emph{-nt\super{h}r}} in
 \thgloss{\emph{tCan}}{จันทร์}, and the consonant-plus-vowel patterns of
 \thgloss{\emph{s\`it}}{สิทธิ์} and \thgloss{\emph{p\super{h}an}}{พันธุ์}, while leaving
