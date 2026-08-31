@@ -199,7 +199,7 @@ learning models.
 Klon-Paed is a Thai verse form that depends on these
 phonetic properties. Each stanza \thpar{\emph{b\`ot}}{บท} consists of four
 sets of seven-to-nine-syllable lines \thpar{\emph{V\'ak}}{วรรค} (wak). A valid rhyme
-requires two syllables to share both the vowel sound \thpar{s\`ar\`a}{สระ} (sara) and
+requires two syllables to share both the vowel sound \thpar{s\`ar\`a}{สระ} (\textipa{sara}) and
 the final-consonant class \thpar{m\^a:ttra:}{มาตราตัวสะกด}. Four canonical rhyme
 rules must hold within ($R_1$, $R_2$, $R_3$) and across ($R_X$) stanzas
 (Section~\ref{sec:bg}), and the final syllable of every wak must participate as depicted
@@ -233,7 +233,7 @@ rigorous, adversarial evaluation. Our contributions are:
 \begin{itemize}
 \item \textbf{An improved rule-based verifier (Model~B).} We rework the
 vowel analysis (\texttt{check\_sara}), the final-consonant-class analysis
-(\texttt{check\_marttra}), the rhyme test (\texttt{is\_sumpus}), karun
+(\texttt{check\_marttra}), the rhyme test (\texttt{is\_sumpus}), \textipa{karun}
 silencing, and true-final detection, and implement all four canonical rhyme rules.
 The result is merged into PyThaiNLP main (4~Aug~2026) and is set to
 ship as the default \texttt{KhaveeVerifier} in PyThaiNLP 6.0.
@@ -263,7 +263,7 @@ counting words. Within this skeleton the verse follows a fixed rhyme scheme.
 As defined by the Royal Institute of Thailand, two syllables rhyme \thpar{\emph{sumpus}}{สัมผัส}
 when they share the same vowel sound \thpar{s\`ar\`a}{สระ} and the same final-consonant class
 \thpar{m\^a:ttra:}{มาตราตัวสะกด}. Additionally, tone is not part of the rhyme.
-The mattra classes \thpar{\emph{m\^{E}:}}{แม่}, consisting of \thgloss{ka}{กา}, \thgloss{kong}{กง}, \thgloss{kok}{กก},
+The \textipa{mattra} classes \thpar{\emph{m\^{E}:}}{แม่}, consisting of \thgloss{ka}{กา}, \thgloss{kong}{กง}, \thgloss{kok}{กก},
 \thgloss{kot}{กด}, \thgloss{kop}{กบ}, \thgloss{kon}{กน}, \thgloss{kom}{กม}, \thgloss{koey}{เกย}, and \thgloss{koew}{เกอว}, group the final consonants of Thai
 syllables by their phonetic outcome (open syllable, velar \ipatxt{ŋ} and \ipatxt{k}, dental \ipatxt{t}, labial \ipatxt{p}, nasal \ipatxt{n} and \ipatxt{m},
 semivowel \ipatxt{j} and \ipatxt{w}). The four waks are called the
@@ -458,40 +458,39 @@ The accuracy of the verifier rests on three functions.
 per-character loop was rewritten to remove the shadowed conditions that
 misparsed the \thgloss{ua}{อัว} diphthong and to resolve the transformed and
 reduced vowels signalled by the short-vowel mark
-\thpar{\emph{m\'a:I t\`aI k\super{h}\'u:}}{ไม้ไต่คู้ (-็)}: \textipa{tC\`et} $\rightarrow$ short
-\textipa{\`e}, \textipa{k\super{h}\v{E}N} $\rightarrow$ short \textipa{E}, \textipa{k\`O}
-$\rightarrow$ \thpar{\textipa{\`O}}{เอาะ}. The
-\thgloss{\emph{rO: h\v{a}n}}{รร} is evaluated once, yielding \textipa{Pam} in a
+\thpar{\emph{m\'a:I t\`aI k\super{h}\'u:}}{ไม้ไต่คู้ ( -็ )}: \thgloss{\ipatxt{tɕèt}}{เจ็ด} $\rightarrow$ transformed \thgloss{\ipatxt{e}}{เ-ะ},
+\thgloss{\ipatxt{kʰɛ̌ŋ}}{แข็ง} $\rightarrow$ transformed \thgloss{\ipatxt{ɛ}}{แ-ะ},
+\thgloss{\ipatxt{kɔ̀}}{ก็} $\rightarrow$ transformed \thgloss{\ipatxt{ɔ}}{เ-าะ}.
+The \thgloss{\emph{rO: h\v{a}n}}{รร} is evaluated once, yielding \textipa{Pam} in a
 \emph{kom class} context (e.g., \thgloss{\emph{t\super{h}am}}{ธรรม}) and \emph{a} 
-elsewhere. The three readings of \thgloss{\emph{r\'W}}{ฤ} and
+elsewhere. The three pronunciations of \thgloss{\emph{r\'W}}{ฤ} and
 \thgloss{\emph{l\'W}}{ฦ} are classified from the original spelling
-\emph{before} karun stripping, so silent suffixes cannot hide them:
-\textipa{r\^@:k} in \thgloss{\emph{r\^@:k}}{ฤกษ์}, \textipa{r\'it} in
-\thgloss{\emph{r\'it}}{ฤทธิ์} and \thgloss{\emph{PaNkr\`it}}{อังกฤษ}, and
-\textipa{r\'Wdu:} in \thgloss{\emph{r\'Wdu:}}{ฤดู}. Pali/Sanskrit words with a
+\emph{before} \textipa{karun} stripping, so silent suffixes cannot hide them:
+(i) \thgloss{\emph{r\^@:k}}{ฤกษ์ - เริก},
+(ii) \thgloss{\emph{r\'it}}{ฤทธิ์ - ริด} and \thgloss{\emph{PaNkr\`it}}{อังกฤษ - อัง.กิด}, and
+(iii) \thgloss{\emph{r\'Wdu:}}{ฤดู - รึ.ดู}. Pali/Sanskrit words with a
 silent terminal vowel (e.g., \thgloss{\emph{ki\`a:t}}{เกียรติ},
 \thgloss{\emph{tC\super{h}\^a:t}}{ชาติ}, \thgloss{\emph{t\super{h}amm\'atC\super{h}\^a:t}}{ธรรมชาติ}) have it
 stripped, and an empty result falls back to the implied short \emph{a}.
 \texttt{check\_marttra} returns the Royal-Institute final-consonant class
-of a syllable, strictly by orthography. It resolves karun first, strips
+of a syllable, strictly by orthography. It resolves \textipa{karun} first, strips
 silent terminal vowels, then strips a silent \emph{r} in loanword
-clusters---always in \emph{tr}/\emph{chr}/\emph{pr} (e.g., \emph{but},
-\emph{net}, \thgloss{\emph{p\super{h}\'et}}{เพชร}) but in \emph{kr}, \emph{kh-r}, 
-and \emph{th-r} only when the preceding vowel is short, so
+clusters---always in \thgloss{\emph{tr}}{ตร}/\thgloss{\emph{chr}}{ชร}/\thgloss{\emph{pr}}{ปร} (e.g., \thgloss{\emph{but}}{บัตร},
+\thgloss{\emph{ne:t}}{เนตร}, \thgloss{\emph{p\super{h}\'et}}{เพชร}) but in \thgloss{\emph{kr}}{กร}, \thgloss{\emph{kh-r}}{ขร}, 
+and \thgloss{\emph{th-r}}{ทร} only when the preceding vowel is short, so
 \thgloss{\emph{tC\`ak}}{จักร} loses its \emph{r} while
 \thgloss{\emph{maNkO:n}}{มังกร} does not. Standalone characters
 (\thgloss{\emph{n\'a}}{ณ}, \thgloss{\emph{t\super{h}\'a}}{ธ},
-\thgloss{\emph{ph\'an\'a}}{พณ}, \thgloss{\emph{bO:}}{บ}) and the \textipa{s\`ar\`a k@:n} are classed as \emph{ka class}. Finally, \texttt{is\_sumpus}
-normalizes both arguments independently, since the old conditional chain
-short-circuited when only one word needed normalization:
-\emph{a+koey} $\rightarrow$ \emph{ai+ka} (so \emph{chai} rhymes with
-\emph{sai}) and \emph{a/am+kom} $\rightarrow$ \emph{am+ka} (so \emph{cam}
-rhymes with \emph{kam}); it returns true iff the normalised sara and
-mattra of the two syllables are equal.
+\thgloss{\emph{ph\'an\'a}}{พณ}, \thgloss{\emph{bO:}}{บ}) and the \textipa{s\`ar\`a k@:n} are classed as \emph{ka class}.
+Finally, \texttt{is\_sumpus} normalizes both arguments properly, since the old verifier has a normalization logic error. 
+The normalization transform a word with \thgloss{\emph{a}}{-ะ} + \thgloss{\emph{koey}}{เกย} $\rightarrow$ \thgloss{\emph{ai}}{ไ-/ใ-} + \thgloss{\emph{ka}}{กา}
+and \thgloss{\emph{a}}{-ะ}/\thgloss{\emph{am}}{-ำ} + \thgloss{\emph{kom} class}{กม} $\rightarrow$ \thgloss{\emph{am}}{-ำ} + \thgloss{\emph{ka} class}{กา}.
+It returns true if and only if the normalised \textipa{sara} and
+\textipa{mattra} of the two syllables are equal.
 
 Two further mechanisms account for most of the improvement over the 5.0.1
 baseline. \texttt{handle\_karun\_sound\_silence} strips characters silenced
-by the \emph{karun}, no longer by a fixed truncation: it recognises
+by the \textipa{karun}, no longer by a fixed truncation: it recognises
 multi-letter silent suffixes such as \thgloss{\emph{p\super{h}r\'a l\'ak}}{พระลักษมณ์}
 (strips the silent \emph{km} cluster to expose the true \emph{kok class}
 final) and \thgloss{\emph{k\`as\`at}}{กษัตริย์} (strips the silent \emph{triy}
@@ -499,10 +498,10 @@ suffix, leaving a \emph{kot class} final), two-consonant suffixes such as
 \emph{-tr} in \thgloss{\emph{s\`a:t}}{ศาสตร์} and \textipa{\emph{-nt\super{h}r}} in
 \thgloss{\emph{tCan}}{จันทร์}, and the consonant-plus-vowel patterns of
 \thgloss{\emph{s\`it}}{สิทธิ์} and \thgloss{\emph{p\super{h}an}}{พันธุ์}, while leaving
-an internal karun (e.g., \thgloss{\emph{Po:m}}{โอห์ม}) untouched.
+an internal \textipa{karun} (e.g., \thgloss{\emph{Po:m}}{โอห์ม}) untouched.
 \texttt{\_is\_true\_final} decides whether a trailing \emph{y}, \emph{l},
 or \emph{w} is a genuine final rather than part of a vowel digraph or
-initial cluster. It strips karun and tone marks first---so
+initial cluster. It strips \textipa{karun} and tone marks first---so
 \thgloss{\emph{kl\^aI}}{ใกล้}, which ends in a tone mark, is still seen as
 ending in \emph{l}---requires at least two consonants, and consults
 hand-built cluster tables for \emph{l}, \emph{r}, and \emph{w} under the
@@ -515,7 +514,7 @@ Table~\ref{tab:changes} summarises the principal changes of the 6.0
 verifier relative to the 5.0.1 baseline; they were developed and merged in
 the PyThaiNLP project~\cite{pythainlp}. The fixes target precisely the
 failure families probed by the augmentation (Section~\ref{sec:results}):
-karun and \emph{ru} traps, short/long and compound-vowel swaps, and the
+\textipa{karun} and \emph{ru} traps, short/long and compound-vowel swaps, and the
 one-sided special-vowel normalization that our C9 operator exploits.
 Together they raise per-rule gold recall from 86--89\% to 95--97\%
 (6.0) and eliminate false positives on the curated negatives.
@@ -531,7 +530,7 @@ Together they raise per-rule gold recall from 86--89\% to 95--97\%
 \textbf{Aspect} & \textbf{5.0.1 $\rightarrow$ 6.0 (example)} \\
 \midrule
 Segmentation & dict subword $\rightarrow$ SSG syllable segmentation \\
-Karun (\textipa{t\super{h}ant\super{h}\'ak\super{h}\^a:t}) & ignored $\rightarrow$ silenced (\emph{ohm}$\rightarrow$\emph{o}) \\
+\textipa{Karun} (\textipa{t\super{h}ant\super{h}\'ak\super{h}\^a:t}) & ignored $\rightarrow$ silenced (\emph{ohm}$\rightarrow$\emph{o}) \\
 True finals y/l/w & naive $\rightarrow$ cluster-aware (\emph{thai}, \emph{klai}$\rightarrow$mae ka) \\
 Special-vowel norm. & one-sided $\rightarrow$ both-sided (\emph{cam}$\sim$\emph{kam}) \\
 Compound/reduced vowels & misread $\rightarrow$ compound-vowel classifier,
@@ -578,12 +577,12 @@ the more robust configuration.
 
 Model~A is the original \texttt{KhaveeVerifier} of PyThaiNLP 5.0.1,
 instrumented verbatim from the vendored source: dictionary-based
-\texttt{subword\_tokenize}, no $R_3$ rule, karun handling, or true-final
+\texttt{subword\_tokenize}, no $R_3$ rule, \textipa{karun} handling, or true-final
 logic. Model~C is the \texttt{word\_check} rhyme grader of
 KlonSuphap-LM~\cite{klonsuphap}: each wak is romanized using the TLTK G2P
 model, and the romanized vowels and finals are compared. Its two
 documented weaknesses are (i)~a \texttt{replace\_long\_short} step that collapses
-long and short vowels and (ii)~a mattra comparison that ignores the final
+long and short vowels and (ii)~a \textipa{mattra} comparison that ignores the final
 consonant, both inflating recall at the cost of precision; TLTK failures
 reduce coverage.
 
@@ -613,10 +612,10 @@ is \emph{standalone}: it is derived from a real stanza but only the target
 rule is changed, so exactly one rule is exercised while the others remain
 intact. Every negative is verified by the 6.0 oracle
 (\texttt{is\_sumpus}) to be a genuine non-rhyme, and the whole set was
-audited in four independent passes in which reviewers spelled out the sara
-and mattra of every candidate (with vowel length made explicit) and
+audited in four independent passes in which reviewers spelled out the \textipa{sara}
+and \textipa{mattra} of every candidate (with vowel length made explicit) and
 double-checked pronunciations against the IPA. The audit removed 56
-candidate words the oracle misreads---karun clusters it fails to silence
+candidate words the oracle misreads---\textipa{karun} clusters it fails to silence
 and multi-syllable Pali words SSG keeps as single tokens.
 
 \paragraph{Negatives (precision probes)} The 10{,}000 negatives are drawn
@@ -625,13 +624,13 @@ from eight corruption operators: trivial different-vowel-and-mattra swaps
 short/long vowel swaps (C3, 3{,}100), liquid-final swaps (C4, 1{,}200), a
 systematic trap in which the 5.0.1 checker reads the candidate as rhyming
 with the target while 6.0 does not (C9, 2{,}800), leading-consonant words
-(C5, 600), and karun/\thgloss{\emph{ru}}{ฤ}/cluster traps (C2, 1{,}000).
+(C5, 600), and \textipa{karun}/\thgloss{\emph{ru}}{ฤ}/cluster traps (C2, 1{,}000).
 C3 and C9 dominate the mix because they are the operators that best
 discriminate the checkers.
 
 \paragraph{Positives (recall probes)} The 1{,}200 \emph{tricky}
 positives swap the target syllable with a rhyming candidate that exercises
-normalization \thpar{\emph{s\`ar\`a pli\`an.r\^u:p/l\'ot.r\^up}}{สระเปลี่ยนรูป/ลดรูป}, \thgloss{\emph{r\'W}}{ฤ}, karun, and
+normalization \thpar{\emph{s\`ar\`a pli\`an.r\^u:p/l\'ot.r\^up}}{สระเปลี่ยนรูป/ลดรูป}, \thgloss{\emph{r\'W}}{ฤ}, \textipa{karun}, and
 true-final cases; all are oracle-confirmed rhymes. A further 423
 \emph{oracle-blind} positives are genuine rhymes the oracle labels as
 non-rhymes: the silent-\emph{r} \thgloss{\emph{p\super{h}\'et}}{เพชร} (true
@@ -805,7 +804,7 @@ augmentation-only tables.
 
 The verifier is deployed as an interactive web tool for Klon 4/8 teachers
 and students: it segments a poem into syllables, highlights rhyme
-positions, spells out the sara and mattra of every syllable, and explains
+positions, spells out the \textipa{sara} and \textipa{mattra} of every syllable, and explains
 each error in terms of the four rhyme rules. The rule-based
 feedback is reproducible and hallucination-free. Future work includes
 classroom evaluations and pronunciation guidance for irregular words.
@@ -827,7 +826,7 @@ alongside decoding-time constrained sampling~\cite{geng2023}.
 We presented a hybrid rule-based approach to Thai Klon-Paed rhyme
 verification. An improved rule-based verifier (Model~B), now the default
 \texttt{KhaveeVerifier} in PyThaiNLP main and to ship in 6.0, implements all four canonical
-rhyme rules with robust karun, true-final, and sara handling and reaches
+rhyme rules with robust \textipa{karun}, true-final, and \textipa{sara} handling and reaches
 100\% precision on curated negatives. A dictionary-enhanced variant
 (Klon8Checker, Model~D) adds a gold-standard G2P override dictionary of over
 4{,}000 entries and recovers 95.7\% of the oracle's own blind spots. On
