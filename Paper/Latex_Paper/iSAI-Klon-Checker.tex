@@ -22,7 +22,7 @@
 % Thai and IPA render ONLY with XeLaTeX. Build with:
 %   xelatex iSAI-Klon-Checker.tex   -> Thai + IPA shown next to romanization
 %   pdflatex iSAI-Klon-Checker.tex  -> romanization only (Thai/IPA omitted)
-% On Overleaf: Menu -> Compiler -> XeLaTeX (the .latexmkrc in this folder also
+% On Overleaf: Menu -> Compiler -> XeLaTeX (the latexmkrc in this folder also
 % forces XeLaTeX automatically). Thai fonts auto-selected: TH Sarabun New
 % (Overleaf), else Angsana New, else Tahoma (Windows). IPA font auto-selected:
 % Charis SIL, Gentium Plus, Doulos SIL, DejaVu Sans, FreeSerif, else Segoe UI.
@@ -36,6 +36,8 @@
 % and \ipatxt for phonetic transcriptions.
 
 % latexmk iSAI-Klon-Checker.tex
+% or run
+% latexmk -xelatex iSAI-Klon-Checker.tex
 
 \ifXeTeX
   \usepackage{fontspec}
@@ -135,16 +137,16 @@
 % }
 % }
 
-\author{\IEEEauthorblockN{Warit Yuvaniyama\orcidlink{0009-0007-1630-4286}, Athit Phinyachok\orcidlink{0009-0000-3783-8104}, Gunn Sanguankittipun\orcidlink{0009-0005-8812-4992}, Leo Colombo\orcidlink{0009-0004-9133-5398}, and Prachya Boonkwan\orcidlink{0000-0003-1405-1071}}
-    \IEEEauthorblockA{
-        \textit{School of Information, Computer and Communication Technology} \\
-        \textit{Sirindhorn International Institute of Technology, Thammasat University}\\
-        Pathum Thani 12120, Thailand \\
-        % ORCID: \{ 0009-0007-1630-4286, 0009-0000-3783-8104, 0009-0005-8812-4992, 0009-0004-9133-5398, 0000-0003-1405-1071 \}
-        % Email: \{ 6622770459@g.siit.tu.ac.th, 6622780474@g.siit.tu.ac.th, 6622780136@g.siit.tu.ac.th,\\ 6622780540@g.siit.tu.ac.th, prachya@siit.tu.ac.th \}
-        Email: \{6622770459, 6622780474, 6622780136, 6622780540\}@g.siit.tu.ac.th, prachya@siit.tu.ac.th
-    }
-}
+% \author{\IEEEauthorblockN{Warit Yuvaniyama\orcidlink{0009-0007-1630-4286}, Athit Phinyachok\orcidlink{0009-0000-3783-8104}, Gunn Sanguankittipun\orcidlink{0009-0005-8812-4992}, Leo Colombo\orcidlink{0009-0004-9133-5398}, and Prachya Boonkwan\orcidlink{0000-0003-1405-1071}}
+%     \IEEEauthorblockA{
+%         \textit{School of Information, Computer and Communication Technology} \\
+%         \textit{Sirindhorn International Institute of Technology, Thammasat University}\\
+%         Pathum Thani 12120, Thailand \\
+%         % ORCID: \{ 0009-0007-1630-4286, 0009-0000-3783-8104, 0009-0005-8812-4992, 0009-0004-9133-5398, 0000-0003-1405-1071 \}
+%         % Email: \{ 6622770459@g.siit.tu.ac.th, 6622780474@g.siit.tu.ac.th, 6622780136@g.siit.tu.ac.th,\\ 6622780540@g.siit.tu.ac.th, prachya@siit.tu.ac.th \}
+%         Email: \{6622770459, 6622780474, 6622780136, 6622780540\}@g.siit.tu.ac.th, prachya@siit.tu.ac.th
+%     }
+% }
 %% For double-anonymous review, comment out the above author block and uncomment the following line:
 % \author{\IEEEauthorblockN{Ommited for double-anonymous review}}
 
@@ -160,7 +162,7 @@ checkers nor G2P-romanization checkers handle the resulting edge cases
 reliably. We present a hybrid rule-based verification approach: first, we
 improve the KhaveeVerifier algorithm---vowel analysis,
 final-consonant-class analysis, the rhyme test, karun silencing, and
-true-final detection---and ship it in PyThaiNLP 5.3.5 (Model~B); second,
+true-final detection---and merge it into PyThaiNLP main (Model~B); second,
 we introduce Klon8Checker (Model~D), which augments these rules with a
 gold-standard G2P override dictionary of over 4{,}000 entries and a
 fallback segmenter, recovering phonetic blind spots of the base oracle. We evaluate
@@ -201,7 +203,7 @@ requires two syllables to share both the vowel sound \thpar{s\`ar\`a}{สระ}
 the final-consonant class \thpar{m\^a:ttra:}{มาตราตัวสะกด}. Four canonical rhyme
 rules must hold within (r1, r2, r3) and across (rX) stanzas
 (Section~\ref{sec:bg}), and the final syllable of every wak must participate as depicted
-in Figure~\ref{fig:rhyme-example}.
+in Figure~\ref{fig:klon}.
 A single silent letter, e.g.\ the silent \emph{\thpar{r}{ร}} of
 \emph{\thgloss{phet}{เพชร}} (`diamond'), or a short-long vowel-length
 error is enough to break a rhyme. These constraints are strict and
@@ -217,7 +219,8 @@ LLMs are probabilistic, they are unreliable at strict constraints such as
 syllable counts and rhymes, which a rule-based verifier supplies
 deterministically.
 
-Existing verification systems fall short of this standard. The prior
+Existing verification systems fall short of this standard. 
+Across five checker configurations (A, B, C, D\_w2p, D\_ssg), the prior
 KhaveeVerifier in PyThaiNLP 5.0.1 (Model~A) relies on dictionary subword
 tokenization, omits one canonical rhyme rule, and reaches only 73.4\%
 recall on our gold corpus. G2P romanization-based checkers, such as the
@@ -232,8 +235,8 @@ rigorous, adversarial evaluation. Our contributions are:
 vowel analysis (\texttt{check\_sara}), the final-consonant-class analysis
 (\texttt{check\_marttra}), the rhyme test (\texttt{is\_sumpus}), karun
 silencing, and true-final detection, and implement all four canonical rhyme
-rules. The result is merged into PyThaiNLP 5.3.5 as the default
-\texttt{KhaveeVerifier}.
+rules. The result is merged into PyThaiNLP main (4~Aug~2026) and is set to
+ship as the default \texttt{KhaveeVerifier} in PyThaiNLP 6.0.
 \item \textbf{A dictionary-enhanced variant (Klon8Checker, Model~D).} We augment
 the rules with a gold-standard G2P override dictionary of over 4{,}000
 entries and a fallback segmenter, recovering the oracle's blind spots.
@@ -412,7 +415,7 @@ for rhymes its oracle cannot see.
 
 \subsection{Core Rule-Based Verification (Model B)}
 
-Model~B is the \texttt{KhaveeVerifier} of PyThaiNLP 5.3.5. It verifies a
+Model~B is the \texttt{KhaveeVerifier} merged into PyThaiNLP main, to ship in 6.0. It verifies a
 poem in three stages. (1)~Each wak is tokenised directly into syllables
 with the SSG CRF segmenter, applied to the wak text itself without word
 pre-segmentation. (2)~For each canonical rule the relevant syllables are
@@ -505,24 +508,24 @@ the \emph{y} of \thgloss{\emph{t\super{h}aI}}{ไทย} is silent, the \emph{l}
 \thgloss{\emph{ple:}}{เปล} belongs to the cluster, and the \emph{l} of
 \thgloss{\emph{tC\super{h}on}}{ชล} is a true final.
 
-Table~\ref{tab:changes} summarises the principal changes of the 5.3.5
+Table~\ref{tab:changes} summarises the principal changes of the 6.0
 verifier relative to the 5.0.1 baseline; they were developed and merged in
 the PyThaiNLP project~\cite{pythainlp}. The fixes target precisely the
 failure families probed by the augmentation (Section~\ref{sec:results}):
 karun and \emph{ru} traps, short/long and compound-vowel swaps, and the
 one-sided special-vowel normalization that our C9 operator exploits.
 Together they raise per-rule gold recall from 86--89\% to 95--97\%
-(5.3.5) and eliminate false positives on the curated negatives.
+(6.0) and eliminate false positives on the curated negatives.
 
 \begin{table}[t]
-\caption{Principal changes of the 5.3.5 \texttt{KhaveeVerifier} over the
+\caption{Principal changes of the 6.0 \texttt{KhaveeVerifier} over the
 5.0.1 baseline.}
 \label{tab:changes}
 \centering
 \footnotesize
 \begin{tabular}{p{2.9cm}p{4.5cm}}
 \toprule
-\textbf{Aspect} & \textbf{5.0.1 $\rightarrow$ 5.3.5 (example)} \\
+\textbf{Aspect} & \textbf{5.0.1 $\rightarrow$ 6.0 (example)} \\
 \midrule
 Segmentation & dict subword $\rightarrow$ SSG syllable segmentation \\
 Karun (\textipa{t\super{h}ant\super{h}\'ak\super{h}\^a:t}) & ignored $\rightarrow$ silenced (\emph{ohm}$\rightarrow$\emph{o}) \\
@@ -606,7 +609,7 @@ positives cannot expose blind spots. We therefore augmented the gold with
 adversarial instances generated by an automated pipeline. Every instance
 is \emph{standalone}: it is derived from a real stanza but only the target
 rule is changed, so exactly one rule is exercised while the others remain
-intact. Every negative is verified by the 5.3.5 oracle
+intact. Every negative is verified by the 6.0 oracle
 (\texttt{is\_sumpus}) to be a genuine non-rhyme, and the whole set was
 audited in four independent passes in which reviewers spelled out the sara
 and mattra of every candidate (with vowel length made explicit) and
@@ -619,7 +622,7 @@ from eight corruption operators: trivial different-vowel-and-mattra swaps
 (C6, 300), same-mattra swaps (C0, 500), same-vowel swaps (C1, 500),
 short/long vowel swaps (C3, 3{,}100), liquid-final swaps (C4, 1{,}200), a
 systematic trap in which the 5.0.1 checker reads the candidate as rhyming
-with the target while 5.3.5 does not (C9, 2{,}800), leading-consonant words
+with the target while 6.0 does not (C9, 2{,}800), leading-consonant words
 (C5, 600), and karun/\thgloss{\emph{ru}}{ฤ}/cluster traps (C2, 1{,}000).
 C3 and C9 dominate the mix because they are the operators that best
 discriminate the checkers.
@@ -650,7 +653,7 @@ every augmentation instance is standalone and tests exactly one rule, the
 per-rule prediction is the clean metric; a stanza-level aggregate over the
 augmentation is only well-defined for Model~B (the oracle). Model~A has no
 r3 and is reported as N/A there. All checkers were instrumented from
-verbatim vendored sources (the 5.0.1 and 5.3.5 cores), with Model~C run
+verbatim vendored sources (the 5.0.1 and 6.0 cores), with Model~C run
 under Python 3.12 through a persistent pool of ten tltk workers (the full
 augmentation pass takes about 40 minutes; A/B/D are parallelised and finish
 in under a minute).
@@ -673,7 +676,7 @@ concentrate in the archaic Khun Chang Khun Phaen).
 System & Stanza & r1 & r2 & r3 & rX \\
 \midrule
 A (5.0.1) & 73.4 & 86.3 & 88.8 & N/A & 88.7 \\
-B (5.3.5) & 87.5 & 94.7 & 96.5 & 95.5 & 96.7 \\
+B (6.0) & 87.5 & 94.7 & 96.5 & 95.5 & 96.7 \\
 D\_w2p & 87.4 & 95.4 & 96.3 & 94.9 & 96.5 \\
 D\_ssg & \textbf{88.5} & 95.9 & 96.7 & 95.2 & 97.0 \\
 C (Kongfha) & 84.8$^{\dagger}$ & 93.2 & 96.5 & 94.1 & 96.6 \\
@@ -723,7 +726,7 @@ negatives on 1{,}623 positives.}
 System & P & R & F1 & FP & FN-pos \\
 \midrule
 A (5.0.1) & 28.4 & 62.7 & 39.1 & 1,950 & 848 \\
-B (5.3.5) & \textbf{100.0} & 73.9 & 85.0 & \textbf{0} & 423 \\
+B (6.0) & \textbf{100.0} & 73.9 & 85.0 & \textbf{0} & 423 \\
 D\_w2p & 83.4 & \textbf{92.1} & \textbf{87.5} & 298 & 128 \\
 D\_ssg & 86.8 & 87.0 & 86.9 & 215 & 211 \\
 C (Kongfha) & 30.4 & 87.1 & 45.1 & 3,107 & 266 \\
@@ -821,7 +824,7 @@ alongside decoding-time constrained sampling~\cite{geng2023}.
 
 We presented a hybrid rule-based approach to Thai Klon-Paed rhyme
 verification. An improved rule-based verifier (Model~B), now the default
-\texttt{KhaveeVerifier} of PyThaiNLP 5.3.5, implements all four canonical
+\texttt{KhaveeVerifier} in PyThaiNLP main and to ship in 6.0, implements all four canonical
 rhyme rules with robust karun, true-final, and sara handling and reaches
 100\% precision on curated negatives. A dictionary-enhanced variant
 (Klon8Checker, Model~D) adds a gold-standard G2P override dictionary of over

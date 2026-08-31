@@ -1,0 +1,11 @@
+# Force XeLaTeX so Thai script renders in iSAI-Klon-Checker.tex
+# (read by latexmk when run from this folder)
+#
+# NOTE: latexmk only reads a config file named "latexmkrc" (no leading dot)
+# from the current directory. A file named ".latexmkrc" is IGNORED (the
+# leading-dot form is only read from the user's home directory).
+$pdf_mode = 4;              # 4 = xelatex  (5 = lualatex, 1 = pdflatex)
+$postscript_mode = undef;
+$dvi_mode = undef;
+$xelatex = 'xelatex -interaction=nonstopmode -halt-on-error %O %S';
+$bibtex_use = 1;
