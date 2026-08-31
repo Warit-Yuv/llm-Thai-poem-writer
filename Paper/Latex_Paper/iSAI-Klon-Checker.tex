@@ -16,6 +16,7 @@
 \usepackage{url}
 \usepackage{iftex}
 \usepackage{tipa}
+\usepackage{orcidlink}
 
 % ---- Thai script + IPA support (dual-engine) ----
 % Thai and IPA render ONLY with XeLaTeX. Build with:
@@ -33,6 +34,9 @@
 %   \ipatxt{ipa}           bare IPA transcription (IPA font)
 % Use \thgloss for terms/concepts, \thpar for inline parenthetical glosses,
 % and \ipatxt for phonetic transcriptions.
+
+% latexmk iSAI-Klon-Checker.tex
+
 \ifXeTeX
   \usepackage{fontspec}
   \IfFontExistsTF{TH Sarabun New}
@@ -84,47 +88,47 @@
 
 % Double-anonymous submission: author block is commented out for review.
 % Uncomment for the camera-ready version.
-%\author{\IEEEauthorblockN{1\textsuperscript{st} Warit Yuvaniyama}
-%\IEEEauthorblockA{
-%\textit{School of Information, Computer,} \\
-%\textit{and Communication Technology} \\
-%\textit{Sirindhorn International Institute} \\
-%\textit{of Technology, Thammasat University}\\
-%Pathum Thani 12120, Thailand \\
-%https://orcid.org/0009-0007-1630-4286}
-%\and
-%\IEEEauthorblockN{2\textsuperscript{nd} Athit Phinyachok}
-%\IEEEauthorblockA{\textit{School of Information, Computer,} \\
-%\textit{and Communication Technology} \\
-%\textit{Sirindhorn International Institute} \\
-%\textit{of Technology, Thammasat University}\\
-%Pathum Thani 12120, Thailand \\
-%https://orcid.org/0009-0000-3783-8104}
-%\and
-%\IEEEauthorblockN{3\textsuperscript{rd} Gunn Sanguankittipun}
-%\IEEEauthorblockA{\textit{School of Information, Computer,} \\
-%\textit{and Communication Technology} \\
-%\textit{Sirindhorn International Institute} \\
-%\textit{of Technology, Thammasat University}\\
-%Pathum Thani 12120, Thailand \\
-%https://orcid.org/0009-0005-8812-4992}
-%\and
-%\IEEEauthorblockN{4\textsuperscript{th} Leo Colombo}
-%\IEEEauthorblockA{\textit{School of Information, Computer,} \\
-%\textit{and Communication Technology} \\
-%\textit{Sirindhorn International Institute} \\
-%\textit{of Technology, Thammasat University}\\
-%Pathum Thani 12120, Thailand \\
-%https://orcid.org/0009-0004-9133-5398}
-%\and
-%\IEEEauthorblockN{5\textsuperscript{th} Prachya Boonkwan*}
-%\IEEEauthorblockA{\textit{School of Information, Computer,} \\
-%\textit{and Communication Technology} \\
-%\textit{Sirindhorn International Institute} \\
-%\textit{of Technology, Thammasat University}\\
-%Pathum Thani 12120, Thailand \\
-%https://orcid.org/0000-0003-1405-1071*}
-%}
+\author{\IEEEauthorblockN{1\textsuperscript{st} Warit Yuvaniyama\orcidlink{0009-0007-1630-4286}}
+\IEEEauthorblockA{
+\textit{School of Information, Computer,} \\
+\textit{and Communication Technology} \\
+\textit{Sirindhorn International Institute} \\
+\textit{of Technology, Thammasat University}\\
+Pathum Thani 12120, Thailand \\
+https://orcid.org/0009-0007-1630-4286}
+\and
+\IEEEauthorblockN{2\textsuperscript{nd} Athit Phinyachok\orcidlink{0009-0000-3783-8104}}
+\IEEEauthorblockA{\textit{School of Information, Computer,} \\
+\textit{and Communication Technology} \\
+\textit{Sirindhorn International Institute} \\
+\textit{of Technology, Thammasat University}\\
+Pathum Thani 12120, Thailand \\
+https://orcid.org/0009-0000-3783-8104}
+\and
+\IEEEauthorblockN{3\textsuperscript{rd} Gunn Sanguankittipun\orcidlink{0009-0005-8812-4992}}
+\IEEEauthorblockA{\textit{School of Information, Computer,} \\
+\textit{and Communication Technology} \\
+\textit{Sirindhorn International Institute} \\
+\textit{of Technology, Thammasat University}\\
+Pathum Thani 12120, Thailand \\
+https://orcid.org/0009-0005-8812-4992}
+\and
+\IEEEauthorblockN{4\textsuperscript{th} Leo Colombo\orcidlink{0009-0004-9133-5398}}
+\IEEEauthorblockA{\textit{School of Information, Computer,} \\
+\textit{and Communication Technology} \\
+\textit{Sirindhorn International Institute} \\
+\textit{of Technology, Thammasat University}\\
+Pathum Thani 12120, Thailand \\
+https://orcid.org/0009-0004-9133-5398}
+\and
+\IEEEauthorblockN{5\textsuperscript{th} Prachya Boonkwan\orcidlink{0000-0003-1405-1071}}
+\IEEEauthorblockA{\textit{School of Information, Computer,} \\
+\textit{and Communication Technology} \\
+\textit{Sirindhorn International Institute} \\
+\textit{of Technology, Thammasat University}\\
+Pathum Thani 12120, Thailand \\
+https://orcid.org/0000-0003-1405-1071}
+}
 
 % \author{\IEEEauthorblockN{Warit Yuvaniyama, Athit Phinyachok, Gunn Sanguankittipun, Leo Colombo, and Prachya Boonkwan}
 %     \IEEEauthorblockA{
@@ -184,8 +188,8 @@ learning models.
 
 Klon-Paed is a Thai verse form that depends on these
 phonetic properties. Each stanza \thpar{\emph{b\`ot}}{บท} consists of four
-sets of seven-to-nine-syllable lines \thpar{\emph{V\'ak}}{วรรค}. A valid rhyme
-requires two syllables to share both the vowel sound \thpar{s\`ar\`a}{สระ} and
+sets of seven-to-nine-syllable lines \thpar{\emph{V\'ak}}{วรรค} (wak). A valid rhyme
+requires two syllables to share both the vowel sound \thpar{s\`ar\`a}{สระ} (sara) and
 the final-consonant class \thpar{m\^a:ttra:}{มาตราตัวสะกด}. Four canonical rhyme
 rules must hold within (r1, r2, r3) and across (rX) stanzas
 (Section~\ref{sec:bg}), and the final syllable of every wak must participate.
@@ -240,7 +244,7 @@ tool plus a deterministic reward signal for RL-based Klon-Paed generation.
 
 \subsection{The Linguistic Rules of Klon-Paed}
 
-A Klon-Paed stanza has four waks of eight syllables each. Thai syllables
+A Klon-Paed stanza has four waks of seven-to-nine syllables each. Thai syllables
 are written without delimiters and a word may consist of one or more
 syllables, so the meter must be recovered by syllabification rather than by
 counting words. Within this skeleton the verse follows a fixed rhyme scheme.
@@ -562,7 +566,8 @@ instrumented verbatim from the vendored source: dictionary-based
 \texttt{subword\_tokenize}, no r3 rule, no karun handling, no true-final
 logic. Model~C is the \texttt{word\_check} rhyme grader of
 KlonSuphap-LM~\cite{klonsuphap}: each wak is romanized with the TLTK G2P
-model and the romanized vowels and finals compared. Its two documented
+model and the romanized vowels and finals compared. % << Grammar error?
+Its two documented
 weaknesses are (i)~a \texttt{replace\_long\_short} step that collapses
 long and short vowels and (ii)~a mattra comparison that ignores the final
 consonant, both inflating recall at the cost of precision; tltk failures
@@ -658,7 +663,7 @@ concentrate in the archaic Khun Chang Khun Phaen).
 \toprule
 System & Stanza & r1 & r2 & r3 & rX \\
 \midrule
-A (5.0.1) & 73.4 & 86.3 & 88.8 & -- & 88.7 \\
+A (5.0.1) & 73.4 & 86.3 & 88.8 & N/A & 88.7 \\
 B (5.3.5) & 87.5 & 94.7 & 96.5 & 95.5 & 96.7 \\
 D\_w2p & 87.4 & 95.4 & 96.3 & 94.9 & 96.5 \\
 D\_ssg & \textbf{88.5} & 95.9 & 96.7 & 95.2 & 97.0 \\
@@ -761,8 +766,9 @@ D\_w2p, and D\_ssg all exceed 99\% merged precision (A 93\%, C 91\%).
 (2)~\textbf{The override dictionary recovers the oracle's blind spots.}
 The D\_w2p-versus-D\_ssg gap on oracle-blind recall (95.7\% versus 68.1\%)
 is the pronunciation-knowledge contribution: the overrides read
-\emph{phet} as /phet/ and split \emph{sattruu} and \emph{kasatrii} into
-their true syllables. One limitation is that each entry forces a single
+\thtxt{เพชร} as \textipa{\emph{p\super{h}\'et}} and split \thtxt{ศัตรู} and \thtxt{กษัตรีย์}
+into their true syllables \textipa{\emph{s\`at.tru:}} and \textipa{\emph{k\`a.s\`at.tri:}},
+respectively. One limitation is that each entry forces a single
 canonical pronunciation, although many surface forms are heteronyms whose
 reading depends on context, and in natural delivery adjacent syllables are
 often merged so that a rhyme lands. The current entries are handcrafted:
