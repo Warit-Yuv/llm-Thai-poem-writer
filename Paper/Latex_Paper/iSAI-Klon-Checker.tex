@@ -84,61 +84,69 @@
     
 \begin{document}
 
-\title{Thai Poetry Rhyme Verification using a Hybrid Rule-Based Approach for Education and GenAI}
+\title{Thai Poetry Rhyme Verification Using a Hybrid Rule-Based Approach for Education and GenAI}
 
 % Double-anonymous submission: author block is commented out for review.
 % Uncomment for the camera-ready version.
-\author{\IEEEauthorblockN{1\textsuperscript{st} Warit Yuvaniyama\orcidlink{0009-0007-1630-4286}}
-\IEEEauthorblockA{
-\textit{School of Information, Computer,} \\
-\textit{and Communication Technology} \\
-\textit{Sirindhorn International Institute} \\
-\textit{of Technology, Thammasat University}\\
-Pathum Thani 12120, Thailand \\
-https://orcid.org/0009-0007-1630-4286}
-\and
-\IEEEauthorblockN{2\textsuperscript{nd} Athit Phinyachok\orcidlink{0009-0000-3783-8104}}
-\IEEEauthorblockA{\textit{School of Information, Computer,} \\
-\textit{and Communication Technology} \\
-\textit{Sirindhorn International Institute} \\
-\textit{of Technology, Thammasat University}\\
-Pathum Thani 12120, Thailand \\
-https://orcid.org/0009-0000-3783-8104}
-\and
-\IEEEauthorblockN{3\textsuperscript{rd} Gunn Sanguankittipun\orcidlink{0009-0005-8812-4992}}
-\IEEEauthorblockA{\textit{School of Information, Computer,} \\
-\textit{and Communication Technology} \\
-\textit{Sirindhorn International Institute} \\
-\textit{of Technology, Thammasat University}\\
-Pathum Thani 12120, Thailand \\
-https://orcid.org/0009-0005-8812-4992}
-\and
-\IEEEauthorblockN{4\textsuperscript{th} Leo Colombo\orcidlink{0009-0004-9133-5398}}
-\IEEEauthorblockA{\textit{School of Information, Computer,} \\
-\textit{and Communication Technology} \\
-\textit{Sirindhorn International Institute} \\
-\textit{of Technology, Thammasat University}\\
-Pathum Thani 12120, Thailand \\
-https://orcid.org/0009-0004-9133-5398}
-\and
-\IEEEauthorblockN{5\textsuperscript{th} Prachya Boonkwan\orcidlink{0000-0003-1405-1071}}
-\IEEEauthorblockA{\textit{School of Information, Computer,} \\
-\textit{and Communication Technology} \\
-\textit{Sirindhorn International Institute} \\
-\textit{of Technology, Thammasat University}\\
-Pathum Thani 12120, Thailand \\
-https://orcid.org/0000-0003-1405-1071}
-}
-
-% \author{\IEEEauthorblockN{Warit Yuvaniyama, Athit Phinyachok, Gunn Sanguankittipun, Leo Colombo, and Prachya Boonkwan}
-%     \IEEEauthorblockA{
-%         \textit{School of Information, Computer and Communication Technology} \\
-%         \textit{Sirindhorn International Institute of Technology, Thammasat University}\\
-%         Pathum Thani 12120, Thailand \\
-%         % ORCID: \{ 0009-0007-1630-4286, 0009-0000-3783-8104, 0009-0005-8812-4992, 0009-0004-9133-5398, 0000-0003-1405-1071 \}
-%         Email: \{ 6622770459@g.siit.tu.ac.th, 6622780474@g.siit.tu.ac.th, 6622780136@g.siit.tu.ac.th,\\ 6622780540@g.siit.tu.ac.th, prachya@siit.tu.ac.th \}
-%     }
+% \author{\IEEEauthorblockN{1\textsuperscript{st} Warit Yuvaniyama\orcidlink{0009-0007-1630-4286}}
+% \IEEEauthorblockA{
+% \textit{School of Information, Computer,} \\
+% \textit{and Communication Technology} \\
+% \textit{Sirindhorn International Institute} \\
+% \textit{of Technology, Thammasat University}\\
+% Pathum Thani 12120, Thailand \\
+% %https://orcid.org/0009-0007-1630-4286
 % }
+% \and
+% \IEEEauthorblockN{2\textsuperscript{nd} Athit Phinyachok\orcidlink{0009-0000-3783-8104}}
+% \IEEEauthorblockA{\textit{School of Information, Computer,} \\
+% \textit{and Communication Technology} \\
+% \textit{Sirindhorn International Institute} \\
+% \textit{of Technology, Thammasat University}\\
+% Pathum Thani 12120, Thailand \\
+% % https://orcid.org/0009-0000-3783-8104
+% }
+% \and
+% \IEEEauthorblockN{3\textsuperscript{rd} Gunn Sanguankittipun\orcidlink{0009-0005-8812-4992}}
+% \IEEEauthorblockA{\textit{School of Information, Computer,} \\
+% \textit{and Communication Technology} \\
+% \textit{Sirindhorn International Institute} \\
+% \textit{of Technology, Thammasat University}\\
+% Pathum Thani 12120, Thailand \\
+% % https://orcid.org/0009-0005-8812-4992
+% }
+% \and
+% \IEEEauthorblockN{4\textsuperscript{th} Leo Colombo\orcidlink{0009-0004-9133-5398}}
+% \IEEEauthorblockA{\textit{School of Information, Computer,} \\
+% \textit{and Communication Technology} \\
+% \textit{Sirindhorn International Institute} \\
+% \textit{of Technology, Thammasat University}\\
+% Pathum Thani 12120, Thailand \\
+% % https://orcid.org/0009-0004-9133-5398
+% }
+% \and
+% \IEEEauthorblockN{5\textsuperscript{th} Prachya Boonkwan\orcidlink{0000-0003-1405-1071}}
+% \IEEEauthorblockA{\textit{School of Information, Computer,} \\
+% \textit{and Communication Technology} \\
+% \textit{Sirindhorn International Institute} \\
+% \textit{of Technology, Thammasat University}\\
+% Pathum Thani 12120, Thailand \\
+% % https://orcid.org/0000-0003-1405-1071
+% }
+% }
+
+\author{\IEEEauthorblockN{Warit Yuvaniyama\orcidlink{0009-0007-1630-4286}, Athit Phinyachok\orcidlink{0009-0000-3783-8104}, Gunn Sanguankittipun\orcidlink{0009-0005-8812-4992}, Leo Colombo\orcidlink{0009-0004-9133-5398}, and Prachya Boonkwan\orcidlink{0000-0003-1405-1071}}
+    \IEEEauthorblockA{
+        \textit{School of Information, Computer and Communication Technology} \\
+        \textit{Sirindhorn International Institute of Technology, Thammasat University}\\
+        Pathum Thani 12120, Thailand \\
+        % ORCID: \{ 0009-0007-1630-4286, 0009-0000-3783-8104, 0009-0005-8812-4992, 0009-0004-9133-5398, 0000-0003-1405-1071 \}
+        % Email: \{ 6622770459@g.siit.tu.ac.th, 6622780474@g.siit.tu.ac.th, 6622780136@g.siit.tu.ac.th,\\ 6622780540@g.siit.tu.ac.th, prachya@siit.tu.ac.th \}
+        Email: \{6622770459, 6622780474, 6622780136, 6622780540\}@g.siit.tu.ac.th, prachya@siit.tu.ac.th
+    }
+}
+%% For double-anonymous review, comment out the above author block and uncomment the following line:
+% \author{\IEEEauthorblockN{Ommited for double-anonymous review}}
 
 \maketitle
 
@@ -174,8 +182,8 @@ grapheme-to-phoneme, reinforcement learning, educational technology
 
 \section{Introduction}
 
-Thai orthography does not map straightforwardly onto pronunciation, and
-this gap becomes especially apparent in the classical register used by Thai
+Thai orthography does not map straightforwardly onto pronunciation.
+This gap becomes especially apparent in the classical register used by Thai
 poetry. The script is written without explicit word boundaries; vowels are
 frequently implicit; consonants or entire clusters can be silenced by the
 karun diacritic \thpar{t\super{h}ant\super{h}\'ak\super{h}\^a:t}{ทัณฑฆาต}; and irregular words whose pronunciations do
@@ -192,7 +200,8 @@ sets of seven-to-nine-syllable lines \thpar{\emph{V\'ak}}{วรรค} (wak). A
 requires two syllables to share both the vowel sound \thpar{s\`ar\`a}{สระ} (sara) and
 the final-consonant class \thpar{m\^a:ttra:}{มาตราตัวสะกด}. Four canonical rhyme
 rules must hold within (r1, r2, r3) and across (rX) stanzas
-(Section~\ref{sec:bg}), and the final syllable of every wak must participate.
+(Section~\ref{sec:bg}), and the final syllable of every wak must participate as depicted
+in Figure~\ref{fig:rhyme-example}.
 A single silent letter, e.g.\ the silent \emph{\thpar{r}{ร}} of
 \emph{\thgloss{phet}{เพชร}} (`diamond'), or a short-long vowel-length
 error is enough to break a rhyme. These constraints are strict and
@@ -382,9 +391,9 @@ rule-based \emph{klon grader} supplies the reward. That grader is the
 evaluation directly relevant to the RL step of that pipeline. More
 broadly, RLHF has established reward models as essential for aligning LLMs
 to follow strict requirements~\cite{ouyang2022}, and grammar-constrained decoding
-enforces structural constraints at inference time~\cite{geng2023}; recent
-benchmarks show that even strong LLMs struggle with classical Thai
-vocabulary and verse~\cite{triyason2026}, motivating deterministic tools.
+enforces structural constraints at inference time~\cite{geng2023}.
+% recent benchmarks show that even strong LLMs struggle with classical Thai %% ### Flawed Paper
+% vocabulary and verse~\cite{triyason2026}, motivating deterministic tools.
 
 \subsection{Positioning of This Work}
 
@@ -889,9 +898,10 @@ Face model, 2024. [Online]. Available:
 K.~Yingyingseree, ``PhraAphaiManee-LM,'' Hugging Face model, 2023.
 [Online]. Available: \url{https://huggingface.co/Kongfha/PhraAphaiManee-LM}
 
-\bibitem{triyason2026}
-T.~Triyason, ``Lilit to Ramakien: A five-work benchmark for LLM
-understanding of classical Thai literature,'' in \emph{Proc. ICAIT}, ACM, 2026.
+%% ### Flawed Paper
+% \bibitem{triyason2026}
+% T.~Triyason, ``Lilit to Ramakien: A five-work benchmark for LLM
+% understanding of classical Thai literature,'' in \emph{Proc. ICAIT}, ACM, 2026.
 
 \bibitem{geng2023}
 S.~Geng, M.~Josifoski, M.~Peyrard, and R.~West, ``Grammar-constrained
