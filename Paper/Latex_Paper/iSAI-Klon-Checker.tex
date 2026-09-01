@@ -489,7 +489,7 @@ silent terminal vowel (e.g., \thgloss{\emph{ki\`a:t}}{เกียรติ},
 stripped, and an empty result falls back to the implied short \emph{a}.
 \texttt{check\_marttra} returns the Royal-Institute final-consonant class
 of a syllable, strictly by orthography. It resolves \textipa{karun} first and strips
-silent terminal vowels. It then strips a silent \emph{r} in loanword clusters
+silent terminal vowels. It then strips a silent \emph{r} in loanword clusters.
 This stripping always occurs in \thgloss{\emph{tr}}{ตร} / \thgloss{\emph{chr}}{ชร} / \thgloss{\emph{pr}}{ปร} (e.g., \thgloss{\emph{but}}{บัตร},
 \thgloss{\emph{ne:t}}{เนตร}, \thgloss{\emph{p\super{h}\'et}}{เพชร}) but in \thgloss{\emph{kr}}{กร}, \thgloss{\emph{kh-r}}{ขร}, 
 and \thgloss{\emph{th-r}}{ทร} only when the preceding vowel is short.
@@ -557,11 +557,11 @@ Segmentation & dict subword $\rightarrow$ SSG syllable segmentation \\
 \emph{Karun} (\textipa{t\super{h}ant\super{h}\'ak\super{h}\^a:t}) & naive $\rightarrow$ improved rule-based \\
 True finals y/l/w & naive $\rightarrow$ cluster-aware (\ipatxt{tʰai}, \ipatxt{klai}$\rightarrow$\emph{ka class}) \\
 Vowel normalization & one-sided $\rightarrow$ both-sided \\
-Compound/reduced vowels & misread $\rightarrow$ compound-vowel classifier, short-vowel mark, and \emph{ua} diphthong \\
+Compound/reduced vowels & misread $\rightarrow$ compound-vowel classifier, short-vowel mark, and `\emph{ua}' diphthong \\
 \textipa{\emph{r\'W}} & one sound $\rightarrow$ three sounds (\textipa{\emph{r\^@:k}}, \textipa{\emph{r\'it}}, \textipa{\emph{r\'W}}) \\
 $R_3$ rule & absent $\rightarrow$ implemented \\
 Silent \emph{r} & misread $\rightarrow$ stripped in \texttt{check\_marttra} (\emph{but}, \emph{p\super{h}\'et}$^{\dagger}$) \\
-Single-char words & crash $\rightarrow$ guarded (\emph{na}, \emph{tha}$\rightarrow$a) \\
+Single-char words & crash $\rightarrow$ guarded (\emph{na}, \emph{tha}$\rightarrow$`\emph{a}') \\
 Silent terminal vowels & misread $\rightarrow$ stripped (\textipa{\emph{ki\`at}}, \textipa{\emph{tC\super{h}\`at}}) \\
 Stanza processing & flat $\rightarrow$ stanza-based, word counts, structured errors \\
 \bottomrule
@@ -569,7 +569,7 @@ Stanza processing & flat $\rightarrow$ stanza-based, word counts, structured err
 \\[2pt]
 \footnotesize
 $^{\dagger}$The strip fixes the final-consonant class; \texttt{check\_sara}
-still reads the vowel as long \textipa{e:} rather than short \textipa{e} (\S\ref{sec:results}).
+still reads the vowel as long \textipa{e:} rather than short \textipa{e} (Section~\ref{sec:results}).
 \end{table}
 
 \subsection{Dictionary-Enhanced Model (Klon8Checker, Model~D)}
