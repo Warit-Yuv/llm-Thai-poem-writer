@@ -153,19 +153,18 @@
 \maketitle
 
 \begin{abstract}
-In Thai Klon-Paed (\thtxt{กลอนแปด}) poetry (the eight-syllable verse form) each four-line stanza must satisfy an interlocking rhyming pattern
+In Thai Klon-Paed (\thtxt{กลอนแปด}) poetry (the eight-syllable verse form), each four-line stanza must satisfy an interlocking rhyming pattern
 where the rhyming syllables must share both a vowel sound \thpar{s\`ar\`a}{สระ} and a final-consonant
-class \thpar{m\^a:ttra:}{มาตราตัวสะกด}. Because Thai is written without word
-boundaries and its orthography conceals vowels and silenced letters,
-automatic rhyme verification is non-trivial: neither classical rule-based
-checkers nor G2P-romanization checkers handle the resulting edge cases
+class \thpar{m\^a:ttra:}{มาตราตัวสะกด}. Because Thai script lacks word boundaries
+and often conceals vowels or silenced letters, automatic rhyme verification is challenging.
+Neither classical rule-based checkers nor G2P-romanization checkers handle the resulting edge cases
 reliably. We present a hybrid rule-based verification approach: first, we
 improve the KhaveeVerifier algorithm---vowel analysis,
 final-consonant class analysis, the rhyme test, \textipa{karun} silencing, and
 true-final detection---and merge it into PyThaiNLP main (Model~B). Second,
 we introduce Klon8Checker (Model~D), which augments these rules with a
 gold-standard G2P override dictionary of over 4{,}000 entries and a
-fallback segmenter, recovering phonetic blind spots of the base oracle. We evaluate
+fallback segmenter, addressing phonetic blind spots of the base oracle. We evaluate
 five checker configurations on a gold corpus of 36{,}475 classical stanzas
 (145{,}709 rhyme checks) and on a targeted augmentation of 11{,}623
 instances: 10{,}000 adversarial negatives, 1{,}200 tricky positives, and
@@ -222,7 +221,7 @@ LLMs are probabilistic, they are unreliable at strict constraints such as
 syllable counts and rhymes, which a rule-based verifier supplies
 deterministically.
 
-Existing verification systems fall short of this standard. 
+Existing verification systems do not meet this standard. 
 Of the five checker configurations we evaluate (A, B, C, D\_w2p, D\_ssg),
 the prior KhaveeVerifier in PyThaiNLP 5.0.1 (Model~A) relies on dictionary
 subword tokenization, omits one canonical rhyme rule, and reaches only
@@ -275,7 +274,7 @@ syllables by their phonetic outcome (open syllable, velar \ipatxt{ŋ} and \ipatx
 semivowel \ipatxt{j} and \ipatxt{w}). The four waks are called the
 \thgloss{s\`ad\`ap}{สดับ},
 \thgloss{r\'ap}{รับ}, \thgloss{rO:ng}{รอง}, and
-\thgloss{s\`ong}{ส่ง} respectively. Four canonical rhyme rules are checked in this work,
+\thgloss{s\`ong}{ส่ง}, respectively. Four canonical rhyme rules are checked in this work,
 following the \emph{klon} rhyme scheme and the implementation of the improved \texttt{KhaveeVerifier}.
 In rules $R_1$ and $R_3$, the target may be any of the first five syllables of the target
 wak, with syllables 3 and 5 as the preferred positions and syllables 1, 2, and 4 as
@@ -463,7 +462,7 @@ offending syllables that failed to rhyme.
 \end{algorithmic}
 \end{algorithm}
 
-The accuracy of the verifier rests on three functions.
+The verifier’s accuracy depends on three core functions.
 \texttt{check\_sara} returns the correct vowel of a syllable. Its
 per-character loop was rewritten to fix the condition shadowing that
 misparsed the \thgloss{ua}{อัว} diphthong and to resolve the transformed and
@@ -472,7 +471,7 @@ reduced vowels signaled by the short-vowel mark
 \thgloss{\ipatxt{kʰɛ̌ŋ}}{แข็ง} $\rightarrow$ transformed \thgloss{\ipatxt{ɛ}}{แ-ะ},
 \thgloss{\ipatxt{kɔ̀}}{ก็} $\rightarrow$ transformed \thgloss{\ipatxt{ɔ}}{เ-าะ}.
 The \thgloss{\emph{rO: h\v{a}n}}{รร} is evaluated once, yielding \textipa{Pam} in a
-\emph{kom class} context (e.g., \thgloss{\emph{t\super{h}am}}{ธรรม}) and \emph{a} 
+\emph{kom class} context (e.g., \thgloss{\emph{t\super{h}am}}{ธรรม}) and `\emph{a}' 
 elsewhere. The three pronunciations of \thgloss{\emph{r\'W}}{ฤ} and
 \thgloss{\emph{l\'W}}{ฦ} are classified from the original spelling
 \emph{before} \textipa{karun} stripping, so silent suffixes cannot hide them:
@@ -483,12 +482,12 @@ silent terminal vowel (e.g., \thgloss{\emph{ki\`a:t}}{เกียรติ},
 \thgloss{\emph{tC\super{h}\^a:t}}{ชาติ}, \thgloss{\emph{t\super{h}amm\'atC\super{h}\^a:t}}{ธรรมชาติ}) have it
 stripped, and an empty result falls back to the implied short \emph{a}.
 \texttt{check\_marttra} returns the Royal-Institute final-consonant class
-of a syllable, strictly by orthography. It resolves \textipa{karun} first, strips
-silent terminal vowels, then strips a silent \emph{r} in loanword
-clusters---always in \thgloss{\emph{tr}}{ตร} / \thgloss{\emph{chr}}{ชร} / \thgloss{\emph{pr}}{ปร} (e.g., \thgloss{\emph{but}}{บัตร},
+of a syllable, strictly by orthography. It resolves \textipa{karun} first and strips
+silent terminal vowels. It then strips a silent \emph{r} in loanword clusters
+This stripping always occurs in \thgloss{\emph{tr}}{ตร} / \thgloss{\emph{chr}}{ชร} / \thgloss{\emph{pr}}{ปร} (e.g., \thgloss{\emph{but}}{บัตร},
 \thgloss{\emph{ne:t}}{เนตร}, \thgloss{\emph{p\super{h}\'et}}{เพชร}) but in \thgloss{\emph{kr}}{กร}, \thgloss{\emph{kh-r}}{ขร}, 
-and \thgloss{\emph{th-r}}{ทร} only when the preceding vowel is short, so
-\thgloss{\emph{tC\`ak}}{จักร} loses its \emph{r} while
+and \thgloss{\emph{th-r}}{ทร} only when the preceding vowel is short.
+For example, \thgloss{\emph{tC\`ak}}{จักร} loses its `\emph{r}' while
 \thgloss{\emph{maNkO:n}}{มังกร} does not. Standalone characters
 (\thgloss{\emph{n\'a}}{ณ}, \thgloss{\emph{t\super{h}\'a}}{ธ},
 \thgloss{\emph{ph\'an\'a}}{พณ}, \thgloss{\emph{bO:}}{บ}) and the \textipa{s\`ar\`a k@:n} are classed as \emph{ka class}.
@@ -498,7 +497,7 @@ and \thgloss{\emph{a}}{-ะ}/\thgloss{\emph{am}}{-ำ} + \thgloss{\emph{kom} cla
 It returns true if and only if the normalized \textipa{sara} and
 \textipa{mattra} of the two syllables are equal.
 
-Two further mechanisms account for most of the improvement over the 5.0.1
+Two additional mechanisms account for most of the improvement over the 5.0.1
 baseline. \texttt{handle\_karun\_sound\_silence} strips characters silenced
 by the \textipa{karun}, no longer by a fixed truncation: it recognizes
 multi-letter silent suffixes such as \thgloss{\emph{p\super{h}r\'a l\'ak}}{พระลักษมณ์}
@@ -718,7 +717,7 @@ evaluated subset.
 \subsection{Augmentation: Precision, Recall, and F1}
 
 Table~\ref{tab:aug} summarizes the augmentation-only results (pooled per
-rule). Three results stand out.
+rule). Three key findings stand out.
 
 First, Model~B is a perfect oracle on the negatives: zero false positives
 across all 10{,}000 (100\% precision by construction). Its recall is
@@ -800,7 +799,7 @@ C & 85.3 & 78.7 & 266 & 90 & 3,107 & 2,702/267 \\
 % กับเรื่องคำเดี๋ยวกันแต่มันอ่านได้หลายแบบ (heteronyms?) แล้วก็พยางค์ด้วยว่าตอนเราออกเสียง
 % บางทีก็สามารถรวบคำให้มันลงสัมผัสได้ ซึ่ง dictionary overrides ตอนนี้เรา force ให้มันเป็นแบบเดียวกันหมด
 
-The experiment supports four findings. (1)~\textbf{The proposed rules are
+The experiments yield four main findings. (1)~\textbf{The proposed rules are
 precise.} B never false-accepts on oracle-verified negatives, and B,
 D\_w2p, and D\_ssg all exceed 99\% merged precision (A 93\%, C 91\%).
 (2)~\textbf{The override dictionary recovers the oracle's blind spots.}
