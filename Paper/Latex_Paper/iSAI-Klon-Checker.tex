@@ -831,8 +831,8 @@ augmentation-only tables.
 
 \subsection{Educational Impact}
 
-The verifier is deployed as an interactive web tool for Klon 4/8 teachers
-and students: it segments a poem into syllables, highlights rhyme
+The verifier is deployed as an interactive web tool for teachers
+and students studying Klon poetry: it segments the entered poem into syllables, highlights rhyme
 positions, spells out the \textipa{sara} and \textipa{mattra} of every syllable, and explains
 each error in terms of the four rhyme rules. The rule-based
 feedback is reproducible and hallucination-free. Future work includes
@@ -841,10 +841,9 @@ classroom evaluations and pronunciation guidance for irregular words.
 \subsection{Foundation for Generative AI}
 
 The same determinism makes the verifier a suitable reward signal for
-fine-tuning small, locally run LLMs: exact, immediate, and free of the
-noise of a learned reward model. It mirrors the RL step of the
+fine-tuning small, locally run LLMs. It mirrors the RL step of the
 KlonSuphap-LM pipeline~\cite{klonsuphap}, but with a grader (Model~B or~D)
-substantially more precise than the G2P-based grader used there (Model~C),
+substantially more precise and faster to run than the G2P-based grader used there (Model~C),
 particularly on vowel length. Fine-tuning a generator with this reward,
 scaling the override dictionary from a public gold-standard G2P corpus, and
 handling heteronyms and on-the-fly syllable merging are future work,
@@ -907,23 +906,27 @@ W.~Aroonmanakun, ``TLTK: Thai language toolkit,'' [Online]. Available:
 
 \bibitem{charoenpornsawat2006}
 P.~Charoenpornsawat and T.~Schultz, ``Example-based grapheme-to-phoneme
-conversion for Thai,'' in \emph{Proc. Interspeech}, 2006.
+conversion for Thai,'' in \emph{Proc. Interspeech}, 2006,
+doi: 10.21437/interspeech.2006-260.
 
 \bibitem{saychum2016}
 S.~Saychum, S.~Kongyoung, A.~Rugchatjaroen, P.~Chootrakool, S.~Kasuriya,
 and C.~Wutiwiwatchai, ``Efficient Thai grapheme-to-phoneme conversion using
-CRF-based joint sequence modeling,'' in \emph{Proc. Interspeech}, 2016.
+CRF-based joint sequence modeling,'' in \emph{Proc. Interspeech}, 2016,
+pp.~1462--1466, doi: 10.21437/interspeech.2016-621.
 
 \bibitem{rugchatjaroen2019}
 A.~Rugchatjaroen, S.~Saychum, S.~Kongyoung, P.~Chootrakool, S.~Kasuriya,
 and C.~Wutiwiwatchai, ``Efficient two-stage processing for joint sequence
 model-based Thai grapheme-to-phoneme conversion,'' \emph{Speech
-Communication}, 2019.
+Communication}, vol.~106, pp.~105--111, 2019,
+doi: 10.1016/j.specom.2018.12.003.
 
 \bibitem{suksanguan2021}
 P.~Suksanguan, S.~Waijanya, and N.~Promrit, ``The extraction of beautiful
 sound patterns from Sunthorn Phu's poem using machine learning technique
-and internal rhyme rule,'' 2021.
+and internal rhyme rule,'' \emph{Int. J. Adv. Intell. Inform.}, vol.~7,
+no.~2, pp.~198--210, 2021, doi: 10.26555/ijain.v7i2.613.
 
 \bibitem{klonsuphap}
 K.~Yingyingseree, ``KlonSuphap-LM: GPT-2 for Thai Klon-Paed,'' Hugging
