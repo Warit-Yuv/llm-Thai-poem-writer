@@ -139,8 +139,8 @@
 
 % \author{\IEEEauthorblockN{Warit Yuvaniyama\orcidlink{0009-0007-1630-4286}, Athit Phinyachok\orcidlink{0009-0000-3783-8104}, Gunn Sanguankittipun\orcidlink{0009-0005-8812-4992}, Leo Colombo\orcidlink{0009-0004-9133-5398}, and Prachya Boonkwan\orcidlink{0000-0003-1405-1071}}
 %     \IEEEauthorblockA{
-%         \textit{School of Information, Computer and Communication Technology} \\
-%         \textit{Sirindhorn International Institute of Technology, Thammasat University}\\
+%         % \textit{School of Information, Computer and Communication Technology} \\
+%         \textit{School of ICT, Sirindhorn International Institute of Technology, Thammasat University}\\
 %         Pathum Thani 12120, Thailand \\
 %         % ORCID: \{ 0009-0007-1630-4286, 0009-0000-3783-8104, 0009-0005-8812-4992, 0009-0004-9133-5398, 0000-0003-1405-1071 \}
 %         % Email: \{ 6622770459@g.siit.tu.ac.th, 6622780474@g.siit.tu.ac.th, 6622780136@g.siit.tu.ac.th,\\ 6622780540@g.siit.tu.ac.th, prachya@siit.tu.ac.th \}
@@ -410,7 +410,7 @@ enforces structural constraints at inference time~\cite{geng2023}.
 
 \subsection{Positioning of This Work}
 
-Compared with this landscape, our contribution is the first systematic,
+Our contribution is the first systematic,
 adversarially augmented evaluation of Thai rhyme \emph{verification} as
 opposed to \emph{generation}: Model~A has never been stress-tested against
 curated edge cases, the G2P-based grader (Model~C) has not been validated
@@ -486,7 +486,7 @@ elsewhere. The three pronunciations of \thgloss{\emph{r\'W}}{ฤ} and
 (iii) \thgloss{\emph{r\'Wdu:}}{ฤดู - รึ.ดู}. Pali/Sanskrit words with a
 silent terminal vowel (e.g., \thgloss{\emph{ki\`a:t}}{เกียรติ},
 \thgloss{\emph{tC\super{h}\^a:t}}{ชาติ}, \thgloss{\emph{t\super{h}amm\'atC\super{h}\^a:t}}{ธรรมชาติ}) have it
-stripped, and an empty result falls back to the implied short \emph{a}.
+stripped, and an empty result falls back to the implied short `\emph{a}'.
 \texttt{check\_marttra} returns the Royal-Institute final-consonant class
 of a syllable, strictly by orthography. It resolves \textipa{karun} first and strips
 silent terminal vowels. It then strips a silent \emph{r} in loanword clusters.
@@ -691,7 +691,7 @@ charged a false negative---``the oracle that is wrong loses points.''
 We report precision, recall, and F1 with Wilson 95\% confidence intervals,
 coverage, and a conservative drop-as-fail variant for Model~C. Because
 every augmentation instance is standalone and tests exactly one rule, the
-per-rule prediction is the clean metric; a stanza-level aggregate over the
+per-rule prediction is the clean metric; a whole-stanza aggregate over the
 augmentation is only well-defined for Model~B (the oracle). Model~A has no
 $R_3$ and is reported as N/A there. All checkers were instrumented from
 verbatim vendored sources (the 5.0.1 and 6.0 cores), with Model~C run
@@ -701,14 +701,14 @@ in under a minute).
 
 \subsection{Gold-Corpus Recall}
 
-Table~\ref{tab:gold} reports stanza-level and per-rule recall over the
+Table~\ref{tab:gold} reports whole-stanza and per-rule recall over the
 36{,}475 gold stanzas. The proposed family dominates: D\_ssg reaches
 88.5\% stanza recall and B 87.5\%, versus 73.4\% for Model~A. Model~C
 reaches 84.8\% but evaluates only 95.7\% of the corpus (TLTK failures
 concentrate in the archaic \emph{\textipa{k\super{h}\v{u}n tC\super{h}\'a:N k\super{h}\v{u}n p\super{h}\v{E}:n}}).
 
 \begin{table}[t]
-\caption{Gold recall (stanza level and per rule), 36{,}475 stanzas.}
+\caption{Gold recall (whole-stanza and per-rule), 36{,}475 stanzas.}
 \label{tab:gold}
 \centering
 \footnotesize
