@@ -148,7 +148,7 @@
 %     }
 % }
 %% For double-anonymous review, comment out the above author block and uncomment the following line:
-\author{\IEEEauthorblockN{Ommited for double-anonymous review}}
+\author{\IEEEauthorblockN{Omitted for double-anonymous review}}
 
 \maketitle
 
@@ -161,8 +161,8 @@ automatic rhyme verification is non-trivial: neither classical rule-based
 checkers nor G2P-romanization checkers handle the resulting edge cases
 reliably. We present a hybrid rule-based verification approach: first, we
 improve the KhaveeVerifier algorithm---vowel analysis,
-final-consonant-class analysis, the rhyme test, \textipa{karun} silencing, and
-true-final detection---and merge it into PyThaiNLP main (Model~B); second,
+final-consonant class analysis, the rhyme test, \textipa{karun} silencing, and
+true-final detection---and merge it into PyThaiNLP main (Model~B). Second,
 we introduce Klon8Checker (Model~D), which augments these rules with a
 gold-standard G2P override dictionary of over 4{,}000 entries and a
 fallback segmenter, recovering phonetic blind spots of the base oracle. We evaluate
@@ -181,6 +181,9 @@ Klon-Paed generation.
 Thai NLP, Thai poetry, Klon-Paed, rhyme verification, rule-based systems,
 grapheme-to-phoneme, reinforcement learning, educational technology
 \end{IEEEkeywords}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \section{Introduction}
 
@@ -251,6 +254,9 @@ per-rule and per-operator error analyses.
 tool plus a deterministic reward signal for RL-based Klon-Paed generation.
 \end{itemize}
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
 \section{Background and Related Work}
 \label{sec:bg}
 
@@ -270,17 +276,17 @@ semivowel \ipatxt{j} and \ipatxt{w}). The four waks are called the
 \thgloss{s\`ad\`ap}{สดับ},
 \thgloss{r\'ap}{รับ}, \thgloss{rO:ng}{รอง}, and
 \thgloss{s\`ong}{ส่ง} respectively. Four canonical rhyme rules are checked in this work,
-following the \emph{klon} rhyme scheme and the implementation of the improved \texttt{KhaveeVerifier}:
+following the \emph{klon} rhyme scheme and the implementation of the improved \texttt{KhaveeVerifier}.
+In rules $R_1$ and $R_3$, the target may be any of the first five syllables of the target
+wak, with syllables 3 and 5 as the preferred positions and syllables 1, 2, and 4 as
+permissible variants:
 \begin{itemize}
 \item $R_1$ (\textipa{s\`ad\`ap} $\rightarrow$ \textipa{r\'ap}): the final syllable of
-wak~1 must rhyme with one of the first five syllables of wak~2 (syllables
-3 and 5 are obligatory, 1, 2, and 4 are permissible);
-% Change made Here in IPA (pls check)
+wak~1 must rhyme with one of the first five syllables of wak~2;
 \item $R_2$ (\textipa{r\'ap} $\rightarrow$ \textipa{rO:ng}): the final syllable of
 wak~2 must rhyme with the final syllable of wak~3;
 \item $R_3$ (\textipa{rO:ng} $\rightarrow$ \textipa{s\`ong}): the final syllable of
-wak~3 must rhyme with one of the first five syllables of wak~4 (syllables
-3 and 5 are obligatory, 1, 2, and 4 are permissible);
+wak~3 must rhyme with one of the first five syllables of wak~4;
 \item $R_X$ (inter-stanza): the final syllable of wak~4 of the previous
 stanza rhymes with the final syllable of wak~2 of the current stanza.
 \end{itemize}
@@ -415,6 +421,9 @@ improved rule-based verification (Model~B), a dictionary-enhanced variant
 novel \emph{oracle-blind} probe that holds the verifier accountable
 for rhymes its oracle cannot see.
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
 \section{Methodology: Hybrid Verification Architecture}
 
 \subsection{Core Rule-Based Verification (Model B)}
@@ -535,7 +544,7 @@ Together they raise per-rule gold recall from 86--89\% to 95--97\%
 \midrule
 Segmentation & dict subword $\rightarrow$ SSG syllable segmentation \\
 \textipa{Karun} (\textipa{t\super{h}ant\super{h}\'ak\super{h}\^a:t}) & ignored $\rightarrow$ silenced (\emph{ohm}$\rightarrow$\emph{o}) \\
-True finals y/l/w & naive $\rightarrow$ cluster-aware (\emph{thai}, \emph{klai}$\rightarrow$mae ka) \\
+True finals y/l/w & naive $\rightarrow$ cluster-aware (\emph{thai}, \emph{klai}$\rightarrow$\emph{ka class}) \\
 Special-vowel norm. & one-sided $\rightarrow$ both-sided (\emph{cam}$\sim$\emph{kam}) \\
 Compound/reduced vowels & misread $\rightarrow$ compound-vowel classifier,
 short-vowel mark, and \emph{ua} diphthong (\emph{cet}$\rightarrow$short \emph{e};
@@ -597,6 +606,9 @@ and (ii)~a \textipa{mattra} comparison that ignores the final consonant,
 both inflating recall at the cost of precision; TLTK failures reduce
 coverage.
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
 \section{Dataset Construction and Augmentation}
 
 \subsection{Gold-Standard Corpus Compilation}
@@ -645,7 +657,7 @@ normalization \thpar{\emph{s\`ar\`a pli\`an.r\^u:p/l\'ot.r\^up}}{สระเป
 true-final cases; all are oracle-confirmed rhymes. A further 423
 \emph{oracle-blind} positives are genuine rhymes the oracle labels as
 non-rhymes: the silent-\emph{r} \thgloss{\emph{p\super{h}\'et}}{เพชร} (true
-\textipa{\emph{e:}}+\textipa{k\`ot}, which the oracle reads with the long \emph{ae} because the
+\textipa{\emph{e}}+\emph{kot class}, which the oracle reads with the long \textipa{e:} because the
 dead final carries no short-vowel mark), and the first-sara words
 \thgloss{\emph{s\`attru:}}{ศัตรู}, \thgloss{\emph{k\`as\`attri:}}{กษัตรี}, and
 \thgloss{\emph{k\`as\`attri:}}{กษัตรีย์} (SSG keeps each as one token, so
@@ -653,6 +665,9 @@ dead final carries no short-vowel mark), and the first-sara words
 is the \emph{linguistic} truth, not the oracle verdict: a checker that
 hears the real rhyme receives credit, while the oracle itself (Model~B) is
 charged a false negative---``the oracle that is wrong loses points.''
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \section{Evaluation and Results}
 \label{sec:results}
@@ -809,6 +824,9 @@ favors D\_ssg (93.6\%), D\_w2p (93.0\%), and B (93.0\%), with C (87.8\%)
 and A (82.0\%) behind. The discriminating precision lives in the
 augmentation-only tables.
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
 \section{Applications and Future Work}
 
 \subsection{Educational Impact}
@@ -831,6 +849,9 @@ particularly on vowel length. Fine-tuning a generator with this reward,
 scaling the override dictionary from a public gold-standard G2P corpus, and
 handling heteronyms and on-the-fly syllable merging are future work,
 alongside decoding-time constrained sampling~\cite{geng2023}.
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \section{Conclusion}
 
