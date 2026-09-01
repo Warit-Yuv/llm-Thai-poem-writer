@@ -218,7 +218,7 @@ hallucination-free feedback: an LLM that invents an incorrect rhyme should
 not be used in a classroom. In \emph{NLP research}, training a language
 model to compose Klon-Paed, e.g.\ via reinforcement learning (RL),
 requires a programmatic reward that scores rhyme correctness. Because
-LLMs are probabilistic, they are unreliable at strict constraints such as
+LLMs are probabilistic, they are unreliable when handling strict constraints such as
 syllable counts and rhymes, which a rule-based verifier supplies
 deterministically.
 
@@ -229,7 +229,7 @@ subword tokenization, omits one canonical rhyme rule, and reaches only
 73.4\% recall on our gold corpus. G2P romanization-based checkers, such as the
 \texttt{word\_check} grader of KlonSuphap-LM~\cite{klonsuphap} (Model~C),
 collapse long/short vowel distinctions and produce thousands of false
-positives on adversarial negatives. In this paper we
+positives on adversarial negatives. In this paper, we
 address these limitations with a hybrid rule-based approach and a
 rigorous, adversarial evaluation. Our contributions are:
 
@@ -428,8 +428,8 @@ for rhymes its oracle cannot see.
 
 \subsection{Core Rule-Based Verification (Model B)}
 
-Model~B is the \texttt{KhaveeVerifier} merged into PyThaiNLP main, to ship in 6.0. It verifies a
-poem in three stages. (1)~Each wak is tokenized directly into syllables
+Model~B is the \texttt{KhaveeVerifier} merged into PyThaiNLP main and scheduled to ship in 6.0.
+It verifies a poem in three stages. (1)~Each wak is tokenized directly into syllables
 with the SSG CRF segmenter, applied to the wak text itself without word
 pre-segmentation. (2)~For each rhyme rule the relevant syllables are
 extracted: the final syllable of every wak and the first five syllables of
