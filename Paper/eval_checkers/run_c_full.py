@@ -103,22 +103,32 @@ class _PersistentWorker:
 
     def score(self, units):
         """Send ``units`` (list of (id, [w1..w8])) and return results in order."""
+        return list(self.score_iter(units))
+
+    def score_iter(self, units):
+        """Send ``units`` and YIELD each result as it arrives (streaming).
+
+        Lets the caller checkpoint partial progress: a crash mid-batch keeps
+        every unit already yielded. Results come back in the worker's
+        completion order, not input order — callers that need order must
+        re-key by ``id``.
+        """
         payload = "\n".join(
             json.dumps({"id": i, "waks": w}, ensure_ascii=False) for i, w in units
         )
         self._proc.stdin.write(payload + "\n")
         self._proc.stdin.flush()
-        results = []
-        while len(results) < len(units):
+        got = 0
+        while got < len(units):
             try:
-                results.append(self._q.get(timeout=60))
+                yield self._q.get(timeout=60)
+                got += 1
             except queue.Empty:
                 if self._proc.poll() is not None:
                     raise RuntimeError(
                         f"Kongfha worker [{self._label}] died:\n"
                         + "".join(self._err[-3000:])
                     )
-        return results
 
     def close(self):
         try:
@@ -131,16 +141,28 @@ class _PersistentWorker:
             self._proc.kill()
 
 
-def process_chunk(pw, units, k, chunk_size=CH):
-    """Score one chunk with a persistent worker, checkpoint it."""
+def process_chunk(pw, units, k, chunk_size=CH, progress=None):
+    """Score one chunk with a persistent worker, checkpoint it.
+
+    Results are streamed to ``chunk_<k>.jsonl.partial`` as they arrive (one
+    JSON object per line), so a crash mid-chunk keeps the units already scored.
+    On success the partial file is atomically renamed to ``chunk_<k>.jsonl``.
+    ``progress`` (if given) is called with the running count for a live bar.
+    """
     batch = units[k * chunk_size:(k + 1) * chunk_size]
     t = time.time()
-    res = pw.score(batch)
-    dt = time.time() - t
     fp = os.path.join(CHECK_DIR, f"chunk_{k:03d}.jsonl")
-    with open(fp, "w", encoding="utf-8") as f:
-        for r in res:
+    part = fp + ".partial"
+    res = []
+    with open(part, "w", encoding="utf-8") as f:
+        for r in pw.score_iter(batch):
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
+            f.flush()
+            res.append(r)
+            if progress is not None:
+                progress(len(res), len(batch))
+    dt = time.time() - t
+    os.replace(part, fp)                 # atomic: only a COMPLETE chunk lands
     we = sum(1 for r in res if (r.get("fail") or "").startswith("WorkerError"))
     return k, len(res), dt, we
 
@@ -244,6 +266,26 @@ def main() -> None:
 
     _completed = [0]
     lock = threading.Lock()
+    # Live progress: total units scored across all workers, updated as each
+    # unit streams back. Printed on one carriage-return line so it does not
+    # scroll; a final newline is emitted when the run ends.
+    _prog = {"units": 0, "total": len(units)}
+    _prog_lock = threading.Lock()
+
+    def _tick(n):
+        with _prog_lock:
+            _prog["units"] += n
+            u, tot = _prog["units"], _prog["total"]
+        el = time.time() - t0
+        rate = u / el if el else 0
+        eta = (tot - u) / rate if rate else 0
+        bar_w = 30
+        filled = int(bar_w * u / tot) if tot else 0
+        bar = "#" * filled + "-" * (bar_w - filled)
+        sys.stdout.write(
+            f"\r  [{bar}] {u}/{tot} units  {rate:.0f} u/s  "
+            f"elapsed={el:.0f}s  ETA={eta:.0f}s   ")
+        sys.stdout.flush()
 
     def worker_loop(wid):
         pw = _PersistentWorker(C._python, C._worker, label=f"w{wid}")
@@ -253,13 +295,14 @@ def main() -> None:
             except queue.Empty:
                 break
             try:
-                kk, n, dt, we = process_chunk(pw, units, k)
+                kk, n, dt, we = process_chunk(pw, units, k, progress=_tick)
             except Exception as e:
                 pw.close()
                 raise RuntimeError(f"worker {wid} failed on chunk {k}: {e}")
             with lock:
                 _completed[0] += 1
                 seq = _completed[0]
+            sys.stdout.write("\r" + " " * 90 + "\r")   # clear the progress line
             print(f"[{done + seq}/{nchunks}] chunk {kk:03d} (w{wid}): {n} units "
                   f"in {dt:.1f}s ({n / dt:.0f} u/s) WE={we}  "
                   f"elapsed={time.time() - t0:.0f}s", flush=True)
@@ -273,6 +316,8 @@ def main() -> None:
         threads.append(t)
     for t in threads:
         t.join()
+    sys.stdout.write("\r" + " " * 90 + "\r")       # clear the progress line
+    sys.stdout.flush()
 
     if not pending:
         print("no pending chunks; all already completed.", flush=True)
