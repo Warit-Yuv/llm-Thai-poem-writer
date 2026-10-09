@@ -1,7 +1,9 @@
 .venv/
+.venv312/
 __pycache__/
 .claude/
 test2.*
+tmp_*.txt
 # cloned third-party reference (KlonSuphap-LM for Checker C) -- kept local;
 # see PROGRESS.md Session 3 / paper reproducibility section
 third_party/

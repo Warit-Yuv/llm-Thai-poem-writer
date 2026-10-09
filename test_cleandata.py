@@ -241,6 +241,49 @@ def test_empty_source_writes_nothing():
         assert os.listdir(td) == ["blank.txt"], os.listdir(td)
 
 
+def test_eval_gap_map_excludes_and_retiles():
+    """A transcription gap (present half of an incomplete บท) is EXCLUDED from
+    tiling so the surrounding complete บท re-align; the source text is never
+    edited. Excluding วรรค 3 of 8 leaves 7 — not a multiple of 4 — so the map
+    must be rejected, not silently shift every later row."""
+    with tempfile.TemporaryDirectory() as td:
+        C.EVAL_DIR = td
+        gaps = os.path.join(td, "gaps.json")
+        C.GAPS_JSON = gaps
+        p = os.path.join(td, "phraAphai_9.txt")
+        waks = [f"วรรค{i}" for i in range(1, 11)]       # 10 วรรค
+        with open(p, "w", encoding="utf-8") as fh:
+            fh.write("๏ " + "\t".join(waks))
+
+        # No gap file -> 10 วรรค leave a 2-วรรค tail (not a multiple of 4).
+        s = C.write_eval(p)
+        assert s["bot_kept"] == 2 and s["tail_dropped"] == 2, s
+        assert s["gap_skipped"] == 0, s
+
+        # Exclude วรรค 3,4 (a present-half pair): 8 remain -> 2 rows, and the
+        # rows are [1,2,5,6] and [7,8,9,10] — the gap pair is gone, neighbours
+        # re-tiled, and the tail is absorbed.
+        with open(gaps, "w", encoding="utf-8") as fh:
+            fh.write('{"phraAphai_9": [[3, 4]]}')
+        s = C.write_eval(p)
+        assert s["bot_kept"] == 2 and s["gap_skipped"] == 2, s
+        assert s["tail_dropped"] == 0, s
+        rows = _read(s["eval"])
+        assert [rows[0][k] for k in ("w1", "w2", "w3", "w4")] == \
+            [waks[0], waks[1], waks[4], waks[5]], rows
+        assert [rows[1][k] for k in ("w1", "w2", "w3", "w4")] == waks[6:10], rows
+
+        # A gap that leaves a non-multiple-of-4 must assert, not corrupt.
+        with open(gaps, "w", encoding="utf-8") as fh:
+            fh.write('{"phraAphai_9": [[3, 3]]}')
+        try:
+            C.write_eval(p)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError("non-multiple-of-4 gap was not rejected")
+
+
 def _write_attention(path, rows):
     with open(path, "w", encoding="utf-8-sig", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))

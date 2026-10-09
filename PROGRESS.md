@@ -1043,3 +1043,100 @@ deferred by the author.
 - Confirm notebook structure (see Session 3 notes / author review): core logic
   stays in `.py`; report notebook drives it with verification blocks — OK, or
   add a separate interactive dev notebook?
+
+## Session 11 — Raw Dataset audit: บท/วรรค counting + 3 transcription gaps (2026-10-09)
+
+### New audit tools (repo root, uncommitted)
+- `count_raw_dataset.py` — counts บท/วรรค per raw file with the project's own rules
+  (วรรค = tab/newline-separated Thai run; ๏ acts must hold 4k or 4k+3 วรรค), flags acts
+  failing the checksum, cross-checks every file against its `Results/Evaluate` row count.
+  Flags: `--file` (per-act detail), `--dump STEM LO HI` (raw tab layout of any region).
+- `check_boundaries.py` — 5.3.5 `KhaveeVerifier` probes of candidate บท tilings at the
+  anomalous sites (3-บท windows so สัมผัสระหว่างบท is included). Gotcha: `is_sumpus`
+  on whole วรรค is invalid (`check_sara` reads only sara[0]) — compare last syllables
+  (ssg) or use `check_klon` on space-separated waks (4 per stanza).
+
+### Raw counts (before any cut)
+191 files · 145,914 วรรค · 36,457 บท by the act rule (36,453 × 4-วรรค + 4 × 3-วรรค
+openers: khobut_1, phraAphai_1, phukaoTong_1, SuphasaetSonYing_1 — KCKP has none, as the
+author expected). No mid-chapter 3-วรรค stanza exists anywhere (7,234 ๏ acts checksummed).
+Eval: 36,475 rows / 145,900 วรรค; reconciliation: 145,914 = 145,900 + 12 (4 openers × 3)
++ 2 (phraAphai_22's eval-dropped tail).
+
+### 5 ๏ acts fail the 4k/4k+3 checksum → 3 transcription gaps + 1 decoration artifact
+| file | act (วรรค) | n | diagnosis |
+|---|---|---|---|
+| phraAphai_22 | 27 (501–530) | 30 | the couplet บ้างเขียวขาววาวแววแก้ววิเชียร / ตะโล่งเลี่ยนเลื่องเหลืองเรืองระยับ appears once; the region rhymes only if it appears twice (as บท 5's tail AND บท 6's head). **Author decision (web-verified 2026-10-09): keep the text as-is — re-inserting the couplet would fabricate data and misrepresent the source.** บท [517,518 + 2 missing] stays incomplete. |
+| phraAphai_31 | 8 (173–182) | 10 | same repeated-couplet signature: บท [X,Y,177,178] missing its first half (its w2 must rhyme with ใจ; the downstream rX ใด~ไข้ holds ✓). Treatment proposed = same as _22 (pending one author confirmation). |
+| phraAphai_31 | 43 (875–892) | 18 | same: บท [X2,Y2,891,892] (rX ใด~ไข้ ✓). |
+| phraAphai_80 | 25–26 (365–396) | 10+22 | nothing missing — ฯ@374 + ๏@375 sit mid-บท [373–376]; 5.3.5 confirms the sequential eval rows there are correct ("The poem is correct"). Cosmetic only. |
+
+Checker probes: the author-grouped stanzas score "The poem is correct according to the
+principle"; the eval's sequential rows inside the gap windows fail r2/rX (e.g. _22
+[521–524]: พร้อม~กุฏิ์ r2 ✗ and the author-confirmed ยับ~พร้อม rX ✗).
+
+### Impact if the eval stays as-is
+~275 eval rows (0.75%; _22 rows 130–225, _31 rows 45–223) sit on วรรค boundaries shifted
+by the gaps, 3 true บท are absent from the eval, and _22's final 2 วรรค are dropped by
+`write_eval`. Proposed (author-gated): a declarative gap map
+(`Dataset/transcription_gaps.json`) consumed by `write_eval` + `count_raw_dataset` →
+exclude the 3 present-half pairs ([517,518], [177,178], [891,892]), re-tile → _22 225
+rows (membership corrected to the author grouping), _31 289, grand 36,474; 3 artificial
+rX misses appear at the gap seams (a property of the gap, not a checker error). The
+augmentation is unaffected (standalone instances). Full plan: **`HANDOFF.md`**.
+
+### Session 11b — Eval gap patch implemented + metric refresh (2026-10-09)
+
+**Author approval (2026-10-09):** "Yes, you may patch the eval rows around the 3 gap
+sites. If you want to exclude the 6 present-half waks ([517,518] / [177,178] / [891,892]),
+make sure neighbor rows are not affected. Also make sure rX is correct and not shift, so
+the gold is preserved. And then re-run the metric sequence. Make sure to document this
+change in the PROGRESS.md and update any relevant metrics or tables accordingly."
+
+**Step 2 — eval gap patch (done).**
+- New `Dataset/transcription_gaps.json`: `{"phraAphai_22": [[517,518]],
+  "phraAphai_31": [[177,178],[891,892]]}` (1-based วรรค ranges to EXCLUDE from tiling;
+  `_`-prefixed keys are comments).
+- `CleanData.write_eval` reads it via `_load_gaps()` (keyed by stem), drops the excluded
+  วรรค from the index list BEFORE grouping, and asserts the remainder tiles exactly by 4
+  (only when a gap map is present — the old tail-drop behaviour is preserved otherwise).
+  Returns `gap_skipped` in its stats; `--eval` prints it.
+- `count_raw_dataset.py` consumes the same JSON in its eval-row prediction (else the
+  patched files would report MISMATCH).
+- `test_cleandata.py`: new `test_eval_gap_map_excludes_and_retiles` (exclusion + re-tile +
+  non-multiple-of-4 rejection). All self-checks pass.
+- Regenerated: **_22 = 225 rows** (re-tiled from row 130: `[519-522][523-526]…`),
+  **_31 = 289 rows** (was 290). Grand total **36,474**; `count_raw_dataset.py` reports
+  both files `ok` (eval rows == prediction).
+
+**rX preservation (author's explicit concern) — verified with the 5.3.5 oracle.**
+- The 3 predicted seam misses appear exactly: `เดียร~ยับ` (_22 row 129→130),
+  `ใจ~สอง` (_31 row 44→45), `นอน~ไข้` (_31 row 222→223).
+- The patch also **eliminated the rX cascade** the shifted tiling had caused: pre-patch
+  _22 had ~95 consecutive rX misses (rows 130–225) and _31 had a cascade from row 44;
+  post-patch only the 3 seam misses + pre-existing text quirks remain. Neighbour rows are
+  unaffected (verified by dumping the seam rows).
+- Pre-existing text-level rX quirks (unchanged by the patch): _22 `ดิน~ศีล`,
+  `บุตรี~ษี`, `ตรี~รัศมี`; _31 `ไฟ~พิสมัย` (×2), `การ~ณฑ์`.
+
+**Step 3 — metric refresh.**
+- A/B/D gold re-consolidated (`consolidate_results.py --skip-c`): B 88.1%, D_w2p 88.1%,
+  D_ssg 89.2%, A 74.0% (n=36,474 for B/D; A n=36,429). Cross-chapter rX: phraAphai
+  130/131 (1 non-rhyming).
+- **Checker C env fix:** the global Python 3.12 (`KONGFHA_PYTHON` default) had a broken
+  numpy 2.5.2 / scipy 1.12.0 pair (`numpy.dtype size changed`), so `import tltk` failed
+  and all C workers died with `BrokenPipeError`. Created a dedicated **`.venv312`**
+  (Python 3.12) with `tltk` + `pandas` + `requests` + upgraded `scikit-learn`/`scipy`
+  (numpy 2.5.3 / scipy 1.18.1 / sklearn 1.9.1). Point `KONGFHA_PYTHON` at
+  `.venv312\Scripts\python.exe` for Checker C. (tltk has no 3.14 wheel — the project venv
+  can't run it.)
+- C chunks were stale (aligned to the old unit list, 36,284 units → now 36,283), so they
+  were cleared and re-scored in full. Backups of the pre-patch CSVs, gold JSON, and C
+  chunks are in `backups/eval_pre_gap_patch/`.
+
+**Corpus counts (paper-facing):** stanzas 36,475 → **36,474**; waks 145,900 → **145,896**;
+gold rhyme checks 145,709 → **145,705** (phraAphai 24,342→24,341 stanzas, 97,368→97,364
+waks, 97,236→97,232 checks). Paper updated: abstract, contributions bullet, dataset
+paragraph (now documents the 3 source-verified incomplete บท), and Table~\ref{tab:gold}
+caption. Gold-side recall numbers tick up slightly (the ~275 systematically-broken rows
+become valid); augment-only tables unchanged.

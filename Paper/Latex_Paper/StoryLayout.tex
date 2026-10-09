@@ -56,7 +56,7 @@ https://orcid.org/0000-0003-1405-1071*}
 % 1. Context/Problem: LLMs struggle to generate Thai poetry (Klon-8) due to strict phonetic, rhyme, and meter constraints. Educators also lack reliable automated tools.
 % 2. Gap: Existing rule-based and G2P checkers suffer from low recall, false positives on vowel lengths, and blind spots with complex Thai morphology.
 % 3. Solution: We propose an improved hybrid rule-based verification algorithm integrated into PyThaiNLP 5.3.5, alongside a G2P-override variant (Klonpad).
-% 4. Evaluation: Evaluated on a massive gold-standard dataset of 36,475 classical stanzas (145,709 rhyme checks) with targeted data augmentation for edge cases.
+% 4. Evaluation: Evaluated on a massive gold-standard dataset of 36,474 classical stanzas (145,705 rhyme checks) with targeted data augmentation for edge cases.
 % 5. Impact: The model achieves 88.5\% gold recall and near 100\% precision on curated negatives, serving as both an educational web tool and a deterministic reward model for RLHF in LLM training.
 \end{abstract}
 
@@ -78,7 +78,7 @@ Thai NLP, Poetry Generation, Rule-based Verification, Natural Language Processin
     \item \textbf{Contributions:} 
         \begin{itemize}
             \item Improved core verification algorithms (\texttt{check\_sara}, \texttt{check\_marttra}, \texttt{is\_sumpus}).
-            \item Creation of a 36,475-stanza gold-standard evaluation dataset.
+            \item Creation of a 36,474-stanza gold-standard evaluation dataset.
             \item Integration into PyThaiNLP 5.3.5 and an open-source Hugging Face educational application.
         \end{itemize}
 \end{itemize}
@@ -122,7 +122,7 @@ Thai NLP, Poetry Generation, Rule-based Verification, Natural Language Processin
 \subsection{Gold-Standard Corpus Compilation}
 \begin{itemize}
     \item Data sourced from vajirayana.org (Khun Chang Khun Phaen, Phra Aphai Mani, etc.).
-    \item Cleaning pipeline resulting in 191 files, 36,475 stanzas, and 145,709 total rhyme checks.
+    \item Cleaning pipeline resulting in 191 files, 36,474 stanzas, and 145,705 total rhyme checks.
     \item Highlight the data-completeness fix (retaining $\geq 10$ syllable waks) that restored inter-stanza (rX) chains.
 \end{itemize}
 

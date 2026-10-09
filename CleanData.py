@@ -409,6 +409,25 @@ ATTENTION_DIR = os.path.join(_ROOT, "Results", "Export", "not_ok")
 # training code's job, and it must not draw eval ตอน from Export/ok.
 EVAL_DIR = os.path.join(_ROOT, "Results", "Evaluate")
 
+# Transcription gaps: 1-based วรรค ranges that are the PRESENT half of an
+# incomplete บท whose other half is genuinely absent from the source (author-
+# verified 2026-10-09). write_eval excludes them from tiling so the remaining
+# complete บท align with the author's grouping; the source .txt is never edited.
+# Keyed by stem. See Dataset/transcription_gaps.json and PROGRESS.md Session 11.
+GAPS_JSON = os.path.join(_ROOT, "Dataset", "transcription_gaps.json")
+
+
+def _load_gaps(path=None):
+    """{stem: [(lo, hi), ...]} of 1-based วรรค ranges to EXCLUDE from eval
+    tiling. Missing file -> {} (no gaps). Keys starting with '_' are comments."""
+    path = path or GAPS_JSON
+    if not os.path.exists(path):
+        return {}
+    with open(path, encoding="utf-8") as fh:
+        raw = json.load(fh)
+    return {k: [tuple(r) for r in v] for k, v in raw.items()
+            if not k.startswith("_")}
+
 
 def _out_paths(path):
     """(export_csv, attention_csv) for a source ตอน, routed to the Results/
@@ -539,7 +558,15 @@ def write_eval(path):
 
     ๏ acts are also ignored here: บท are grouped consecutively from the opener
     offset, so an act failing the x4 checksum no longer deletes its whole
-    stretch. Anything structurally wrong stays visible in Export/not_ok."""
+    stretch. Anything structurally wrong stays visible in Export/not_ok.
+
+    Transcription gaps (Dataset/transcription_gaps.json): a few วรรค are the
+    present half of an incomplete บท whose other half is absent from the source
+    (author-verified). Those วรรค are EXCLUDED from tiling so the surrounding
+    complete บท re-align with the author's grouping; the source .txt is never
+    edited. Excluding a วรรค shifts every later row's membership, so the gap
+    ranges are applied to the วรรค index list BEFORE grouping, and the remainder
+    must still tile exactly by 4 (asserted)."""
     with open(path, encoding="utf-8") as fh:
         results, _, sections = scan_ton(fh.read())
     # One subfolder per work so Evaluate stays navigable — 191 flat files across
@@ -556,17 +583,35 @@ def write_eval(path):
     # the FIRST ๏ act only — a later act with 4k+3 วรรค means a วรรค went
     # missing there, and skipping 3 more would compound the damage, not fix it.
     opener = 3 if sections and sections[0][1] % 4 == 3 else 0
+
+    # Drop the present halves of incomplete บท (1-based วรรค ranges). Applied to
+    # the index list so the remaining วรรค re-tile from the opener offset.
+    gaps = _load_gaps().get(stem, [])
+    excluded = set()
+    for lo, hi in gaps:
+        excluded.update(range(lo, hi + 1))
+    idx = [i for i in range(opener, len(results)) if (i + 1) not in excluded]
+    gap_skipped = len(results) - opener - len(idx)
+    # When a gap map is applied the remainder MUST tile exactly by 4 — a range
+    # that does not leave a multiple of 4 would silently shift every later บท
+    # boundary. (Without gaps the old tail-drop behaviour is preserved.)
+    if gaps:
+        assert len(idx) % 4 == 0, (
+            f"{stem}: {len(idx)} วรรค after excluding gaps {gaps} is not a "
+            f"multiple of 4 — check Dataset/transcription_gaps.json")
+
     kept = 0
     with open(out, "w", encoding="utf-8-sig", newline="") as fh:
         w = csv.writer(fh)
         w.writerow(["w1", "w2", "w3", "w4"])
-        for i in range(opener, len(results) - 3, 4):
-            w.writerow([results[j]["wak"] for j in range(i, i + 4)])
+        for k in range(0, len(idx) - 3, 4):          # full 4-วรรค rows only
+            w.writerow([results[j]["wak"] for j in idx[k:k + 4]])
             kept += 1
     # วรรค left over at the end cannot fill a row; report rather than hide them.
-    tail = len(results) - opener - kept * 4
+    tail = len(idx) - kept * 4
     return {"eval": out, "bot_kept": kept, "bot_blocked": 0,
-            "opener_cut": opener, "tail_dropped": tail, "sections_skipped": 0}
+            "opener_cut": opener, "tail_dropped": tail, "sections_skipped": 0,
+            "gap_skipped": gap_skipped}
 
 
 def import_attention(path):
@@ -673,6 +718,9 @@ if __name__ == "__main__":
             s = write_eval(path)
             print(f"eval:       {s['bot_kept']} บท (1 per row, columns w1..w4) -> {s['eval']}")
             print(f"opener cut: {s['opener_cut']} วรรค (3-วรรค วรรครับ บท at the start)")
+            if s.get("gap_skipped"):
+                print(f"gap skipped: {s['gap_skipped']} วรรค (present halves of incomplete บท, "
+                      f"Dataset/transcription_gaps.json)")
             if s["tail_dropped"]:
                 print(f"tail:       {s['tail_dropped']} วรรค left over — cannot fill a 4-วรรค row")
             print("NOTE: this is a FORMAT, not a split — the same ตอน is also in Export/ok.")

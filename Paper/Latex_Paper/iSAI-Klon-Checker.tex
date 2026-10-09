@@ -165,8 +165,8 @@ true-final detection---and merge it into PyThaiNLP main (Model~B). Second,
 we introduce Klon8Checker (Model~D), which augments these rules with a
 gold-standard G2P override dictionary of over 4{,}000 entries and a
 fallback segmenter, addressing phonetic blind spots of the base oracle. We evaluate
-five checker configurations on a gold corpus of 36{,}475 classical stanzas
-(145{,}709 rhyme checks) and on a targeted augmentation of 11{,}623
+five checker configurations on a gold corpus of 36{,}474 classical stanzas
+(145{,}705 rhyme checks) and on a targeted augmentation of 11{,}623
 instances: 10{,}000 adversarial negatives, 1{,}200 tricky positives, and
 423 oracle-blind rhymes. The best overall configuration (D\_ssg) reaches
 88.5\% gold recall and 86.9\% F1 on the augmentation; D\_w2p attains the
@@ -243,7 +243,7 @@ ship as the default \texttt{KhaveeVerifier} in PyThaiNLP 6.0.
 \item \textbf{A dictionary-enhanced variant (Klon8Checker, Model~D).} We augment
 the rules with a gold-standard G2P override dictionary of over 4{,}000
 entries and a fallback segmenter, recovering the oracle's blind spots.
-\item \textbf{A large evaluation corpus.} 36{,}475 gold stanzas (145{,}709
+\item \textbf{A large evaluation corpus.} 36{,}474 gold stanzas (145{,}705
 rhyme checks) from five classical works, plus 11{,}623 augmentation
 instances: 10{,}000 oracle-verified negatives, 1{,}200 tricky positives,
 and 423 oracle-blind positives.
@@ -636,9 +636,13 @@ scribal ``\thtxt{๏}'' marks. Crucially, waks with ten or more syllables were
 retained; dropping them severed inter-stanza rhyme chains and caused an
 early corpus version to violate $R_X$ at an apparent $\sim$72\% rate,
 whereas on the complete corpus $R_X$ holds at $\sim$96--97\%. The final corpus comprises 191
-files, 36{,}475 stanzas, 145{,}900 waks, and 145{,}709 gold rhyme checks;
+files, 36{,}474 stanzas, 145{,}896 waks, and 145{,}705 gold rhyme checks;
 the gold is all-positive, because the classical poems are presumed to
-rhyme. The Thai Literature Corpora~\cite{tlc} cover similar material.
+rhyme. Three stanzas in \thgloss{\emph{p\super{h}r\'a P\`ap\super{h}aI m\'ani:}}{พระอภัยมณี} are
+incomplete in the source: a couplet is absent from the transcription, so the
+present half of each is excluded from stanza tiling rather than fabricated
+(their six waks are the only ones not counted above). The Thai Literature
+Corpora~\cite{tlc} cover similar material.
 
 \subsection{Targeted Data Augmentation}
 

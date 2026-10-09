@@ -1,0 +1,5 @@
+{
+  "_comment": "1-based วรรค ranges to EXCLUDE from stanza tiling in write_eval. Each range is the present half of an incomplete บท whose other half is genuinely absent from the source (author-verified 2026-10-09). Excluding these re-tiles the surrounding วรรค so the remaining complete บท align with the author's grouping. Do NOT edit the source .txt files.",
+  "phraAphai_22": [[517, 518]],
+  "phraAphai_31": [[177, 178], [891, 892]]
+}
