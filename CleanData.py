@@ -415,6 +415,12 @@ EVAL_DIR = os.path.join(_ROOT, "Results", "Evaluate")
 # complete บท align with the author's grouping; the source .txt is never edited.
 # Keyed by stem. See Dataset/transcription_gaps.json and PROGRESS.md Session 11.
 GAPS_JSON = os.path.join(_ROOT, "Dataset", "transcription_gaps.json")
+# Sidecar recording, per stem, the 0-based eval ROW indices that immediately
+# follow a transcription gap. Those rows must be treated as fresh stanzas with
+# no previous stanza (rX N/A) — the วรรค carrying the cross-stanza rhyme is the
+# one that is absent, so scoring the seam would be a false rX miss. Written by
+# write_eval, read by Paper/data_loading.load_stanzas.
+GAP_SEAMS_JSON = os.path.join(_ROOT, "Results", "Evaluate", "gap_seams.json")
 
 
 def _load_gaps(path=None):
@@ -427,6 +433,32 @@ def _load_gaps(path=None):
         raw = json.load(fh)
     return {k: [tuple(r) for r in v] for k, v in raw.items()
             if not k.startswith("_")}
+
+
+def _write_gap_seams(stem, seam_rows):
+    """Record the eval rows that follow a gap for ``stem`` (merge, don't clobber
+    other stems). Empty list removes the entry."""
+    path = GAP_SEAMS_JSON
+    data = {}
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as fh:
+            data = json.load(fh)
+    if seam_rows:
+        data[stem] = sorted(set(seam_rows))
+    else:
+        data.pop(stem, None)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump(data, fh, ensure_ascii=False, indent=1, sort_keys=True)
+
+
+def _load_gap_seams(path=None):
+    """{stem: [row, ...]} of 0-based eval rows that follow a gap. {} if none."""
+    path = path or GAP_SEAMS_JSON
+    if not os.path.exists(path):
+        return {}
+    with open(path, encoding="utf-8") as fh:
+        return json.load(fh)
 
 
 def _out_paths(path):
@@ -600,6 +632,18 @@ def write_eval(path):
             f"{stem}: {len(idx)} วรรค after excluding gaps {gaps} is not a "
             f"multiple of 4 — check Dataset/transcription_gaps.json")
 
+    # A gap severs the rX chain: the วรรค that would have carried the rhyme is
+    # absent, so the row AFTER a gap must be treated as a fresh stanza with no
+    # previous stanza (rX N/A), not scored against the row before the gap. The
+    # seam rows (0-based eval row indices) are recorded in a sidecar so
+    # data_loading can set prev_w4 = None there.
+    seam_rows = []
+    for lo, _hi in gaps:
+        # first kept วรรค index at or after the gap's start
+        after = next((j for j in idx if j + 1 >= lo), None)
+        if after is not None and after in idx:
+            seam_rows.append(idx.index(after) // 4)
+
     kept = 0
     with open(out, "w", encoding="utf-8-sig", newline="") as fh:
         w = csv.writer(fh)
@@ -609,9 +653,10 @@ def write_eval(path):
             kept += 1
     # วรรค left over at the end cannot fill a row; report rather than hide them.
     tail = len(idx) - kept * 4
+    _write_gap_seams(stem, seam_rows)
     return {"eval": out, "bot_kept": kept, "bot_blocked": 0,
             "opener_cut": opener, "tail_dropped": tail, "sections_skipped": 0,
-            "gap_skipped": gap_skipped}
+            "gap_skipped": gap_skipped, "gap_seams": seam_rows}
 
 
 def import_attention(path):
@@ -721,6 +766,9 @@ if __name__ == "__main__":
             if s.get("gap_skipped"):
                 print(f"gap skipped: {s['gap_skipped']} วรรค (present halves of incomplete บท, "
                       f"Dataset/transcription_gaps.json)")
+            if s.get("gap_seams"):
+                print(f"gap seams:  rows {s['gap_seams']} start a fresh stanza "
+                      f"(rX N/A) -> Results/Evaluate/gap_seams.json")
             if s["tail_dropped"]:
                 print(f"tail:       {s['tail_dropped']} วรรค left over — cannot fill a 4-วรรค row")
             print("NOTE: this is a FORMAT, not a split — the same ตอน is also in Export/ok.")

@@ -8,6 +8,7 @@ w2p hallucination on orphan letters, the compound-tail miscount, and the
 review CSV that used to confirm its own guesses.
 """
 import csv
+import json
 import os
 import sys
 import tempfile
@@ -250,6 +251,7 @@ def test_eval_gap_map_excludes_and_retiles():
         C.EVAL_DIR = td
         gaps = os.path.join(td, "gaps.json")
         C.GAPS_JSON = gaps
+        C.GAP_SEAMS_JSON = os.path.join(td, "gap_seams.json")
         p = os.path.join(td, "phraAphai_9.txt")
         waks = [f"วรรค{i}" for i in range(1, 11)]       # 10 วรรค
         with open(p, "w", encoding="utf-8") as fh:
@@ -272,6 +274,11 @@ def test_eval_gap_map_excludes_and_retiles():
         assert [rows[0][k] for k in ("w1", "w2", "w3", "w4")] == \
             [waks[0], waks[1], waks[4], waks[5]], rows
         assert [rows[1][k] for k in ("w1", "w2", "w3", "w4")] == waks[6:10], rows
+        # The row AFTER the gap (row 0 here, since the gap is at วรรค 3,4) is a
+        # seam: rX must be N/A there, not scored against the row before the gap.
+        assert s["gap_seams"] == [0], s
+        seams = json.load(open(C.GAP_SEAMS_JSON, encoding="utf-8"))
+        assert seams == {"phraAphai_9": [0]}, seams
 
         # A gap that leaves a non-multiple-of-4 must assert, not corrupt.
         with open(gaps, "w", encoding="utf-8") as fh:

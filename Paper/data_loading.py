@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import csv
 import glob
+import json
 import os
 import re
 from dataclasses import dataclass
@@ -23,6 +24,11 @@ from typing import Dict, List, Optional, Tuple
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EVALUATE_DIR = os.path.join(ROOT, "Results", "Evaluate")
+# Rows that immediately follow a transcription gap (see CleanData.write_eval /
+# Dataset/transcription_gaps.json). The วรรค carrying the cross-stanza rhyme is
+# absent there, so those rows are fresh stanzas with no previous stanza: rX is
+# N/A, not a miss. Written by write_eval, read here.
+GAP_SEAMS_JSON = os.path.join(EVALUATE_DIR, "gap_seams.json")
 
 WAK_COLS = ("w1", "w2", "w3", "w4")
 
@@ -66,15 +72,25 @@ def chapters_by_story(evaluate_dir: str = EVALUATE_DIR) -> Dict[str, List[str]]:
 
 def load_stanzas(evaluate_dir: str = EVALUATE_DIR) -> List[Stanza]:
     """Load all stanzas from ``Results/Evaluate`` (file-by-file)."""
+    seams = {}
+    seams_path = os.path.join(evaluate_dir, "gap_seams.json")
+    if os.path.exists(seams_path):
+        with open(seams_path, encoding="utf-8") as fh:
+            seams = json.load(fh)
     stanzas: List[Stanza] = []
     for story, files in chapters_by_story(evaluate_dir).items():
         for fp in files:
             chapter = os.path.basename(fp).replace("_ok.csv", "")
             with open(fp, encoding="utf-8-sig", newline="") as fh:
                 rows = list(csv.DictReader(fh))
+            seam_rows = set(seams.get(chapter, []))
             for i, row in enumerate(rows):
                 w = [row[c].strip() for c in WAK_COLS]
-                prev = None if i == 0 else rows[i - 1]["w4"].strip()
+                # A row after a transcription gap has no previous stanza: the
+                # วรรค that carried the rX rhyme is the one absent from the
+                # source, so rX is N/A (prev_w4 = None), not a false miss.
+                prev = (None if (i == 0 or i in seam_rows)
+                        else rows[i - 1]["w4"].strip())
                 stanzas.append(Stanza(story, chapter, i, *w, prev))
     return stanzas
 

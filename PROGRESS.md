@@ -1110,14 +1110,19 @@ change in the PROGRESS.md and update any relevant metrics or tables accordingly.
   both files `ok` (eval rows == prediction).
 
 **rX preservation (author's explicit concern) — verified with the 5.3.5 oracle.**
-- The 3 predicted seam misses appear exactly: `เดียร~ยับ` (_22 row 129→130),
-  `ใจ~สอง` (_31 row 44→45), `นอน~ไข้` (_31 row 222→223).
+- **Seam fix (author 2026-10-09):** excluding the present-half วรรค severs the rX chain
+  (the วรรค that carried the cross-stanza rhyme is the one absent), so the row AFTER each
+  gap must be a **fresh stanza with no previous stanza** (rX N/A), not scored against the
+  row before the gap. `write_eval` records those seam rows (0-based eval row indices) in
+  `Results/Evaluate/gap_seams.json`; `Paper/data_loading.load_stanzas` reads it and sets
+  `prev_w4 = None` there. Seams: _22 row 129, _31 rows 44 and 222.
+- With the seam fix, the 3 artificial misses (`เดียร~ยับ`, `ใจ~สอง`, `นอน~ไข้`) are **gone**
+  — those rows are rX N/A. The only remaining rX misses are pre-existing text-level quirks
+  unrelated to the gaps: _22 `ดิน~ศีล`, `บุตรี~ษี`, `ตรี~รัศมี`; _31 `ไฟ~พิสมัย` (×2),
+  `การ~ณฑ์`.
 - The patch also **eliminated the rX cascade** the shifted tiling had caused: pre-patch
-  _22 had ~95 consecutive rX misses (rows 130–225) and _31 had a cascade from row 44;
-  post-patch only the 3 seam misses + pre-existing text quirks remain. Neighbour rows are
-  unaffected (verified by dumping the seam rows).
-- Pre-existing text-level rX quirks (unchanged by the patch): _22 `ดิน~ศีล`,
-  `บุตรี~ษี`, `ตรี~รัศมี`; _31 `ไฟ~พิสมัย` (×2), `การ~ณฑ์`.
+  _22 had ~95 consecutive rX misses (rows 130–225) and _31 had a cascade from row 44.
+  Neighbour rows are unaffected (verified by dumping the seam rows).
 
 **Step 3 — metric refresh.**
 - A/B/D gold re-consolidated (`consolidate_results.py --skip-c`): B 88.1%, D_w2p 88.1%,
