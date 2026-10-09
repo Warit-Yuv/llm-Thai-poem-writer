@@ -1135,9 +1135,21 @@ change in the PROGRESS.md and update any relevant metrics or tables accordingly.
   (numpy 2.5.3 / scipy 1.18.1 / sklearn 1.9.1). Point `KONGFHA_PYTHON` at
   `.venv312\Scripts\python.exe` for Checker C. (tltk has no 3.14 wheel — the project venv
   can't run it.)
-- C chunks were stale (aligned to the old unit list, 36,284 units → now 36,283), so they
-  were cleared and re-scored in full. Backups of the pre-patch CSVs, gold JSON, and C
-  chunks are in `backups/eval_pre_gap_patch/`.
+- C chunks were stale (aligned to the old unit list, 36,284 units → now 36,283). A full
+  re-run was started but the parallel workers stalled in this environment, so a **partial
+  recovery** was used instead: `Paper/eval_checkers/recover_c_chunks.py` reuses the cached
+  result for every unchanged unit (35,771 of 36,283 are byte-identical to the pre-patch
+  run — verified) and re-scores only the **275** units that touch the changed rows
+  (~3.5 min vs ~49 min for a full pass). The 1-unit drop shifts chunk boundaries from
+  chunk 5 onward, so the recovery rewrites all 13 chunks in the new order. Backups of the
+  pre-patch CSVs, gold JSON, and C chunks are in `backups/eval_pre_gap_patch/`.
+- **Checker C tooling improvements** (`run_c_full.py`): results now stream to
+  `chunk_<k>.jsonl.partial` as they arrive (flushed per unit) and are atomically renamed
+  to `chunk_<k>.jsonl` only when the chunk completes — a crash mid-chunk keeps every unit
+  already scored. A live progress bar shows units/s, elapsed, and ETA.
+- **Speed benchmark** (`Paper/eval_checkers/benchmark_speed.py`): A/B/D/Dssg over the full
+  corpus at 1..10 workers, and Checker C on a fixed sample, writing
+  `benchmark_speed.json` for reproducibility.
 
 **Corpus counts (paper-facing):** stanzas 36,475 → **36,474**; waks 145,900 → **145,896**;
 gold rhyme checks 145,709 → **145,705** (phraAphai 24,342→24,341 stanzas, 97,368→97,364
