@@ -1311,3 +1311,41 @@ The corpus is **all-positive** (classical poems are presumed to rhyme), so:
 
 Recommended paper tables: (1) corpus counts, (2) gold recall (stanza + per rule),
 (3) augment P/R/F1, (4) oracle-blind probe, (5) speed. That is exactly the set above.
+
+---
+
+## Session 12 — Full rerun + consistency pass (2026-10-11, overnight)
+
+Goal: re-run the whole evaluation on an idle machine, average the speed numbers,
+recheck every figure, and produce a final report.
+
+### FINDING 1 — `KONGFHA_PYTHON` is NOT persistent across terminal sessions
+
+`KongfhaChecker._resolve_python()` falls back to the **global** Python 3.12
+(`C:\Users\User\AppData\Local\Programs\Python\Python312\python.exe`) when
+`KONGFHA_PYTHON` is unset. That interpreter has the **broken numpy 2.5.2 / scipy
+1.12.0** pair, so `import tltk` fails and the worker **hangs at startup** (4 MB RSS,
+0 CPU) — it never errors, it just stalls until the 3600 s subprocess timeout.
+
+**Symptom:** the harness sits at "collecting augment verdicts" forever with 4 idle
+workers; `Get-CimInstance Win32_Process` shows **two** interpreters in use (4×
+`.venv312` + 4× global 3.12).
+
+**Fix:** ALWAYS set the env var in the SAME terminal that launches the job:
+```powershell
+$env:KONGFHA_PYTHON = (Resolve-Path ".venv312\Scripts\python.exe").Path
+```
+Verify before a long run: `KongfhaChecker()._python` must print the `.venv312` path.
+(A future hardening: make `_resolve_python()` prefer `.venv312` if it exists, so a
+missing env var can't silently pick the broken global interpreter.)
+
+### FINDING 2 — the gold rhyme-check total is 145,702, not 145,705
+
+`total = 3 × stanzas + R_X = 3 × 36,474 + 36,280 = 145,702`. The earlier 145,705 was
+off by 3 — exactly the 3 gap-seam rows that became R_X-N/A. phraAphai R_X is 24,206
+(not 24,210). Fixed in the paper + FINAL DATA REPORT.
+
+### FINDING 3 — the author's DS2 report Table 3 (speed) has stale D_ssg/D_w2p numbers
+
+The D_ssg (26.3/9.5/6.3 s) and D_w2p (32.3/18.9/24.1 s) rows do not match any saved
+benchmark run; they appear to come from an earlier, unsaved run. Re-measured below.
