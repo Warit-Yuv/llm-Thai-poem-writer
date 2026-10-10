@@ -94,7 +94,7 @@ are ignored. Counts below are the **updated, data-complete corpus**.
 
 > **Note (Session 11b, 2026-10-09):** the counts in this Session-3 table are the
 > pre-gap-patch figures. After the transcription-gap patch the corpus is
-> **36,474 stanzas / 145,896 waks / 145,705 checks / 36,280 $R_X$ links** — see the
+> **36,474 stanzas / 145,896 waks / 145,702 checks / 36,280 $R_X$ links** — see the
 > authoritative before/after table in Session 11b.
 
 | story | files | บท | วรรค | $R_1{+}R_2{+}R_3$ (intra-stanza) | $R_X$ (inter-stanza) | **total rhyme checks** |
@@ -1113,11 +1113,11 @@ fresh stanza (rX N/A) — the 3 seam links are NOT scored as misses. See below.
 | files | 191 | 191 |
 | stanzas (eval rows) | 36,475 | **36,474** |
 | waks | 145,900 | **145,896** |
-| gold rhyme checks | 145,709 | **145,705** |
+| gold rhyme checks | 145,709 | **145,702** |
 | rX-applicable links | 36,284 | **36,280** |
 | phraAphai stanzas | 24,342 | **24,341** |
 | phraAphai waks | 97,368 | **97,364** |
-| phraAphai checks | 97,236 | **97,232** |
+| phraAphai checks | 97,236 | **97,229** |
 | _22 eval rows | 225 | **225** (re-tiled) |
 | _31 eval rows | 290 | **289** |
 
@@ -1186,8 +1186,8 @@ change in the PROGRESS.md and update any relevant metrics or tables accordingly.
   pool stalled). Speed benchmark in `Paper/eval_checkers/BENCHMARK.md`.
 
 **Corpus counts (paper-facing):** stanzas 36,475 → **36,474**; waks 145,900 → **145,896**;
-gold rhyme checks 145,709 → **145,705** (phraAphai 24,342→24,341 stanzas, 97,368→97,364
-waks, 97,236→97,232 checks). Paper updated: abstract, contributions bullet, dataset
+gold rhyme checks 145,709 → **145,702** (phraAphai 24,342→24,341 stanzas, 97,368→97,364
+waks, 97,236→97,229 checks). Paper updated: abstract, contributions bullet, dataset
 paragraph (now documents the 3 source-verified incomplete บท), and Table~\ref{tab:gold}
 caption. Gold-side recall numbers tick up slightly (the ~275 systematically-broken rows
 become valid); augment-only tables unchanged.
@@ -1203,18 +1203,19 @@ post-gap-patch. Sources: `Paper/eval_checkers/full_gold_results.json` (gold),
 
 ### 1. Corpus
 
-| quantity | value |
-|---|---:|
-| files | 191 |
-| stanzas (eval rows) | 36,474 |
-| waks | 145,896 |
-| gold rhyme checks | 145,705 |
-| $R_X$-applicable links | 36,280 |
-| $R_1$ / $R_2$ / $R_3$ positives | 36,474 each |
-| augmentation instances | 11,623 (10,000 negatives + 1,623 positives) |
+| Name | Files | Stanzas | Waks | $R_1{+}R_2{+}R_3$ | $R_X$ | Total rhyme |
+|---|---:|---:|---:|---:|---:|---:|
+| SuphasaetSonYing | 1 | 200 | 800 | 600 | 199 | 799 |
+| khobut | 14 | 1,303 | 5,212 | 3,909 | 1,289 | 5,198 |
+| khunChangKhunPhaen | 43 | 10,543 | 42,172 | 31,629 | 10,500 | 42,129 |
+| phraAphai | 132 | 24,341 | 97,364 | 73,023 | 24,206 | 97,229 |
+| phukaoTong | 1 | 87 | 348 | 261 | 86 | 347 |
+| **TOTAL** | **191** | **36,474** | **145,896** | **109,422** | **36,280** | **145,702** |
 
-Per-story: SuphasaetSonYing 200 · khobut 1,303 · khunChangKhunPhaen 10,543 ·
-phraAphai 24,341 · phukaoTong 87.
+$R_1{+}R_2{+}R_3$ = 3 × stanzas (every stanza has the three intra-stanza rules).
+$R_X$ = stanzas − files − gap-seams (a row with no previous stanza is N/A; the 3
+gap-seam rows are also N/A). Total = $R_1{+}R_2{+}R_3$ + $R_X$ = 3×36,474 + 36,280
+= **145,702**. Augmentation: 11,623 instances (10,000 negatives + 1,623 positives).
 
 ### 2. Gold-corpus recall (stanza level and per rule)
 
