@@ -31,13 +31,13 @@ SENIOR PROJECT PB1-2026
 
 # **Abstract** {#abstract}
 
-In Thai Klon-Paed (กลอนแปด) poetry (the eight-syllable verse form), each four-line stanza must satisfy an interlocking rhyming pattern where the rhyming syllables must share both a vowel sound (sara) and a final-consonant class (mattra). Because Thai is written without word boundaries and its orthography conceals vowels and silenced letters, automatic rhyme verification is non-trivial: neither classical rule-based checkers nor G2P-romanization checkers handle the resulting edge cases reliably. We present a hybrid rule-based verification approach: first, we improve the KhaveeVerifier algorithm: vowel analysis, final-consonant-class analysis, the rhyme test, karun silencing, and true-final detection, and ship it in PyThaiNLP 6.0 (Model B); second, we introduce Klon8Checker (Model D), which augments these rules with a gold-standard G2P override dictionary of over 4,000 entries and a fallback segmenter, recovering phonetic blind spots of the base oracle. We evaluate five checker configurations on a gold corpus of 36,474 classical stanzas (145,709 rhyme checks) and on a targeted augmentation of 11,623 instances: 10,000 adversarial negatives, 1,200 tricky positives, and 423 oracle-blind rhymes. The best configuration (D\_ssg) reaches 88.5% gold recall and 86.9% F1 on the augmentation, Model B attains 100% precision on curated negatives, and D\_w2p recovers 95.7% of the oracle-blind rhymes. The verifier is released as an explainable educational tool and provides a deterministic reward signal for RL-based Klon-Paed generation.
+In Thai Klon-Paed (กลอนแปด) poetry (the eight-syllable verse form), each four-line stanza must satisfy an interlocking rhyming pattern where the rhyming syllables must share both a vowel sound (sara) and a final-consonant class (mattra). Because Thai is written without word boundaries and its orthography conceals vowels and silenced letters, automatic rhyme verification is non-trivial: neither classical rule-based checkers nor G2P-romanization checkers handle the resulting edge cases reliably. We present a hybrid rule-based verification approach: first, we improve the KhaveeVerifier algorithm: vowel analysis, final-consonant-class analysis, the rhyme test, karun silencing, and true-final detection, and ship it in PyThaiNLP 6.0 (Model B); second, we introduce Klon8Checker (Model D), which augments these rules with a gold-standard G2P override dictionary of over 4,000 entries and a fallback segmenter, recovering phonetic blind spots of the base oracle. We evaluate five checker configurations on a gold corpus of 36,474 classical stanzas (฿฿฿===฿฿฿ 145,702 rhyme checks) and on a targeted augmentation of 11,623 instances: 10,000 adversarial negatives, 1,200 tricky positives, and 423 oracle-blind rhymes. The best configuration (D\_ssg) reaches ฿฿฿===฿฿฿ 89.2% gold recall and 86.9% F1 on the augmentation, Model B attains 100% precision on curated negatives, and D\_w2p recovers 95.7% of the oracle-blind rhymes. The verifier is released as an explainable educational tool and provides a deterministic reward signal for RL-based Klon-Paed generation.
 
 # **Our contributions** {#our-contributions}
 
 * **An improved rule-based verifier (Model B):** We rework the vowel analysis (check\_sara), the final-consonant-class analysis (check\_marttra), the rhyme test (is\_sumpus), karun silencing, and true-final detection, and implement all four canonical rhyme rules. The result is merged into PyThaiNLP 6.0 as the default KhaveeVerifier. \[17\] [https\://github.com/PyThaiNLP/pythainlp/pull/1453](https://github.com/PyThaiNLP/pythainlp/pull/1453)  
 * **A dictionary-enhanced variant (Klon8Checker, Model D):** We augment the rules with a gold-standard G2P override dictionary of over 4,000 entries and a fallback segmenter, recovering the oracle's blind spots.  
-* **A large evaluation corpus:** 36,474 gold stanzas (145,709 rhyme checks) from five classical works, plus 11,623 augmentation instances: 10,000 oracle-verified negatives, 1,200 tricky positives, and 423 oracle-blind positives.  
+* **A large evaluation corpus:** 36,474 gold stanzas (฿฿฿===฿฿฿ 145,702 rhyme checks) from five classical works, plus 11,623 augmentation instances: 10,000 oracle-verified negatives, 1,200 tricky positives, and 423 oracle-blind positives.  
 * **A systematic comparison:** Five configurations (A, B, C, D\_w2p, D\_ssg) are compared on precision, recall, F1, and coverage, with per-rule and per-operator error analyses.  
 * **Educational tool and RL-ready reward:** An explainable web tool plus a deterministic reward signal for RL-based Klon-Paed generation. The link to the hosted web tool is as follows: [https\://klon-pad-rhyme-checker.streamlit.app/](https://klon-pad-rhyme-checker.streamlit.app/)
 
@@ -107,7 +107,7 @@ Both categories have pros and cons, although currently available rhyme verifiers
 
 This project focuses on developing a hybrid rule-based system for automatically verifying rhyme correctness in Thai Klon-Paed poetry.
 
-The proposed methods are evaluated using 36,474 stanzas of classical Thai poetry, containing 145,709 rhyme checks. An additional 11,623 targeted test instances are constructed, including 10,000 adversarial non-rhyming cases, 1,200 difficult positive rhyme cases, and 423 cases representing pronunciations that the base rule-based oracle cannot correctly identify.
+The proposed methods are evaluated using 36,474 stanzas of classical Thai poetry, containing ฿฿฿===฿฿฿ 145,702 rhyme checks. An additional 11,623 targeted test instances are constructed, including 10,000 adversarial non-rhyming cases, 1,200 difficult positive rhyme cases, and 423 cases representing pronunciations that the base rule-based oracle cannot correctly identify.
 
 # **Introduction** {#introduction}
 
@@ -117,7 +117,7 @@ Klon-Paed is a form of Thai poetry that depends on multiple phonetic properties.
 
 A dependable automatic verifier is needed in two main domains: education and NLP research. In education, teachers and students need deterministic, explainable, hallucination-free feedback. In NLP research, training a language model to compose Klon-Paed, e.g., via reinforcement learning (RL), requires a programmatic reward process that scores rhyme correctness.
 
-Existing available verification systems fall short of this standard. The prior version of KhaveeVerifier in PyThaiNLP 5.0.1 (Model A) relies on dictionary subword tokenization, excludes one canonical rhyme rule, and reaches only 73.4% recall on our gold corpus. G2P romanization-based checkers, such as the *word\_check* grader of KlonSuphap-LM (Model C), collapse long/short vowel distinctions and produce thousands of false positives on adversarial negatives. In this paper, we address these limitations with a hybrid rule-based approach and a rigorous, adversarial evaluation.
+Existing available verification systems fall short of this standard. The prior version of KhaveeVerifier in PyThaiNLP 5.0.1 (Model A) relies on dictionary subword tokenization, excludes one canonical rhyme rule, and reaches only ฿฿฿===฿฿฿ 74.0% recall on our gold corpus. G2P romanization-based checkers, such as the *word\_check* grader of KlonSuphap-LM (Model C), collapse long/short vowel distinctions and produce thousands of false positives on adversarial negatives. In this paper, we address these limitations with a hybrid rule-based approach and a rigorous, adversarial evaluation.
 
 # **Requirement Specification** {#requirement-specification}
 
@@ -199,20 +199,20 @@ Since the corpus only consists of true positive rhyme instances, negative test c
 ### Speed {#speed}
 
 A script is written to record the total wall-clock time each checker takes to process the entire corpus.   
-Parallel scaling has been tested on the checkers to see how well they speed up when the workload is distributed across multiple cores. After testing with 1 to 10 parallel workers to identify limits, Checker A, B, and D\_ssg can run smoothly on 10 workers to finish the process in less than 8 seconds, while Checker D\_w2p chokes under heavy load and caps the speed at 4 workers, and gets worse with more parallel workers, coming around at 24 seconds.   
-Checker A (PyThaiNLP 5.0.1) is the fastest tool, finishing in just 4.4 seconds using 10 parallel workers. However, this speed is achieved by cutting corners, like relying on a basic dictionary tokenizer and skipping evaluation of the third rhyming rule (r3), which causes the high error rate.  
+Parallel scaling has been tested on the checkers to see how well they speed up when the workload is distributed across multiple cores. After testing with 1 to 10 parallel workers to identify limits, Checker A, B, and D\_ssg scale to about 4x on 10 workers (finishing the full corpus in 3.5 s, 6.7 s, and 5.4 s respectively), while Checker D\_w2p chokes under heavy load and gets *slower* with more parallel workers (20.2 s at 1 worker rising to 22.3 s at 10), so it is best run single-threaded.   
+Checker A (PyThaiNLP 5.0.1) is the fastest tool, finishing in just 3.5 seconds using 10 parallel workers. However, this speed is achieved by cutting corners, like relying on a basic dictionary tokenizer and skipping evaluation of the third rhyming rule (r3), which causes the high error rate.  
 Checker B (PyThaiNLP 6.0) is the upgraded version of A. It finishes more slowly to properly use the more accurate segmentation tool and evaluate all of the poetic rules.  
-Checker C (Kongfha) is exceptionally slow by design because its phonetic translation model processes text on a single thread, taking an estimated 4-8 CPU-hours (running at \~0.37-0.5 s per 8-wak unit, from 36,474-unit corpus). To make it remotely usable, engineering workarounds are required, such as using Per-wak G2P lru-cache and a pool of 10 workers running parallely, which brought the runtime down to around 49 minutes.
+Checker C (Kongfha) is exceptionally slow by design because its phonetic translation model processes text on a single thread, taking an estimated 3-4 CPU-hours (running at ~0.31 s per 8-wak unit, from the 36,283-unit corpus). To make it remotely usable, engineering workarounds are required, such as a per-wak G2P lru-cache and a pool of parallel workers, which brought the runtime down to around 1.6 hours at 10 workers.
 
-| Model | Checker | Number of workers |  |  |
+฿฿฿===฿฿฿ | Model | Checker | Number of workers |  |  |
 | :---: | :---: | ----- | ----- | ----- |
 |  |  | **1** | **4** | **10** |
-| PyThaiNLP 5.0.1 | A (dict) | 22.8 s | 5.8 s | 4.4 s |
-| PyThaiNLP 6.0 | B (ssg) | 37.8 s | 19.6 s | 7.8 s |
-| Klon8Checker | D\_ssg | 26.3s | 9.5 s | 6.3 s |
-|  | D\_w2p | 32.3 s | 18.9 s | 24.1 s |
-| Kongfha word\_check | C | \~5 Hrtoo long have not run | 104 min | 49 min |
-|  | C (100 units sample from 36.4k units \~0.274%) | 55.6 s | 56.6 s | 22.0 s |
+| PyThaiNLP 5.0.1 | A (dict) | 13.2 s | 4.7 s | 3.5 s |
+| PyThaiNLP 6.0 | B (ssg) | 29.3 s | 9.7 s | 6.7 s |
+| Klon8Checker | D\_ssg | 24.2 s | 8.3 s | 5.4 s |
+|  | D\_w2p | 20.2 s | 16.1 s | 22.3 s |
+| Kongfha word\_check | C | ~3.1 Hr | ~1.9 Hr | ~1.6 Hr |
+|  | C (200 units sample from 36.3k units ~0.55%) | 61.6 s | 43.8 s | 32.1 s |
 
 #  
 
@@ -265,7 +265,7 @@ Upon investigation, we have documented two weaknesses:
 
 ## Evaluation Steps  {#evaluation-steps}
 
-We report precision, recall, and F1 with Wilson 95% confidence intervals, coverage, and a conservative drop-as-fail variant for Model C. Because every augmentation instance is standalone and tests exactly one rule, the per-rule prediction is the clean metric; a stanza-level aggregate over the augmentation is only well-defined for Model B (the oracle). Model A has no r3 and is reported as N/A there. All checkers were instrumented from verbatim vendored sources (the 5.0.1 and 6.0 cores), with Model C run under Python 3.12 through a persistent pool of ten tltk workers (the full augmentation pass takes about 40 minutes; A/B/D are parallelised and finish in under a minute).
+We report precision, recall, and F1 with Wilson 95% confidence intervals, coverage, and a conservative drop-as-fail variant for Model C. Because every augmentation instance is standalone and tests exactly one rule, the per-rule prediction is the clean metric; a stanza-level aggregate over the augmentation is only well-defined for Model B (the oracle). Model A has no r3 and is reported as N/A there. All checkers were instrumented from verbatim vendored sources (the 5.0.1 and 6.0 cores), with Model C run under Python 3.12 through a pool of tltk workers (the full augmentation pass takes about ฿฿฿===฿฿฿ 24 minutes at 4 workers; A/B/D are parallelised and finish in under a minute).
 
 # **Future Work** {#future-work}
 
