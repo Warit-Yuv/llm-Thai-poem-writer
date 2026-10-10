@@ -27,6 +27,7 @@ import sys
 import threading
 import time
 from collections import OrderedDict, defaultdict
+from concurrent.futures import ThreadPoolExecutor
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)                     # eval_checkers
@@ -167,28 +168,63 @@ def process_chunk(pw, units, k, chunk_size=CH, progress=None):
     return k, len(res), dt, we
 
 
-def score_units_parallel(units, workers=10):
-    """Score a list of 8-wak units with a pool of persistent tltk workers.
+def score_units_parallel(units, workers=10, sub_batch=200):
+    """Score a list of 8-wak units with concurrent one-shot tltk subprocesses.
 
     ``units`` is a list of ``(id, [w1..w8])``. Results are returned in input
     order (ids are remapped internally to preserve order). Used for Checker C
     on the augmented instances (the gold corpus path reads checkpoints).
+
+    Each worker is a ONE-SHOT subprocess. I/O goes through TEMP FILES, not
+    pipes: a large stdin payload (>~600 KB) deadlocks the Windows pipe (the
+    parent blocks writing stdin while the worker blocks writing stdout), which
+    stalled both the persistent pool and the piped one-shot design. Writing the
+    payload to a file and redirecting stdin/stdout to files avoids the pipe
+    entirely. Work is split into ``sub_batch``-sized rounds for progress.
     """
+    import tempfile
+
     C = KongfhaChecker()
     n = len(units)
     k = max(1, min(workers, n))
-    pws = [_PersistentWorker(C._python, C._worker, label=f"w{i}") for i in range(k)]
-    batches = [[] for _ in range(k)]
-    for idx, (_uid, waks) in enumerate(units):
-        batches[idx % k].append((str(idx), waks))
+
+    def _run(shard):
+        with tempfile.TemporaryDirectory() as td:
+            in_fp = os.path.join(td, "in.jsonl")
+            out_fp = os.path.join(td, "out.jsonl")
+            with open(in_fp, "w", encoding="utf-8") as f:
+                for i, w in shard:
+                    f.write(json.dumps({"id": i, "waks": w},
+                                       ensure_ascii=False) + "\n")
+            with open(in_fp, encoding="utf-8") as fin, \
+                    open(out_fp, "w", encoding="utf-8") as fout:
+                p = subprocess.run([C._python, C._worker], stdin=fin,
+                                   stdout=fout, stderr=subprocess.PIPE,
+                                   text=True, encoding="utf-8", timeout=3600)
+            if p.returncode != 0:
+                raise RuntimeError(
+                    f"Kongfha worker failed ({p.returncode}):\n"
+                    f"{(p.stderr or '')[-2000:]}")
+            out = {}
+            with open(out_fp, encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        rec = json.loads(line)
+                        out[int(rec["id"])] = rec
+            return out
+
     results_by_id = {}
-    try:
-        for i, pw in enumerate(pws):
-            for r in pw.score(batches[i]):
-                results_by_id[int(r["id"])] = r
-    finally:
-        for pw in pws:
-            pw.close()
+    shards = [[] for _ in range(k)]
+    for idx, (_uid, waks) in enumerate(units):
+        shards[idx % k].append((str(idx), waks))
+    rounds = max((len(s) + sub_batch - 1) // sub_batch for s in shards) if n else 0
+    for r in range(rounds):
+        batch = [s[r * sub_batch:(r + 1) * sub_batch] for s in shards]
+        batch = [b for b in batch if b]
+        with ThreadPoolExecutor(max_workers=len(batch)) as ex:
+            for part in ex.map(_run, batch):
+                results_by_id.update(part)
     return [results_by_id[i] for i in range(n)]
 
 

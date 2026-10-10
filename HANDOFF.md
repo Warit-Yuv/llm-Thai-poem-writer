@@ -1,222 +1,164 @@
-# HANDOFF — Dataset gap decision → optional eval patch → metric refresh
+# HANDOFF — Eval gap patch + Checker C recovery + metric refresh
 
-**Date:** 2026-10-09 · **From:** the raw-dataset audit session · **For:** the next agent session
-**Workspace:** `e:\User\Noto\SIIT\SIIT_Year_4\LLM_WritePoem` · venv `.venv` (Python 3.14.3, pythainlp 5.3.5)
+**Date:** 2026-10-09 (evening) · **From:** the gap-patch / metric-refresh session
+**Workspace:** `e:\User\Noto\SIIT\SIIT_Year_4\LLM_WritePoem`
+**venv:** `.venv` (Python 3.14.3, pythainlp 5.3.5) · **tltk venv:** `.venv312` (Python 3.12)
 
 ---
 
 ## 0) Author's standing rules — read first, follow always
 
-1. **`Dataset/PhraAphai/phraAphai_22.txt` is FINAL.** The author verified it against the
-   printed source on the web (2026-10-09). Do **not** edit it, do **not** re-verify it, and
-   do **not** insert the "missing" couplet
-   `บ้างเขียวขาววาวแววแก้ววิเชียร / ตะโล่งเลี่ยนเลื่องเหลืองเรืองระยับ`:
-   restoring it would fabricate text that is not in the data and misrepresent the source
-   (author's words). The incomplete บท in that file is an accepted, documented gap.
-2. **Ask the author before re-running any evaluation or metric job.** ("It's okay to rerun
-   the experiment but before doing that ask me again first.") The full sequence + runtimes
-   are in Step 3 so the ask can be ONE message.
-3. Batch questions, be decisive, answer in English. If has questions, ask the author; if has answers, answer the author. Do not guess.
-4. Note: a script `verify_phra22_fix.py` ran during the author's check (exit 0) and was
-   deleted afterwards; no data file changed as a result (git-clean). If you ever need to
-   know what it verified — ask the author, don't guess.
+1. **`Dataset/PhraAphai/phraAphai_22.txt` is FINAL.** Never edit / re-verify it. The
+   incomplete บท is an accepted, documented gap. Do not fabricate the missing couplet.
+2. **Ask the author before re-running any evaluation or metric job.** (Already granted for
+   this workstream — see §3.)
+3. Batch questions, be decisive, answer in English. Do not guess.
+4. **Do NOT kill long-running jobs early.** The tltk workers look idle (low CPU) while
+   loading models / between units; killing them wastes the whole run. Let them finish.
 
 ---
 
-## 1) Context in 30 seconds
+## 1) What this session did (all committed & pushed to `origin/main`)
 
-The repo evaluates four Klon-8 rhyme checkers (A = pythainlp 5.0.1, B = 5.3.5
-KhaveeVerifier, C = Kongfha/tltk, D = Klonpad overrides) over a gold corpus built from
-`Dataset/<work>/<stem>.txt` by `CleanData.py --eval` into
-`Results/Evaluate/<work>/<stem>_ok.csv` (one 4-วรรค บท per row, columns w1..w4).
-Paper numbers (iSAI, v5.7) come from `Paper/eval_checkers/full_metrics.json` +
-`Paper/report/paper_tables.json`, rendered by `Paper/Method_evaluation_script.ipynb`.
+| commit | what |
+|---|---|
+| `b1289e1` | Eval gap patch: `Dataset/transcription_gaps.json` + `CleanData.write_eval` + `count_raw_dataset.py` + test |
+| `1af7668` | Seam fix: rows after a gap are fresh stanzas (rX N/A) via `Results/Evaluate/gap_seams.json` + `Paper/data_loading.py` |
+| `5dbf02a` | Checker C: streaming `.partial` checkpoints + progress bar; `recover_c_chunks.py`; `benchmark_speed.py` |
+| `0657887` | Trim Table 3 footnote; PROGRESS.md Session 11b |
+| `30437dc` | `recover_c_chunks.py`: one-shot worker (persistent pool stalls) |
 
-This workstream audited the RAW `Dataset/` files — counted บท/วรรค with the project's own
-rules and cross-checked every file against its eval CSV. Results are logged in
-`PROGRESS.md` → **Session 11** (read it; it is the factual record).
+### The gap patch (Step 2 — DONE)
+- `Dataset/transcription_gaps.json` = `{"phraAphai_22": [[517,518]], "phraAphai_31": [[177,178],[891,892]]}`
+  (1-based วรรค ranges to EXCLUDE from tiling; `_`-prefixed keys are comments).
+- `CleanData.write_eval` drops those วรรค before grouping, asserts the remainder tiles by 4,
+  and records the **seam rows** (the eval rows that follow each gap) in
+  `Results/Evaluate/gap_seams.json`.
+- `Paper/data_loading.load_stanzas` reads the seam file and sets `prev_w4 = None` there, so
+  **rX is N/A at the seams** (not a false miss). This was the author's explicit requirement.
+- Regenerated: **_22 = 225 rows**, **_31 = 289 rows** (was 290). Grand total **36,474**.
+- `count_raw_dataset.py` cross-check reports both files `ok`.
 
----
+### rX verification (5.3.5 oracle)
+- The 3 artificial seam misses (`เดียร~ยับ`, `ใจ~สอง`, `นอน~ไข้`) are **gone** (rX N/A).
+- The patch also **eliminated the ~95-row rX cascade** the shifted tiling had caused.
+- Remaining rX misses are pre-existing text quirks: _22 `ดิน~ศีล`, `บุตรี~ษี`, `ตรี~รัศมี`;
+  _31 `ไฟ~พิสมัย` (×2), `การ~ณฑ์`.
 
-## 2) Verified facts
-
-### Raw counts (`python count_raw_dataset.py`)
-
-| | files | วรรค | บท (act rule) | eval rows |
-|---|---:|---:|---:|---:|
-| Khobut | 14 | 5,215 | 1,304 | 1,303 |
-| KhunChangKhunPhaen | 43 | 42,172 | 10,543 | 10,543 |
-| PhraAphai | 132 | 97,373 | 24,321¹ | 24,342 |
-| PhukaoTong | 1 | 351 | 88 | 87 |
-| SuphasaetSonYing | 1 | 803 | 201 | 200 |
-| **total** | **191** | **145,914** | **36,457** | **36,475** |
-
-¹ excludes the 90 วรรค of the 5 checksum-failing acts (32 of those belong to 8 complete บท
-in phraAphai_80). True complete บท = **36,478** (incl. the 4 three-wak openers) + **3
-incomplete บท** (6 of their 12 วรรค present). No mid-chapter 3-วรรค stanza exists anywhere
-(7,234 ๏ acts checksummed); the only 3-วรรค openers are the 4 works' first files — KCKP has
-none, matching the author's note.
-
-### The five checksum failures
-
-| file | act (วรรค) | n | diagnosis | status |
-|---|---|---|---|---|
-| phraAphai_22 | 27 (501–530) | 30 | repeated couplet present once; region rhymes only if twice | **KEEP AS-IS (author, final)** |
-| phraAphai_31 | 8 (173–182) | 10 | บท [X,Y,177,178] missing its first half | propose same as _22 |
-| phraAphai_31 | 43 (875–892) | 18 | บท [X2,Y2,891,892] missing its first half | propose same as _22 |
-| phraAphai_80 | 25–26 (365–396) | 10+22 | **nothing missing** — ฯ@374 + ๏@375 sit mid-บท [373–376] | none (cosmetic) |
-
-Checker evidence (`python check_boundaries.py`, 5.3.5 oracle): the author-grouped stanzas
-score *"The poem is correct according to the principle"*; the eval's sequential rows inside
-the gap windows fail r2/rX (e.g. _22 [521–524]: `พร้อม~กุฏิ์` r2 ✗, and the author-confirmed
-`ยับ~พร้อม` rX ✗).
-
-### Author-approved grouping (the reference for any eval patch)
-
-- **_22:** `[501-504][505-508][509-512][513-516] | [517,518 + 2 missing] (incomplete) |
-  [519-522][523-526][527-530] | [531-534]…` (act 28 onward re-aligns).
-- **_31:** `[173-176] | [177,178 + 2 missing] | [179-182]…[887-890] |
-  [891,892 + 2 missing] | [893-896]…[1157-1160]`.
-- **_80:** eval's sequential rows are already correct; only the ฯ/ฯ decoration placement is
-  off. Optional cosmetic fix (author approval): move the ฯ from w374 to w376 → acts 25/26
-  become 12+20 and pass the checksum. Text unchanged either way.
-
-Corroboration: `README.md` says PhraAphai = **97,379** วรรค; the files hold 97,373 = 6
-fewer (the 3 lost couplets) — the README number predates the loss.
+### Corpus counts (paper-facing)
+stanzas 36,475 → **36,474**; waks 145,900 → **145,896**; gold rhyme checks 145,709 →
+**145,705**. Paper updated: abstract, contributions, dataset paragraph, Table 3 caption,
+`abstract.md`, `StoryLayout.tex`.
 
 ---
 
-## 3) The decision already made (do not relitigate)
+## 2) Checker C — the environment problem (IMPORTANT)
 
-phraAphai_22 keeps its text as-is. Both candidate groupings leave something broken
-(`[517-520]` is a valid บท but forces `[521-524]` to break; the author grouping
-`[519-530]` gives three perfect บท but orphans [517,518]) — because 2 วรรค are genuinely
-absent from the source. Inserting the repeated couplet was **rejected by the author**
-(fabrication). The only open question is how the **eval** should represent the affected
-windows.
+**tltk has no Python 3.14 wheel**, so the project `.venv` (3.14.3) cannot run Checker C.
+The global Python 3.12 (`KONGFHA_PYTHON` default) had a **broken numpy 2.5.2 / scipy 1.12.0**
+pair (`numpy.dtype size changed`), so `import tltk` failed.
+
+**Fix:** a dedicated **`.venv312`** (Python 3.12) with `tltk` + `pandas` + `requests` +
+upgraded `scikit-learn`/`scipy` (numpy 2.5.3 / scipy 1.18.1 / sklearn 1.9.1). Point
+`KONGFHA_PYTHON` at it:
+
+```powershell
+$env:KONGFHA_PYTHON = (Resolve-Path ".venv312\Scripts\python.exe").Path
+```
+
+**The persistent-pool stall:** `run_c_full.py`'s original `_PersistentWorker` (long-lived
+subprocess + reader thread) **intermittently stalls idle** in this environment — workers
+start but never process (CPU ~0, memory ~4 MB, i.e. tltk never loads). This wasted several
+runs. `score_units_parallel` was rewritten to use **one-shot subprocesses with temp-file
+I/O** (no pipes) in `sub_batch`-sized rounds. **If a run still stalls, do NOT kill it
+immediately — wait; the machine may just be loading models.**
 
 ---
 
-## 4) Remaining work — ordered plan
+## 3) Checker C gold chunks — RECOVERED (DONE)
 
-### Step 1 — ONE batched author ask (do this before anything else)
+The gap patch changed only `_22`/`_31`; **35,771 of 36,283 units are byte-identical** to the
+pre-patch run. `Paper/eval_checkers/recover_c_chunks.py` reuses the cached result for every
+unchanged unit and re-scores only the **275** changed units (one-shot worker, ~2 min), then
+rewrites all 13 chunks in the new order.
 
-Copy-paste (adjust after re-reading):
+**Status: DONE.** `Paper/eval_checkers/_c_chunks/` holds 13 chunks, 36,283 lines total.
+Backups of the pre-patch CSVs, gold JSON, and C chunks are in `backups/eval_pre_gap_patch/`.
 
-> Two confirmations before I touch anything:
-> 1. **phraAphai_31** has the same two gaps as phraAphai_22 (between
->    `…ไม่กลับกลายแกล้งลวงแม่ดวงใจ` [w176] and `จะสัญญาว่าขานประการใด` [w177]
-> >>> Author here: "yes, I see there is a gap of 2 waks -> ๏ พระฟังนางช่างฉลาดประภาษพ้อ	ทั้งลวงล่อสิ้นลมคมใจหาย
-จึงว่าพี่นี้ซื่อเป็นชื่อชาย	ไม่กลับกลายแกล้งลวงแม่ดวงใจ
-*จะสัญญาว่าขานประการใด	พี่จะให้ความสัตย์ไม่ขัดน้อง*, and the text is correct as-is"
-> 
-> ; and between
->    `…ต่อพระองค์โปรดแปลจึงแน่นอน` [w890] and `จึงถามว่าอาจารย์ท่านเข้านอน` [w891]).
->    Same treatment as _22 — keep the text as-is, do not fabricate the couplets?
->    (If your web check says the source HAS them and you want them inserted, say so and
->    I will follow your text instead.)
-> >>> Author here: "yes, the text is correct as-is, do not fabricate the couplets"
-> *จึงถามว่าอาจารย์ท่านเข้านอน	หรือว่าจะจรจากกุฎีไปที่ใด ฯ* is actually missing the first half of the couplet, so the gap is real.
-> >>> Author Comment: "Make sure the matrix is correctly evaluated and the precision/recall when the gaps are present is correctly reported. It might be a mistake in the library archive or the source text, but the gaps are real and should be reported as such. You may split the file/drop the rows in the evaluation to reflect the gaps, but do not fabricate the missing couplets. Ensure the rhyme rules are correctly applied to the remaining rows. So, keep the original text as-is, and patch the evaluation row/split file/or drop but make sure number is correctly reported."
-> 2. May I patch the **eval rows** around the 3 gap sites — exclude the 6 present-half
->    วรรค ([517,518] / [177,178] / [891,892]), re-tile the rest (eval 36,475 → 36,474
->    rows) — and then re-run the metric sequence? Runtimes: A/B/D ≈ 35 s; Checker C
->    targeted re-score ≈ 3 min (or full C ≈ 49 min); harness + tables + notebook ≈ 10 min.
+---
 
-If the author says "no patch" → skip Steps 2–3, do Step 4 only.
-> >>> Author here: "Yes, you may patch the eval rows around the 3 gap sites. If you want to exclude the 6 present-half waks ([517,518] / [177,178] / [891,892]), make sure neigbor rows are not affected. Also makesure rX is correct and not shift, so the gold is preserved.  and then re-run the metric sequence. Make sure to document this change in the PROGRESS.md and update any relevant metrics or tables accordingly."
+## 4) Remaining work — the metric refresh (Step 3)
 
-### Step 2 — implement the eval gap patch (only if approved)
+**A/B/D gold: DONE** (`consolidate_results.py --skip-c`): B 88.1%, D_w2p 88.1%, D_ssg 89.2%,
+A 74.0%. Cross-chapter rX: phraAphai 130/131.
 
-1. Create `Dataset/transcription_gaps.json`:
-   ```json
-   {"phraAphai_22": [[517, 518]], "phraAphai_31": [[177, 178], [891, 892]]}
+**In progress / to run (in order):**
+
+1. **`eval_harness.py`** (RUNNING as of this handoff — let it finish):
+   ```powershell
+   $env:KONGFHA_PYTHON = (Resolve-Path ".venv312\Scripts\python.exe").Path
+   .venv\Scripts\python.exe Paper/eval_checkers/eval_harness.py --workers 10 --dw-workers 4 `
+       --augment Paper/augment/output/instances.json --out Paper/eval_checkers/full_metrics.json
    ```
-   (1-based วรรค ranges to EXCLUDE from stanza tiling — the present halves of the
-   incomplete บท.)
-2. `CleanData.write_eval`: read that JSON (keyed by stem), skip excluded waks while
-   tiling, assert the remainder tiles exactly by 4, and report `gap_skipped` in the
-   returned stats. Run `python test_cleandata.py` after editing (project self-checks).
-3. `count_raw_dataset.py`: consume the same JSON in its eval-row prediction, otherwise it
-   will report the patched files as MISMATCH.
-4. Regenerate: `python CleanData.py Dataset/PhraAphai/phraAphai_22.txt --eval` and
-   `python CleanData.py Dataset/PhraAphai/phraAphai_31.txt --eval`.
-5. **Expected:** _22 = 225 rows with rows-from-130 re-tiled to
-   `[519-522][523-526][527-530][531-534]…[899-902]` (no tail drop); _31 = 289 rows
-   (`[179-182]…[887-890]`, `[893-896]…[1157-1160]`); grand total 36,474.
-6. Do **not** hand-edit the CSVs without the mechanism — a bare `--eval` rerun would
-   silently revert a hand patch.
+   This re-scores C on the **11,623 augmentation instances** (the slow part, ~10–15 min).
+   Output → `tmp_harness.txt`. **Do not kill it.**
+2. `python Paper/eval_checkers/paper_report_data.py --from-verdicts`
+3. `python Paper/eval_checkers/refresh_metrics.py`
+4. Re-run `Paper/Method_evaluation_script.ipynb` (reads the JSONs; tables/figures refresh).
+5. Update paper numbers if they shift (`Paper/Latex_Paper/iSAI-Klon-Checker.tex`).
+   Expected: augment-only tables unchanged; gold-side recall ticks up slightly; the gold rX
+   denominator drops by 3 (the 3 seam links are now N/A).
+6. Re-run the cross-chapter boundary rX check (report-only).
 
-### Step 3 — metric refresh (only if Step 2 happened; author-approved in Step 1)
-
-Stale after a patch: `Paper/eval_checkers/full_gold_results.json` (A/B/D gold),
-`Paper/eval_checkers/_c_chunks/chunk_*.jsonl` (C gold), `full_metrics.json`,
-`Paper/report/paper_tables.json`. **Still valid:** `Paper/report/augment_verdicts.json`
-(C's augment verdicts — the augmentation is standalone and independent of these eval rows;
-do NOT regenerate `Paper/augment/`), `poetry_overrides*.py`, the G2P dictionary.
-
-1. `python Paper/eval_checkers/consolidate_results.py --workers 10 --dw-workers 4 --skip-c --out Paper/eval_checkers/full_gold_results.json` (~35 s).
-2. Checker C gold: ~275 changed rows. Preferred: targeted re-score of just those eval rows
-   through `Paper/eval_checkers/kongfha_worker.py` (GLOBAL Python 3.12, `KONGFHA_PYTHON`;
-   8-wak units = 2 consecutive eval rows joined with `\n`; ~3 min), writing the same JSONL
-   format into the chunk files (back up `Paper/eval_checkers/_c_chunks/` first).
-   Fallback: full `python Paper/eval_checkers/run_c_full.py --workers 10` (~49 min).
-3. `python Paper/eval_checkers/eval_harness.py --workers 10 --dw-workers 4 --augment Paper/augment/output/instances.json --out Paper/eval_checkers/full_metrics.json`
-   (C augment verdicts are reused from the cached verdicts — do not re-score them).
-4. `python Paper/eval_checkers/paper_report_data.py --from-verdicts` then
-   `python Paper/eval_checkers/refresh_metrics.py` (rebuild tables/merged totals).
-5. Re-run `Paper/Method_evaluation_script.ipynb` (reads the JSONs; all tables/figures refresh).
-6. Re-run the cross-chapter boundary rX check (report-only; _22's last row changed).
-7. Update paper numbers if they shift (`Paper/Latex_Paper/iSAI-Klon-Checker.tex`; the
-   workspace copy is what compiles — beware the second copy in `E:\Download`, see
-   `/memories/repo/build.md`). Expected shape of the change: **augment-only tables
-   unchanged**; gold-side numbers tick up slightly (~+0.2–0.5 pp recall — ~275
-   systematically-broken gold rows become valid); **3 new gold rX misses appear at the gap
-   seams** (`เดียร~ยับ`, `ใจ~สอง`, `นอน~ไข้` — 3 of 36,284 rX links; mention them in the
-   paper's dataset paragraph as gap properties, don't hide them).
-
-### Step 4 — documentation (always, even with no patch)
-
-- `PROGRESS.md`: Session 11 is already written — extend it with the outcomes of Steps 1–3.
-- Paper dataset section: one sentence documenting the 3 source-verified incomplete บท
-  (and, if unpatched, that ~275 eval rows sit on shifted boundaries by construction).
-- Optional (author call): README's "97,379 วรรค" → 97,373 with a footnote.
+**Still valid (do NOT regenerate):** `Paper/report/augment_verdicts.json` (C's augment
+verdicts are standalone), `Paper/augment/`, `poetry_overrides*.py`, the G2P dictionary.
 
 ---
 
-## 5) What NOT to do
+## 5) Speed benchmark (author request — NOT yet run)
 
-- Do not edit / re-verify / "fix" `Dataset/PhraAphai/phraAphai_22.txt`.
-- Do not regenerate the augmentation (`Paper/augment/`) or the override dictionaries —
-  unaffected by this workstream.
-- Do not "fix" phraAphai_80's text — nothing is missing there.
-- Do not delete `count_raw_dataset.py` / `check_boundaries.py` — they are the audit tools
-  the author may want again.
-- Do not run any evaluation/metric job without the author's go-ahead (Rule 0.2).
+`Paper/eval_checkers/benchmark_speed.py` measures A/B/D/Dssg over the full corpus at
+workers 1..10, and Checker C on a fixed sample, writing `benchmark_speed.json`.
+
+```powershell
+$env:KONGFHA_PYTHON = (Resolve-Path ".venv312\Scripts\python.exe").Path
+.venv\Scripts\python.exe Paper/eval_checkers/benchmark_speed.py            # all
+.venv\Scripts\python.exe Paper/eval_checkers/benchmark_speed.py --only abd # A/B/D only
+.venv\Scripts\python.exe Paper/eval_checkers/benchmark_speed.py --only c --c-sample 500
+```
+Run this **after** the harness (to avoid resource contention). The author wants a
+consistent, reproducible speed-up/slow-down table per model.
 
 ---
 
-## 6) Environment & gotchas
+## 6) Checker C tooling improvements (DONE)
 
-- Python: `.venv\Scripts\python.exe` (terminal is usually pre-activated). Checker C / tltk
-  run under the GLOBAL Python 3.12 (`KONGFHA_PYTHON` env var).
-- Printing Thai on Windows: `sys.stdout.reconfigure(encoding="utf-8")` first; piping output
-  through `Select-Object` mangles UTF-8 — write to a file and read it instead.
+- `run_c_full.py`: results stream to `chunk_<k>.jsonl.partial` as they arrive (flushed per
+  unit) and are atomically renamed to `chunk_<k>.jsonl` only when the chunk completes — a
+  crash mid-chunk keeps every unit already scored. A live progress bar shows units/s,
+  elapsed, and ETA.
+- `score_units_parallel`: one-shot subprocesses + temp-file I/O (see §2).
+
+---
+
+## 7) Environment & gotchas
+
+- Python: `.venv\Scripts\python.exe` (3.14.3). Checker C: `.venv312\Scripts\python.exe`
+  (3.12) via `KONGFHA_PYTHON`.
+- Printing Thai on Windows: `sys.stdout.reconfigure(encoding="utf-8")` first; piping through
+  `Select-Object` mangles UTF-8 — write to a file and read it.
+- LaTeX: `latexmk -xelatex iSAI-Klon-Checker.tex` from `Paper/Latex_Paper/`. The exit code
+  is sometimes 1 even when the PDF is written (a locked-PDF / xdvipdfmx quirk) — check the
+  PDF timestamp, not the exit code. Two copies of the `.tex` exist (workspace + `E:\Download`);
+  the workspace one is what compiles.
 - `KhaveeVerifier.is_sumpus(wak1, wak2)` on WHOLE วรรค is invalid (`check_sara` reads only
-  the first syllable). Compare LAST syllables (ssg) or use `check_klon`, which takes
-  whitespace-separated waks and groups them 4-per-บท.
-- LaTeX: two copies of `iSAI-Klon-Checker.tex` exist (workspace + `E:\Download`); the
-  workspace one is what `latexmk` compiles.
+  the first syllable). Compare LAST syllables (ssg) or use `check_klon`.
 - Tools: `count_raw_dataset.py` (`--file`, `--dump STEM LO HI`), `check_boundaries.py`.
 
 ---
 
-## 7) Key Thai anchors (for the author ask and any future source check)
+## 8) Key Thai anchors
 
-- **_22 gap:** after `ดูเรืองรุ่งราวกับลายระบายเขียน` (w518) / before `กุฏิ์น้อยน้อยร้อยเศษสังเกตนับ` (w521) —
-  the incomplete บท = [517,518 + 2]; the repeated couplet would be
-  `บ้างเขียวขาววาวแววแก้ววิเชียร / ตะโล่งเลี่ยนเลื่องเหลืองเรืองระยับ`
-  (its exact slot in the printed source — before w519 or after w520 — is the author's
-  knowledge; irrelevant while the decision is keep-as-is).
+- **_22 gap:** after `ดูเรืองรุ่งราวกับลายระบายเขียน` (w518) / before `กุฏิ์น้อยน้อยร้อยเศษสังเกตนับ` (w521).
 - **_31 gap 1:** after `ไม่กลับกลายแกล้งลวงแม่ดวงใจ` (w176) / before `จะสัญญาว่าขานประการใด` (w177).
 - **_31 gap 2:** after `ต่อพระองค์โปรดแปลจึงแน่นอน` (w890) / before `จึงถามว่าอาจารย์ท่านเข้านอน` (w891).
