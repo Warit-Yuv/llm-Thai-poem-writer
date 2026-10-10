@@ -1187,3 +1187,122 @@ waks, 97,236→97,232 checks). Paper updated: abstract, contributions bullet, da
 paragraph (now documents the 3 source-verified incomplete บท), and Table~\ref{tab:gold}
 caption. Gold-side recall numbers tick up slightly (the ~275 systematically-broken rows
 become valid); augment-only tables unchanged.
+
+---
+
+## FINAL DATA REPORT (2026-10-11) — authoritative numbers
+
+This is the single source of truth for every number in the paper. All figures are
+post-gap-patch. Sources: `Paper/eval_checkers/full_gold_results.json` (gold),
+`Paper/report/paper_tables.json` (augmentation), `Paper/eval_checkers/BENCHMARK.md`
+(speed). Rule notation: $R_1$ สดับ→รับ, $R_2$ รับ→รอง, $R_3$ รอง→ส่ง, $R_X$ inter-stanza.
+
+### 1. Corpus
+
+| quantity | value |
+|---|---:|
+| files | 191 |
+| stanzas (eval rows) | 36,474 |
+| waks | 145,896 |
+| gold rhyme checks | 145,705 |
+| $R_X$-applicable links | 36,280 |
+| $R_1$ / $R_2$ / $R_3$ positives | 36,474 each |
+| augmentation instances | 11,623 (10,000 negatives + 1,623 positives) |
+
+Per-story: SuphasaetSonYing 200 · khobut 1,303 · khunChangKhunPhaen 10,543 ·
+phraAphai 24,341 · phukaoTong 87.
+
+### 2. Gold-corpus recall (stanza level and per rule)
+
+All-positive corpus → **recall** only (no negatives). $R_3$ is N/A for A (5.0.1 has no
+$R_3$). C evaluates 2 stanzas per 8-wak unit, so its `n` is ~2× and it drops units on
+tltk failures (coverage reported).
+
+| checker | stanza_ok% | $R_1$ | $R_2$ | $R_3$ | $R_X$ | n |
+|---|---:|---:|---:|---:|---:|---:|
+| A (5.0.1) | 74.0 | 86.3 | 89.5 | – | 89.4 | 36,429 |
+| B (5.3.5) | 88.1 | 94.7 | 97.2 | 95.5 | 97.4 | 36,474 |
+| D_w2p | 88.1 | 95.4 | 97.0 | 94.9 | 97.3 | 36,474 |
+| D_ssg | **89.2** | **95.9** | **97.4** | 95.2 | **97.8** | 36,474 |
+| C (Kongfha) | 85.5 | 93.1 | 96.5 | 94.1 | 96.6 | 69,482 |
+
+Per-story stanza_ok% (for the paper's per-work table):
+
+| story | A | B | D_w2p | D_ssg | C |
+|---|---:|---:|---:|---:|---:|
+| SuphasaetSonYing | 76.9 | 91.0 | 89.5 | 89.5 | 87.1 |
+| khobut | 70.5 | 86.7 | 85.7 | 86.1 | 83.7 |
+| khunChangKhunPhaen | 76.2 | 87.3 | 83.5 | 84.8 | 80.5 |
+| phraAphai | 73.2 | 88.6 | 90.3 | 91.3 | 87.6 |
+| phukaoTong | 67.8 | 81.6 | 77.0 | 79.3 | 80.0 |
+
+### 3. Augmentation — precision / recall / F1 (stanza level, pooled)
+
+10,000 oracle-verified negatives + 1,623 positives. **P** = precision on negatives,
+**R** = recall on positives, **F1** = harmonic mean. Coverage = fraction of instances
+the checker could evaluate (C drops tltk failures).
+
+| checker | P | R | F1 | coverage | TP | FP | FN | TN |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| A (5.0.1) | 28.4 | 62.7 | 39.1 | 99.3 | 775 | 1,950 | 461 | 5,492 |
+| B (5.3.5) | **100.0** | 73.9 | 85.0 | 100.0 | 1,200 | **0** | 423 | 10,000 |
+| D_w2p | 83.4 | **92.1** | **87.5** | 100.0 | 1,495 | 298 | 128 | 9,702 |
+| D_ssg | 86.8 | 87.0 | 86.9 | 100.0 | 1,412 | 215 | 211 | 9,785 |
+| C (Kongfha) | 30.4 | 87.1 | 45.1 | 97.6 | 1,357 | 3,107 | 201 | 6,674 |
+
+Per-rule augmentation F1 (pooled):
+
+| checker | $R_1$ | $R_2$ | $R_3$ | $R_X$ |
+|---|---:|---:|---:|---:|
+| A (5.0.1) | 39.7 | 39.1 | – | 38.5 |
+| B (5.3.5) | 70.6 | 87.3 | 88.2 | **99.0** |
+| D_w2p | 85.7 | 94.0 | 80.8 | 92.7 |
+| D_ssg | 82.7 | 91.6 | 82.2 | 95.5 |
+| C (Kongfha) | 49.4 | 49.9 | 37.2 | 42.3 |
+
+### 4. Oracle-blind probe
+
+423 genuine rhymes the 5.3.5 oracle cannot see (silent-ร `เพชร`, first-sara
+`ศัตรู`/`กษัตรี`/`กษัตรีย์`). Recall on these is the key differentiator.
+
+| checker | oracle-blind recall | recovered / 423 |
+|---|---:|---:|
+| A (5.0.1) | 21.5 | 91 |
+| B (5.3.5) | 0.0 | 0 |
+| D_w2p | **95.7** | 405 |
+| D_ssg | 68.1 | 288 |
+| C (Kongfha) | 78.7 | 333 |
+
+### 5. Speed (full gold corpus; C on a sample)
+
+| checker | best workers | best time | speed-up |
+|---|---:|---:|---:|
+| A | 10 | 4.2 s | 5.5× |
+| B | 10 | 7.8 s | 4.8× |
+| D_ssg | 10 | 12.9 s | 3.7× |
+| D_w2p | **1** | 32.3 s | 1.0× (slower with more) |
+| C | 4 | ~3× | memory-bound |
+
+Full-corpus C: ~3.7 h at 1 worker, ~1.2 h at 4 workers. Details:
+`Paper/eval_checkers/BENCHMARK.md`.
+
+### 6. Which metrics to report (avoid confusing the reader)
+
+The corpus is **all-positive** (classical poems are presumed to rhyme), so:
+
+- **Gold corpus → report RECALL only** (stanza-level + per rule). Precision is
+  undefined there (no negatives). Do **not** report gold precision/F1 — it would be
+  meaningless (always 1.0 by construction).
+- **Augmentation → report PRECISION, RECALL, F1** (it has both classes). This is the
+  only place precision is measurable.
+- **Coverage** → report for C only (it drops tltk failures); A/B/D cover ~100%.
+- **Oracle-blind recall** → report as a separate probe (it isolates the dictionary's
+  value; the oracle itself scores 0%).
+- **Stanza-level vs per-rule** → report both: stanza-level is the headline (all four
+  rules must hold), per-rule shows where each checker fails.
+- **Do NOT mix** gold recall and augment recall in one column — they are different
+  corpora. Keep the two tables separate (as the paper does: Table 2 = gold, Table 3 =
+  augment).
+
+Recommended paper tables: (1) corpus counts, (2) gold recall (stanza + per rule),
+(3) augment P/R/F1, (4) oracle-blind probe, (5) speed. That is exactly the set above.

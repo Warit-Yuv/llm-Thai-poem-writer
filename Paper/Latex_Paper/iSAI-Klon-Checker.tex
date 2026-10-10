@@ -169,7 +169,7 @@ five checker configurations on a gold corpus of 36{,}474 classical stanzas
 (145{,}705 rhyme checks) and on a targeted augmentation of 11{,}623
 instances: 10{,}000 adversarial negatives, 1{,}200 tricky positives, and
 423 oracle-blind rhymes. The best overall configuration (D\_ssg) reaches
-88.5\% gold recall and 86.9\% F1 on the augmentation; D\_w2p attains the
+89.2\% gold recall and 86.9\% F1 on the augmentation; D\_w2p attains the
 highest augmentation F1 (87.5\%) and recovers 95.7\% of the oracle-blind
 rhymes, while Model~B achieves 100\% precision on curated negatives. The
 verifier is released as an explainable
@@ -226,7 +226,7 @@ Existing verification systems do not meet this standard.
 Of the five checker configurations we evaluate (A, B, C, D\_w2p, D\_ssg),
 the prior KhaveeVerifier in PyThaiNLP 5.0.1 (Model~A) relies on dictionary
 subword tokenization, omits one canonical rhyme rule, and reaches only
-73.4\% recall on our gold corpus. G2P romanization-based checkers, such as the
+74.0\% recall on our gold corpus. G2P romanization-based checkers, such as the
 \texttt{word\_check} grader of KlonSuphap-LM~\cite{klonsuphap} (Model~C),
 collapse long/short vowel distinctions and produce thousands of false
 positives on adversarial negatives. In this paper, we
@@ -709,13 +709,13 @@ in under a minute).
 \subsection{Gold-Corpus Recall}
 
 Table~\ref{tab:gold} reports whole-stanza and per-rule recall over the
-36{,}475 gold stanzas. The proposed family dominates: D\_ssg reaches
-88.5\% stanza recall and B 87.5\%, versus 73.4\% for Model~A. Model~C
-reaches 84.8\% but evaluates only 95.7\% of the corpus (TLTK failures
+36{,}474 gold stanzas. The proposed family dominates: D\_ssg reaches
+89.2\% stanza recall and B 88.1\%, versus 74.0\% for Model~A. Model~C
+reaches 85.5\% but evaluates only 97.6\% of the corpus (TLTK failures
 concentrate in the archaic \emph{\textipa{k\super{h}\v{u}n tC\super{h}\'a:N k\super{h}\v{u}n p\super{h}\v{E}:n}}).
 
 \begin{table}[t]
-\caption{Gold recall (whole-stanza and per-rule), 36{,}475 stanzas.}
+\caption{Gold recall (whole-stanza and per-rule), 36{,}474 stanzas.}
 \label{tab:gold}
 \centering
 \footnotesize
@@ -723,15 +723,15 @@ concentrate in the archaic \emph{\textipa{k\super{h}\v{u}n tC\super{h}\'a:N k\su
 \toprule
 System & Stanza & $R_1$ & $R_2$ & $R_3$ & $R_X$ \\
 \midrule
-A (5.0.1) & 73.4 & 86.3 & 88.8 & N/A & 88.7 \\
-B (6.0) & 87.5 & 94.7 & 96.5 & 95.5 & 96.7 \\
-D\_w2p & 87.4 & 95.4 & 96.3 & 94.9 & 96.5 \\
-D\_ssg & \textbf{88.5} & 95.9 & 96.7 & 95.2 & 97.0 \\
-C (Kongfha) & 84.8$^{\dagger}$ & 93.2 & 96.5 & 94.1 & 96.6 \\
+A (5.0.1) & 74.0 & 86.3 & 89.5 & N/A & 89.4 \\
+B (6.0) & 88.1 & 94.7 & 97.2 & 95.5 & 97.4 \\
+D\_w2p & 88.1 & 95.4 & 97.0 & 94.9 & 97.3 \\
+D\_ssg & \textbf{89.2} & \textbf{95.9} & \textbf{97.4} & 95.2 & \textbf{97.8} \\
+C (Kongfha) & 85.5$^{\dagger}$ & 93.1 & 96.5 & 94.1 & 96.6 \\
 \bottomrule
 \end{tabular}
 \\[2pt]
-\footnotesize $^{\dagger}$ coverage 95.7\%; per-rule figures on the
+\footnotesize $^{\dagger}$ coverage 97.6\%; per-rule figures on the
 evaluated subset.
 \end{table}
 
@@ -809,7 +809,7 @@ oracle-blind).}
 \toprule
  & \multicolumn{2}{c}{recall (\%)} & \multicolumn{2}{c}{FN-pos} & \multicolumn{2}{c}{FP} \\
 \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
-System & tricky & \begin{tabular}{@{}c@{}}oracle-\\blind\end{tabular} & total & $=$ob & total & C3/C9 \\
+System & tricky & \begin{tabular}{@{}c@{}}oracle-\\blind\end{tabular} & total & $=$oracle-blind & total & C3/C9 \\
 \midrule
 A & 57.0 & 21.5 & 848 & 332 & 1,950 & 162/1,774 \\
 B & \textbf{100} & 0.0 & 423 & 423 & \textbf{0} & 0/0 \\
@@ -888,8 +888,8 @@ rhyme rules with robust \textipa{karun}, true-final, and \textipa{sara} handling
 100\% precision on curated negatives. A dictionary-enhanced variant
 (Klon8Checker, Model~D) adds a gold-standard G2P override dictionary of over
 4{,}000 entries and recovers 95.7\% of the oracle's own blind spots. On
-36{,}475 gold stanzas and 11{,}623 adversarial instances, the proposed
-family raises stanza recall from 73.4\% to 88.5\% (D\_ssg) with
+36{,}474 gold stanzas and 11{,}623 adversarial instances, the proposed
+family raises stanza recall from 74.0\% to 89.2\% (D\_ssg) with
 near-perfect precision, exposing the blind spots of both the
 G2P-romanization checker and the rule-based oracle. The verifier is
 released as an explainable educational tool and provides a deterministic
