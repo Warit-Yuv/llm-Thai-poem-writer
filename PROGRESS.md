@@ -1349,3 +1349,20 @@ off by 3 — exactly the 3 gap-seam rows that became R_X-N/A. phraAphai R_X is 2
 
 The D_ssg (26.3/9.5/6.3 s) and D_w2p (32.3/18.9/24.1 s) rows do not match any saved
 benchmark run; they appear to come from an earlier, unsaved run. Re-measured below.
+
+### Outcomes (all committed)
+
+- **Full eval re-run** (harness exit 0, correct env): gold A 74.0 / B 88.1 / D_w2p 88.1
+  / D_ssg 89.2 / C 85.5; augment P/R/F1 unchanged (deterministic).
+- **Speed benchmark** (3 repeats, idle machine): A 13.2→3.5 s (3.76×), B 29.3→6.7 s
+  (4.37×), D_ssg 24.2→5.4 s (4.49×), D_w2p 20.2→22.3 s (0.91×, slower), C 61.6→32.1 s
+  (1.92×) at 10 workers. Full-corpus C ≈ 0.31 s/unit → ~3.1 h at 1 worker.
+- **`FINAL_REPORT.md`** — new self-contained report with every number.
+- **`Paper/Latex_Paper/iSAI-Klon-Checker-6page.tex`** — condensed copy, **7 → 6 pages**
+  (trimmed Related Work, Methodology prose, Discussion, Applications). The original
+  `iSAI-Klon-Checker.tex` is untouched; the author will supervise the final trim.
+- **Author's DS2 report** — stale numbers fixed, each marked with `฿฿฿===฿฿฿`:
+  145,709→145,702; 88.5%→89.2%; 73.4%→74.0%; speed table + prose re-measured;
+  "40 min"→"24 min at 4 workers".
+- **`benchmark_speed.py`** now MERGES into the JSON (a `--only c` run no longer wipes
+  the `abd` results).
