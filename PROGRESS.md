@@ -1046,7 +1046,7 @@ deferred by the author.
 
 ## Session 11 — Raw Dataset audit: บท/วรรค counting + 3 transcription gaps (2026-10-09)
 
-### New audit tools (repo root, uncommitted)
+### New audit tools (repo root; committed in Session 11b)
 - `count_raw_dataset.py` — counts บท/วรรค per raw file with the project's own rules
   (วรรค = tab/newline-separated Thai run; ๏ acts must hold 4k or 4k+3 วรรค), flags acts
   failing the checksum, cross-checks every file against its `Results/Evaluate` row count.
@@ -1081,11 +1081,31 @@ by the gaps, 3 true บท are absent from the eval, and _22's final 2 วรร
 `write_eval`. Proposed (author-gated): a declarative gap map
 (`Dataset/transcription_gaps.json`) consumed by `write_eval` + `count_raw_dataset` →
 exclude the 3 present-half pairs ([517,518], [177,178], [891,892]), re-tile → _22 225
-rows (membership corrected to the author grouping), _31 289, grand 36,474; 3 artificial
-rX misses appear at the gap seams (a property of the gap, not a checker error). The
+rows (membership corrected to the author grouping), _31 289, grand 36,474. The
 augmentation is unaffected (standalone instances). Full plan: **`HANDOFF.md`**.
+**Outcome (Session 11b):** implemented, plus a seam fix so the row after each gap is a
+fresh stanza (rX N/A) — the 3 seam links are NOT scored as misses. See below.
 
 ### Session 11b — Eval gap patch implemented + metric refresh (2026-10-09)
+
+**CURRENT STATE (authoritative numbers after the patch):**
+
+| quantity | before | after |
+|---|---:|---:|
+| files | 191 | 191 |
+| stanzas (eval rows) | 36,475 | **36,474** |
+| waks | 145,900 | **145,896** |
+| gold rhyme checks | 145,709 | **145,705** |
+| rX-applicable links | 36,284 | **36,280** |
+| phraAphai stanzas | 24,342 | **24,341** |
+| phraAphai waks | 97,368 | **97,364** |
+| phraAphai checks | 97,236 | **97,232** |
+| _22 eval rows | 225 | **225** (re-tiled) |
+| _31 eval rows | 290 | **289** |
+
+The rX drop is 4 = 1 (one fewer row) + 3 (the 3 seam rows are now rX N/A). The
+earlier sessions' counts (36,475 / 145,900 / 145,709 / 36,284) are the historical
+record and are left as-is.
 
 **Author approval (2026-10-09):** "Yes, you may patch the eval rows around the 3 gap
 sites. If you want to exclude the 6 present-half waks ([517,518] / [177,178] / [891,892]),
@@ -1135,21 +1155,17 @@ change in the PROGRESS.md and update any relevant metrics or tables accordingly.
   (numpy 2.5.3 / scipy 1.18.1 / sklearn 1.9.1). Point `KONGFHA_PYTHON` at
   `.venv312\Scripts\python.exe` for Checker C. (tltk has no 3.14 wheel — the project venv
   can't run it.)
-- C chunks were stale (aligned to the old unit list, 36,284 units → now 36,283). A full
-  re-run was started but the parallel workers stalled in this environment, so a **partial
-  recovery** was used instead: `Paper/eval_checkers/recover_c_chunks.py` reuses the cached
-  result for every unchanged unit (35,771 of 36,283 are byte-identical to the pre-patch
-  run — verified) and re-scores only the **275** units that touch the changed rows
-  (~3.5 min vs ~49 min for a full pass). The 1-unit drop shifts chunk boundaries from
-  chunk 5 onward, so the recovery rewrites all 13 chunks in the new order. Backups of the
-  pre-patch CSVs, gold JSON, and C chunks are in `backups/eval_pre_gap_patch/`.
-- **Checker C tooling improvements** (`run_c_full.py`): results now stream to
-  `chunk_<k>.jsonl.partial` as they arrive (flushed per unit) and are atomically renamed
-  to `chunk_<k>.jsonl` only when the chunk completes — a crash mid-chunk keeps every unit
-  already scored. A live progress bar shows units/s, elapsed, and ETA.
-- **Speed benchmark** (`Paper/eval_checkers/benchmark_speed.py`): A/B/D/Dssg over the full
-  corpus at 1..10 workers, and Checker C on a fixed sample, writing
-  `benchmark_speed.json` for reproducibility.
+- **C gold chunks — PARTIAL RECOVERY (not a full re-run).** The gap patch changed only
+  `_22`/`_31`; **35,771 of 36,283 units are byte-identical** to the pre-patch run, so
+  `Paper/eval_checkers/recover_c_chunks.py` reuses the cached result for every unchanged
+  unit and re-scores only the **275** changed units (one-shot worker, ~2 min), then
+  rewrites all 13 chunks in the new order. The 1-unit drop shifts chunk boundaries from
+  chunk 5 onward, so the recovery rewrites every chunk. Backups of the pre-patch CSVs,
+  gold JSON, and C chunks are in `backups/eval_pre_gap_patch/`.
+- **Checker C tooling:** `run_c_full.py` streams results to `chunk_<k>.jsonl.partial`
+  (flushed per unit, atomically renamed on completion) and shows a live progress bar;
+  `score_units_parallel` uses one-shot subprocesses with temp-file I/O (the persistent
+  pool stalled). Speed benchmark in `Paper/eval_checkers/BENCHMARK.md`.
 
 **Corpus counts (paper-facing):** stanzas 36,475 → **36,474**; waks 145,900 → **145,896**;
 gold rhyme checks 145,709 → **145,705** (phraAphai 24,342→24,341 stanzas, 97,368→97,364

@@ -167,7 +167,12 @@ def main() -> None:
             "files": len({(s.story, s.chapter) for s in stanzas}),
             "stanzas": len(stanzas),
             "waks": len(stanzas) * 4,
-            "inter_links": len(units),
+            # C units = consecutive row-pairs within a chapter (what Checker C
+            # scores). NOT the same as rX-applicable links: a row after a
+            # transcription gap has prev_w4 = None, so its pair is a C unit but
+            # not an rX link.
+            "c_units": len(units),
+            "rX_applicable": sum(1 for s in stanzas if s.prev_w4 is not None),
         },
         "checkers": {},
         "cross_chapter_rX": None,
