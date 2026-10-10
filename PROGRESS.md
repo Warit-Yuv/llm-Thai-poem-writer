@@ -10,7 +10,7 @@ This file is updated after each working session so progress is visible at a glan
 
 ---
 
-## Current status (2026-08-09)
+## Current status (2026-10-11)
 
 | Area | State |
 |---|---|
@@ -20,19 +20,20 @@ This file is updated after each working session so progress is visible at a glan
 | Checker A (pythainlp 5.0.1) instrumented | ✅ Done |
 | Checker B (pythainlp 5.3.5) instrumented | ✅ Done |
 | Checker D (Klonpad overrides) instrumented | ✅ Done |
-| Checker C (Kongfha `word_check`) wrapper | ✅ Runs via Python 3.12 subprocess worker |
-| Data loader (`data_loading.py`) | ✅ Done |
+| Checker C (Kongfha `word_check`) wrapper | ✅ Runs via `.venv312` (Python 3.12) subprocess worker |
+| Data loader (`data_loading.py`) | ✅ Done (gap-seam aware) |
 | Parity validation (A & B vs original `check_klon`) | ✅ 0 mismatches |
 | Smoke test A/B/C/D on gold sample | ✅ Done |
-| Full-corpus gold re-eval (post data-completeness fix) | ✅ A 73.4% / B 87.5% / C 85.4% / D 87.2% (rX 89/97/97/96) |
-| Cross-chapter boundary rX check | ✅ 181/186 = 97.3% rhyme (report-only) |
-| Checker C slowness mitigation (persistent workers + G2P cache) | ✅ Done (~49 min wall) |
-| Parallel A/B/D eval (`--workers`/`--dw-workers`, `parallel_eval.py`) | ✅ Done (95s -> ~33s: `--workers 10 --dw-workers 4`) |
-| Augmentation (mixed neg operators + standalone positives) | 🔄 Redesigned (Session 8); author review pending |
-| Augmentation review (word lists + readable TSVs) | 🔄 Written on next run; author gate |
+| Transcription-gap patch (3 incomplete บท) | ✅ Done (Session 11b) — corpus now 36,474 stanzas |
+| Full-corpus gold re-eval (post gap patch) | ✅ A 74.0% / B 88.1% / D_w2p 88.1% / D_ssg 89.2% / C 85.5% |
+| Cross-chapter boundary rX check | ✅ phraAphai 130/131 (report-only) |
+| Checker C slowness mitigation (streaming checkpoints + progress bar) | ✅ Done |
+| Parallel A/B/D eval (`--workers`/`--dw-workers`, `parallel_eval.py`) | ✅ Done |
+| Speed benchmark (per checker, 1–10 workers) | ✅ `Paper/eval_checkers/BENCHMARK.md` |
+| Augmentation (mixed neg operators + standalone positives) | ✅ Done (audited) |
 | Evaluation harness + metrics (`eval_harness.py`, `metrics.py`) | ✅ Done |
-| Report notebook (`Method_evaluation_script.ipynb`) | ⏳ Stub only |
-| Final full eval incl. Checker C on augment | ⏳ After author approves augmentation |
+| Report notebook (`Method_evaluation_script.ipynb`) | ✅ Done |
+| Final full eval incl. Checker C on augment | 🔄 Harness re-run pending (C-on-augment, ~24 min at 4 workers) |
 
 ---
 
@@ -86,6 +87,11 @@ each chapter is N/A for that rule. **Data-completeness fix (commit 53c6b29):**
 removed and the inter-stanza rhyme chains (บท→บท, and chapter→chapter across
 files) are preserved. Only the 3-วรรค opener at chapter start is cut and ๏ acts
 are ignored. Counts below are the **updated, data-complete corpus**.
+
+> **Note (Session 11b, 2026-10-09):** the counts in this Session-3 table are the
+> pre-gap-patch figures. After the transcription-gap patch the corpus is
+> **36,474 stanzas / 145,896 waks / 145,705 checks / 36,280 $R_X$ links** — see the
+> authoritative before/after table in Session 11b.
 
 | story | files | บท | วรรค | $R_1{+}R_2{+}R_3$ (intra-stanza) | $R_X$ (inter-stanza) | **total rhyme checks** |
 |---|---|---|---|---|---|---|
