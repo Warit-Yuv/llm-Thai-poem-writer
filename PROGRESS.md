@@ -3,6 +3,10 @@
 Tracked sessions and current state of the **Klon-8 rhyme-detection evaluation**.
 This file is updated after each working session so progress is visible at a glance.
 
+> ## 📊 [**→ FINAL DATA REPORT (authoritative numbers)**](#final-data-report-2026-10-11--authoritative-numbers)
+> Every paper number in one place: corpus counts, gold recall, augment P/R/F1,
+> oracle-blind probe, speed, and a "which metrics to report" guide.
+
 > **Rule notation.** The paper writes the four canonical rules as $R_1$ (สดับ→รับ),
 > $R_2$ (รับ→รอง), $R_3$ (รอง→ส่ง), and $R_X$ (inter-stanza). The code/JSON keys are
 > the lowercase `r1_w1_w2`, `r2_w2_w3`, `r3_w3_w4`, `rX_inter`; older tables in this
