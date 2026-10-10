@@ -149,9 +149,16 @@ def main():
                            repeats=args.repeats)
         _table(f"C (Kongfha, {args.c_sample}-unit sample)", out["c"])
 
+    # MERGE into the existing JSON so a --only c run does not wipe the abd
+    # results (and vice versa). Keys are overwritten only when re-measured.
+    merged = {}
+    if os.path.exists(OUT):
+        with open(OUT, encoding="utf-8") as fh:
+            merged = json.load(fh)
+    merged.update(out)
     with open(OUT, "w", encoding="utf-8") as fh:
-        json.dump(out, fh, ensure_ascii=False, indent=1)
-    print(f"\nwrote {OUT}")
+        json.dump(merged, fh, ensure_ascii=False, indent=1)
+    print(f"\nwrote {OUT} (keys: {sorted(merged)})")
 
 
 if __name__ == "__main__":
