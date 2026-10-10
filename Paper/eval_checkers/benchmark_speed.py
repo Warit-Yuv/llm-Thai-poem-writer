@@ -47,14 +47,16 @@ ABD = [
 
 
 def bench_abd(stanzas, worker_counts):
-    """Time A/B/D/Dssg over the full corpus at each worker count."""
-    results = {}
-    for w in worker_counts:
-        t = time.time()
-        run_checkers(stanzas, ABD, workers=w)
-        dt = time.time() - t
-        results[w] = dt
-        print(f"  A/B/D/Dssg  workers={w:>2}  {dt:7.2f}s", flush=True)
+    """Time EACH of A/B/D_w2p/D_ssg separately over the full corpus, at each
+    worker count. Returns {checker_name: {workers: seconds}}."""
+    results = {name: {} for name, _c, _k in ABD}
+    for name, cls, kw in ABD:
+        for w in worker_counts:
+            t = time.time()
+            run_checkers(stanzas, [(name, cls, kw)], workers=w)
+            dt = time.time() - t
+            results[name][w] = dt
+            print(f"  {name:<24} workers={w:>2}  {dt:7.2f}s", flush=True)
     return results
 
 
@@ -73,12 +75,33 @@ def bench_c(units, worker_counts, sample):
 
 
 def _table(name, results):
+    """results: {workers: seconds} for a single checker."""
     base = results.get(1)
     print(f"\n== {name} ==")
     print(f"  {'workers':>7}  {'seconds':>9}  {'speed-up':>9}")
     for w in sorted(results):
         su = (base / results[w]) if base else float("nan")
         print(f"  {w:>7}  {results[w]:>9.2f}  {su:>8.2f}x")
+
+
+def _table_multi(title, per_checker):
+    """per_checker: {checker_name: {workers: seconds}} — one column per checker."""
+    names = list(per_checker)
+    workers = sorted({w for r in per_checker.values() for w in r})
+    print(f"\n== {title} ==")
+    header = f"  {'workers':>7}  " + "  ".join(f"{n[:18]:>18}" for n in names)
+    print(header)
+    for w in workers:
+        cells = []
+        for n in names:
+            base = per_checker[n].get(1)
+            dt = per_checker[n].get(w)
+            if dt is None:
+                cells.append(f"{'—':>18}")
+            else:
+                su = (base / dt) if base else float("nan")
+                cells.append(f"{dt:>10.2f}s {su:>5.2f}x")
+        print(f"  {w:>7}  " + "  ".join(cells))
 
 
 def main():
@@ -97,9 +120,10 @@ def main():
 
     if args.only in ("abd", "all"):
         stanzas = load_stanzas()
-        print(f"A/B/D/Dssg over {len(stanzas)} stanzas", flush=True)
+        print(f"A/B/D_w2p/D_ssg over {len(stanzas)} stanzas (each timed separately)",
+              flush=True)
         out["abd"] = bench_abd(stanzas, args.workers)
-        _table("A/B/D/Dssg (full corpus)", out["abd"])
+        _table_multi("A/B/D_w2p/D_ssg (full corpus, per checker)", out["abd"])
 
     if args.only in ("c", "all"):
         units, _meta = build_units()
