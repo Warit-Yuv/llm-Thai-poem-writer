@@ -3,6 +3,11 @@
 Tracked sessions and current state of the **Klon-8 rhyme-detection evaluation**.
 This file is updated after each working session so progress is visible at a glance.
 
+> **Rule notation.** The paper writes the four canonical rules as $R_1$ (สดับ→รับ),
+> $R_2$ (รับ→รอง), $R_3$ (รอง→ส่ง), and $R_X$ (inter-stanza). The code/JSON keys are
+> the lowercase `r1_w1_w2`, `r2_w2_w3`, `r3_w3_w4`, `rX_inter`; older tables in this
+> log abbreviate them `r1`/`r2`/`r3`/`rX`. They are the same rules.
+
 ---
 
 ## Current status (2026-08-09)
@@ -82,7 +87,7 @@ removed and the inter-stanza rhyme chains (บท→บท, and chapter→chapte
 files) are preserved. Only the 3-วรรค opener at chapter start is cut and ๏ acts
 are ignored. Counts below are the **updated, data-complete corpus**.
 
-| story | files | บท | วรรค | within rhymes (×3) | inter links (rows−files) | **total rhyme checks** |
+| story | files | บท | วรรค | $R_1{+}R_2{+}R_3$ (intra-stanza) | $R_X$ (inter-stanza) | **total rhyme checks** |
 |---|---|---|---|---|---|---|
 | SuphasaetSonYing | 1 | 200 | 800 | 600 | 199 | 799 |
 | khobut | 14 | 1,303 | 5,212 | 3,909 | 1,289 | 5,198 |
@@ -91,19 +96,22 @@ are ignored. Counts below are the **updated, data-complete corpus**.
 | phukaoTong | 1 | 87 | 348 | 261 | 86 | 347 |
 | **TOTAL** | **191** | **36,475** | **145,900** | **109,425** | **36,284** | **145,709** |
 
-Per-rule gold positives: `r1`=36,475 · `r2`=36,475 · `r3`=36,475 · `rX`=36,284.
+Per-rule gold positives: $R_1$=36,475 · $R_2$=36,475 · $R_3$=36,475 · $R_X$=36,284
+(the intra-stanza rules apply to every stanza; $R_X$ applies only when a previous
+stanza exists, i.e. rows − files).
 The dataset grew ~22% versus the pre-fix corpus (29,762 → 36,475 บท).
 
 ### The four checkers under evaluation
 
 | ID | System | Basis | Rule set | Notes |
 |---|---|---|---|---|
-| A | Original PyThaiNLP | pythainlp **5.0.1** `check_klon` | r1, r2, rX | `subword_tokenize(engine="dict")`; no r3 |
-| B | Rule-based PyThaiNLP | pythainlp **5.3.5** `check_klon` (merged KhaveeVerifier) | r1, r2, r3, rX | ssg tokenizer; improved `is_sumpus` |
-| C | Kongfha `word_check` | `KlonSuphap-LM` `sumpass_eval.py` + `word_check.py` | r1, r2, r3, rX (+extra `รับ-ส่ง`) | tltk G2P romanisation; vowel-mattra compare |
+| A | Original PyThaiNLP | pythainlp **5.0.1** `check_klon` | $R_1$, $R_2$, $R_X$ | `subword_tokenize(engine="dict")`; no $R_3$ |
+| B | Rule-based PyThaiNLP | pythainlp **5.3.5** `check_klon` (merged KhaveeVerifier) | $R_1$, $R_2$, $R_3$, $R_X$ | ssg tokenizer; improved `is_sumpus` |
+| C | Kongfha `word_check` | `KlonSuphap-LM` `sumpass_eval.py` + `word_check.py` | $R_1$, $R_2$, $R_3$, $R_X$ (+extra `รับ-ส่ง`) | tltk G2P romanisation; vowel-mattra compare |
 | D | Klonpad | `extract_poetic_syllables` + `POETRY_OVERRIDES` | same as B (isolation) | override-enhanced segmentation |
 
-Canonical rules: `r1_w1_w2`, `r2_w2_w3`, `r3_w3_w4`, `rX_inter`.
+Rule notation (paper): $R_1$ สดับ→รับ, $R_2$ รับ→รอง, $R_3$ รอง→ส่ง, $R_X$ inter-stanza.
+Code IDs (JSON/CSV keys): `r1_w1_w2`, `r2_w2_w3`, `r3_w3_w4`, `rX_inter`.
 
 ### Environment facts
 
@@ -189,11 +197,11 @@ severed inter-stanza rhyme chains and made gold rX look ~72% "valid". With the
 corpus now complete (36,475 บท / 145,900 วรรค / 145,709 gold checks), all four
 checkers were re-run over the **entire** corpus.
 
-### Full-corpus gold acceptance (per story) — stanza_ok% and r1/r2/r3/rX
+### Full-corpus gold acceptance (per story) — stanza_ok% and $R_1$/$R_2$/$R_3$/$R_X$
 
 **A = pythainlp 5.0.1** (no r3 — N/A):
 
-| story | stanza_ok | r1 | r2 | r3 | rX | n (drop) |
+| story | stanza_ok | $R_1$ | $R_2$ | $R_3$ | $R_X$ | n (drop) |
 |---|---|---|---|---|---|---|
 | SuphasaetSonYing | 76.9% | 90 | 88 | – | 89 | 199 (1) |
 | khobut | 70.5% | 86 | 87 | – | 88 | 1,301 (2) |
@@ -204,7 +212,7 @@ checkers were re-run over the **entire** corpus.
 
 **B = pythainlp 5.3.5:**
 
-| story | stanza_ok | r1 | r2 | r3 | rX | n (drop) |
+| story | stanza_ok | $R_1$ | $R_2$ | $R_3$ | $R_X$ | n (drop) |
 |---|---|---|---|---|---|---|
 | SuphasaetSonYing | 91.0% | 98 | 97 | 96 | 97 | 200 (0) |
 | khobut | 86.6% | 94 | 97 | 94 | 97 | 1,303 (0) |
@@ -215,7 +223,7 @@ checkers were re-run over the **entire** corpus.
 
 **D = Klonpad (overrides):**
 
-| story | stanza_ok | r1 | r2 | r3 | rX | n (drop) |
+| story | stanza_ok | $R_1$ | $R_2$ | $R_3$ | $R_X$ | n (drop) |
 |---|---|---|---|---|---|---|
 | SuphasaetSonYing | 89.0% | 98 | 95 | 96 | 95 | 200 (0) |
 | khobut | 85.6% | 94 | 97 | 93 | 97 | 1,303 (0) |
@@ -227,7 +235,7 @@ checkers were re-run over the **entire** corpus.
 **C = Kongfha word_check** (evaluates 2 stanzas per 8-wak unit; drops =
 WordFail/LengthFail/WorkerError → coverage reported separately):
 
-| story | stanza_ok | r1 | r2 | r3 | rX | n (drop, we) | coverage |
+| story | stanza_ok | $R_1$ | $R_2$ | $R_3$ | $R_X$ | n (drop, we) | coverage |
 |---|---|---|---|---|---|---|---|
 | SuphasaetSonYing | 87.1% | 95 | 99 | 92 | 98 | 394 (4, 0) | 99.0% |
 | khobut | 83.7% | 92 | 96 | 93 | 96 | 2,546 (32, 0) | 98.8% |
@@ -314,7 +322,7 @@ variant `KlonpadSsgChecker` (overrides + **plain ssg** fallback, no w2p) was
 added (`klonpad_checker.py`; `fallback` param threaded through
 `extract_poetic_syllables` in `klonpad_syllables.py`) and run on the full corpus:
 
-| checker | stanza_ok | r1 | r2 | r3 | rX |
+| checker | stanza_ok | $R_1$ | $R_2$ | $R_3$ | $R_X$ |
 |---|---|---|---|---|---|
 | B (ssg, no overrides) | 87.5% | 95 | 96 | 95 | 97 |
 | D w2p fallback (original) | 87.2% | 95 | 96 | 95 | 96 |
@@ -454,7 +462,7 @@ Per-checker scaling over the full corpus (results identical at every count):
 `Paper/augment/output/` — **6,000 negatives + 1,200 positives (7,200
 instances)** in ~75 s:
 
-| kind | r1 | r2 | r3 | rX | total |
+| kind | $R_1$ | $R_2$ | $R_3$ | $R_X$ | total |
 |---|---|---|---|---|---|
 | negatives | 1,500 | 1,500 | 1,500 | 1,500 | 6,000 |
 | positives | 300 | 300 | 300 | 300 | 1,200 |
@@ -821,7 +829,7 @@ oracle limitation that the generator's oracle-gate could not self-detect:
 
 ### Gold recall (stanza level, 36,475 stanzas; A has no r3)
 
-| checker | stanza | r1 | r2 | r3 | rX |
+| checker | stanza | $R_1$ | $R_2$ | $R_3$ | $R_X$ |
 |---|---|---|---|---|---|
 | A · 5.0.1 | 73.4% | 86.3% | 88.8% | – | 88.7% |
 | B · 5.3.5 | 87.5% | 94.7% | 96.5% | 95.5% | 96.7% |
@@ -978,7 +986,7 @@ error strings for a stanza when `w3_last == prev_w4_last` (e.g. จิต-ฤท
 
 ### Smoke test (gold sample: phukaoTong + phraAphai_1 + khobut_1 heads; 144 stanzas)
 
-| checker | stanza_ok | r1 | r2 | r3 | rX |
+| checker | stanza_ok | $R_1$ | $R_2$ | $R_3$ | $R_X$ |
 |---|---|---|---|---|---|
 | A (5.0.1) | 49.3% | 88% | 81% | – | 62% |
 | B (5.3.5) | 63.9% | 96% | 95% | 94% | 72% |
