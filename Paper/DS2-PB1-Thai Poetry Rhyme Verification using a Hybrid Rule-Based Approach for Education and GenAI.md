@@ -145,7 +145,7 @@ Our corpus consists of 5 famous Thai poetry, namely Phra Aphai Manee, Khobut, Kh
 | ----- | ----- | ----- |
 | Files | 191 | Total raw files |
 | Stanzas | 36,457 | 36,453 4-wak stanzas \+ 4 3-wak openers |
-| Waks | 145,900 | Total poetic lines (waks) |
+| Waks | ฿฿฿===฿฿฿ 145,914 | Total poetic lines (waks) |
 
 The preprocessing process consists of cutting the act-opening stanzas, which contain only 3 waks and rhyme mismatches, from the dataset. The data will then be transformed into a .CSV file as below; note that each column contains waks 1 through 4 in each stanza.
 
