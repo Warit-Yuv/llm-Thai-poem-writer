@@ -175,7 +175,7 @@ def _augment_key(inst):
     return (inst["w1"], inst["w2"], inst["w3"], inst["w4"], inst["prev_w4"])
 
 
-def collect_augment(aug, workers, skip_c, filler):
+def collect_augment(aug, workers, skip_c, filler, c_workers=4):
     """Run all checkers on the augment stanzas.
 
     Returns ``{checker_name: [{"rule", "gold", "pred", "stanza_pred"}]}``
@@ -202,12 +202,17 @@ def collect_augment(aug, workers, skip_c, filler):
                 "stanza_pred": None if v["drop"] else bool(v["stanza_ok"]),
             })
     if not skip_c:
-        out[C_NAME] = collect_c_augment(aug, filler)
+        out[C_NAME] = collect_c_augment(aug, filler, workers=c_workers)
     return out
 
 
-def collect_c_augment(aug, filler):
-    """Checker C verdicts on augment instances (via the tltk worker)."""
+def collect_c_augment(aug, filler, workers=4):
+    """Checker C verdicts on augment instances (via the tltk worker).
+
+    ``workers`` defaults to 4: C scales to ~3x at 4 workers but no further
+    (each tltk process loads ~400 MB; 10 workers thrash and can hit the
+    subprocess timeout). See Paper/eval_checkers/BENCHMARK.md.
+    """
     client = KongfhaChecker()
     units = []
     meta = []
@@ -222,7 +227,7 @@ def collect_c_augment(aug, filler):
             units.append((str(i), waks
                           + [filler.w1, filler.w2, filler.w3, filler.w4]))
         meta.append((i, inst["rule"]))
-    results = score_units_parallel(units)
+    results = score_units_parallel(units, workers=workers)
     out = []
     for (i, rule), res in zip(meta, results):
         inst = aug[i]
@@ -269,6 +274,9 @@ def main() -> None:
                     help="parallel processes for A/B/D/Dssg (recommended 10)")
     ap.add_argument("--dw-workers", type=int, default=None,
                     help="worker count for D_w2p only (recommended 4)")
+    ap.add_argument("--c-workers", type=int, default=4,
+                    help="worker count for Checker C on the augmentation "
+                         "(recommended 4; C does not scale beyond 4)")
     ap.add_argument("--skip-c", action="store_true",
                     help="skip Checker C (no checkpoint files yet)")
     ap.add_argument("--out", default=OUT,
@@ -321,7 +329,8 @@ def main() -> None:
             aug = json.load(f)
         print(f"collecting augment verdicts ({len(aug)} instances)...", flush=True)
         filler = stanzas[0]
-        aug_preds = collect_augment(aug, workers, args.skip_c, filler)
+        aug_preds = collect_augment(aug, workers, args.skip_c, filler,
+                                    c_workers=args.c_workers)
         print(f"  augment collected in {time.time() - t0:.0f}s", flush=True)
         merge_augment(report, aug_preds)
         print("merged augment (per-rule and stanza precision/F1)", flush=True)

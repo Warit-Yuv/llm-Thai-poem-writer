@@ -46,31 +46,43 @@ ABD = [
 ]
 
 
-def bench_abd(stanzas, worker_counts):
+def bench_abd(stanzas, worker_counts, repeats=1):
     """Time EACH of A/B/D_w2p/D_ssg separately over the full corpus, at each
-    worker count. Returns {checker_name: {workers: seconds}}."""
+    worker count, averaged over ``repeats`` runs.
+    Returns {checker_name: {workers: mean_seconds}}."""
     results = {name: {} for name, _c, _k in ABD}
     for name, cls, kw in ABD:
         for w in worker_counts:
-            t = time.time()
-            run_checkers(stanzas, [(name, cls, kw)], workers=w)
-            dt = time.time() - t
+            times = []
+            for _ in range(repeats):
+                t = time.time()
+                run_checkers(stanzas, [(name, cls, kw)], workers=w)
+                times.append(time.time() - t)
+            dt = sum(times) / len(times)
             results[name][w] = dt
-            print(f"  {name:<24} workers={w:>2}  {dt:7.2f}s", flush=True)
+            extra = (f"  (runs {['%.1f' % x for x in times]})"
+                     if repeats > 1 else "")
+            print(f"  {name:<24} workers={w:>2}  {dt:7.2f}s{extra}", flush=True)
     return results
 
 
-def bench_c(units, worker_counts, sample):
-    """Time Checker C on a fixed sample of units at each worker count."""
+def bench_c(units, worker_counts, sample, repeats=1):
+    """Time Checker C on a fixed sample of units at each worker count,
+    averaged over ``repeats`` runs."""
     batch = [(str(i), w) for i, (_uid, w) in enumerate(units[:sample])]
     results = {}
     for w in worker_counts:
-        t = time.time()
-        score_units_parallel(batch, workers=w)
-        dt = time.time() - t
+        times = []
+        for _ in range(repeats):
+            t = time.time()
+            score_units_parallel(batch, workers=w)
+            times.append(time.time() - t)
+        dt = sum(times) / len(times)
         results[w] = dt
+        extra = (f"  (runs {['%.1f' % x for x in times]})"
+                 if repeats > 1 else "")
         print(f"  C (Kongfha) workers={w:>2}  {dt:7.2f}s  "
-              f"({sample / dt:.1f} u/s)", flush=True)
+              f"({sample / dt:.1f} u/s){extra}", flush=True)
     return results
 
 
@@ -114,21 +126,27 @@ def main():
                     help="worker counts to test (default 1..10)")
     ap.add_argument("--c-sample", type=int, default=3000,
                     help="units for the C sample (default 3000 = 1 chunk)")
+    ap.add_argument("--repeats", type=int, default=1,
+                    help="repeat each measurement N times and average "
+                         "(reduces noise from background load)")
     args = ap.parse_args()
 
-    out = {"workers": args.workers, "c_sample": args.c_sample}
+    out = {"workers": args.workers, "c_sample": args.c_sample,
+           "repeats": args.repeats}
 
     if args.only in ("abd", "all"):
         stanzas = load_stanzas()
-        print(f"A/B/D_w2p/D_ssg over {len(stanzas)} stanzas (each timed separately)",
-              flush=True)
-        out["abd"] = bench_abd(stanzas, args.workers)
+        print(f"A/B/D_w2p/D_ssg over {len(stanzas)} stanzas (each timed separately, "
+              f"{args.repeats} repeat(s))", flush=True)
+        out["abd"] = bench_abd(stanzas, args.workers, repeats=args.repeats)
         _table_multi("A/B/D_w2p/D_ssg (full corpus, per checker)", out["abd"])
 
     if args.only in ("c", "all"):
         units, _meta = build_units()
-        print(f"\nChecker C over {args.c_sample} units (sample)", flush=True)
-        out["c"] = bench_c(units, args.workers, args.c_sample)
+        print(f"\nChecker C over {args.c_sample} units (sample, "
+              f"{args.repeats} repeat(s))", flush=True)
+        out["c"] = bench_c(units, args.workers, args.c_sample,
+                           repeats=args.repeats)
         _table(f"C (Kongfha, {args.c_sample}-unit sample)", out["c"])
 
     with open(OUT, "w", encoding="utf-8") as fh:
